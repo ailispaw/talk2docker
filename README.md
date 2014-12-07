@@ -9,6 +9,13 @@ It's aimed at my learning Go and Docker Remote API.
 - [go](http://golang.org/)
 - [godep](https://github.com/tools/godep)
 
+# References
+
+- https://docs.docker.com/reference/api/docker_remote_api/
+- https://github.com/samalba/dockerclient
+- https://github.com/codegangsta/cli
+- https://github.com/olekukonko/tablewriter
+
 # How to Build
 
 ```
