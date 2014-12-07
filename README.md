@@ -31,7 +31,7 @@ NAME:
    talk2docker - A simple Docker client to talk to a Docker daemon
 
 USAGE:
-   talk2docker [global options] command [command options] [arguments...]
+   talk2docker [global options] command [options] [arguments...]
 
 VERSION:
    0.1.0+git
@@ -40,13 +40,13 @@ AUTHOR:
   YungSang - <yungsang@gmail.com>
 
 COMMANDS:
-   ps   List containers
-   images List images
-   help, h  Shows a list of commands or help for one command
+   ps           List containers
+   images       List images
+   help, h      Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --host, -H 'unix:///var/run/docker.sock'    Location of the Docker socket [$DOCKER_HOST]
-   --help, -h                                  show help
-   --version, -v                               print the version
+   --host, -H 'unix:///var/run/docker.sock'     Location of the Docker socket [$DOCKER_HOST]
+   --help, -h                                   show help
+   --version, -v                                print the version
 
 ```
