@@ -25,7 +25,7 @@
 		},
 		{
 			"ImportPath": "github.com/yungsang/dockerclient",
-			"Rev": "1b4f01290f3293c934118e51dec542a7ad5d0b58"
+			"Rev": "cb3b57e6fcca060b19f1af51461dca661d18bb57"
 		}
 	]
 }
