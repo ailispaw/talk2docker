@@ -49,6 +49,11 @@ func main() {
 				},
 			},
 		},
+		{
+			Name:   "images",
+			Usage:  "List images",
+			Action: commands.CommandImages,
+		},
 	}
 
 	app.Run(os.Args)
