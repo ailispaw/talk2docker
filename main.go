@@ -96,6 +96,14 @@ OPTIONS:
 					Name:  "all, a",
 					Usage: "Show all images. Only named/taged and leaf images are shown by default.",
 				},
+				cli.BoolFlag{
+					Name:  "quiet, q",
+					Usage: "Only display numeric IDs",
+				},
+				cli.BoolFlag{
+					Name:  "no-header, n",
+					Usage: "Omit the header",
+				},
 			},
 		},
 	}

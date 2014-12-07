@@ -23,15 +23,46 @@ func CommandImages(ctx *cli.Context) {
 		log.Fatal(err)
 	}
 
+	var matchName = ""
+	if len(ctx.Args()) > 0 {
+		matchName = ctx.Args()[0]
+	}
+
+	matchImageByName := func(tags []string, name string) bool {
+		_name := strings.Split(name, ":")
+
+		for _, tag := range tags {
+			_tag := strings.Split(tag, ":")
+			if _tag[0] == _name[0] {
+				if (len(_name) < 2) || (_tag[1] == _name[1]) {
+					return true
+				}
+			}
+		}
+
+		return false
+	}
+
+	if ctx.Bool("quiet") {
+		for _, image := range images {
+			if (matchName == "") || matchImageByName(image.RepoTags, matchName) {
+				fmt.Println(Truncate(image.Id, 12))
+			}
+		}
+		return
+	}
+
 	var items [][]string
 	for _, image := range images {
-		out := []string{
-			Truncate(image.Id, 12),
-			strings.Join(image.RepoTags, ", "),
-			FormatDateTime(time.Unix(image.Created, 0)),
-			fmt.Sprintf("%.4g MB", float64(image.VirtualSize)/1000000.0),
+		if (matchName == "") || matchImageByName(image.RepoTags, matchName) {
+			out := []string{
+				Truncate(image.Id, 12),
+				strings.Join(image.RepoTags, ", "),
+				FormatDateTime(time.Unix(image.Created, 0)),
+				fmt.Sprintf("%.4g MB", float64(image.VirtualSize)/1000000.0),
+			}
+			items = append(items, out)
 		}
-		items = append(items, out)
 	}
 
 	var header = []string{
@@ -42,7 +73,9 @@ func CommandImages(ctx *cli.Context) {
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader(header)
+	if !ctx.Bool("no-header") {
+		table.SetHeader(header)
+	}
 	table.SetBorder(false)
 	table.AppendBulk(items)
 	table.Render()
