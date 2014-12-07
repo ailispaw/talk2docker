@@ -1,0 +1,31 @@
+{
+	"ImportPath": "github.com/yungsang/talk2docker",
+	"GoVersion": "go1.3.3",
+	"Deps": [
+		{
+			"ImportPath": "github.com/codegangsta/cli",
+			"Comment": "1.2.0-42-gfbda1ce",
+			"Rev": "fbda1ce02d5dabcee952040e5f4025753b6c9ce0"
+		},
+		{
+			"ImportPath": "github.com/olekukonko/tablewriter",
+			"Rev": "37f85ed61c00a85092550bf43fc51087a10475fd"
+		},
+		{
+			"ImportPath": "github.com/samalba/dockerclient",
+			"Rev": "1b4f01290f3293c934118e51dec542a7ad5d0b58"
+		},
+		{
+			"ImportPath": "github.com/stretchr/objx",
+			"Rev": "cbeaeb16a013161a98496fad62933b1d21786672"
+		},
+		{
+			"ImportPath": "github.com/stretchr/testify/assert",
+			"Rev": "1297dc01ed0a819ff634c89707081a4df43baf6b"
+		},
+		{
+			"ImportPath": "github.com/stretchr/testify/mock",
+			"Rev": "1297dc01ed0a819ff634c89707081a4df43baf6b"
+		}
+	]
+}
