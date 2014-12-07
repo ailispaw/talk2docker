@@ -18,7 +18,7 @@ func CommandImages(ctx *cli.Context) {
 		log.Fatal(err)
 	}
 
-	images, err := client.ListImages()
+	images, err := client.ListImages(ctx.Bool("all"))
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -57,6 +57,12 @@ func main() {
 			Name:   "images",
 			Usage:  "List images",
 			Action: commands.CommandImages,
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "all, a",
+					Usage: "Show all images. The intermediate image layers are filtered out by default.",
+				},
+			},
 		},
 	}
 
