@@ -45,8 +45,8 @@ COMMANDS:
    help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --host, -H 'unix:///var/run/docker.sock' Location of the Docker socket [$DOCKER_HOST]
-   --help, -h         show help
-   --version, -v        print the version
+   --host, -H 'unix:///var/run/docker.sock'    Location of the Docker socket [$DOCKER_HOST]
+   --help, -h                                  show help
+   --version, -v                               print the version
 
 ```
