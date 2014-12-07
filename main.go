@@ -94,7 +94,7 @@ OPTIONS:
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "all, a",
-					Usage: "Show all images. The intermediate image layers are filtered out by default.",
+					Usage: "Show all images. Only named/taged and leaf images are shown by default.",
 				},
 			},
 		},
