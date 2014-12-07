@@ -76,7 +76,7 @@ func CommandPs(ctx *cli.Context) {
 		"Names",
 		"Image",
 		"Command",
-		"Created",
+		"Created at",
 		"Status",
 		"Ports",
 	}
