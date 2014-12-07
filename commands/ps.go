@@ -9,7 +9,7 @@ import (
 
 	"github.com/codegangsta/cli"
 	"github.com/olekukonko/tablewriter"
-	docker "github.com/samalba/dockerclient"
+	docker "github.com/yungsang/dockerclient"
 )
 
 func CommandPs(ctx *cli.Context) {
