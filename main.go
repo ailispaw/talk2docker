@@ -8,6 +8,38 @@ import (
 )
 
 func main() {
+	cli.AppHelpTemplate = `NAME:
+   {{.Name}} - {{.Usage}}
+
+USAGE:
+   {{.Name}} {{if .Flags}}[global options] {{end}}command{{if .Flags}} [options]{{end}} [arguments...]
+
+VERSION:
+   {{.Version}}{{if or .Author .Email}}
+
+AUTHOR:{{if .Author}}
+  {{.Author}}{{if .Email}} - <{{.Email}}>{{end}}{{else}}
+  {{.Email}}{{end}}{{end}}
+
+COMMANDS:
+   {{range .Commands}}{{.Name}}{{with .ShortName}}, {{.}}{{end}}{{ "\t" }}{{if .Description}}{{.Description}}{{else}}{{.Usage}}{{end}}
+   {{end}}{{if .Flags}}
+GLOBAL OPTIONS:
+   {{range .Flags}}{{.}}
+   {{end}}{{end}}
+`
+
+	cli.CommandHelpTemplate = `NAME:
+   {{.Name}} - {{.Description}}
+
+USAGE:
+   {{.Usage}}{{if .Flags}}
+
+OPTIONS:
+   {{range .Flags}}{{.}}
+   {{end}}{{ end }}
+`
+
 	app := cli.NewApp()
 
 	app.Name = "talk2docker"
@@ -27,9 +59,10 @@ func main() {
 
 	app.Commands = []cli.Command{
 		{
-			Name:   "ps",
-			Usage:  "List containers",
-			Action: commands.CommandPs,
+			Name:        "ps",
+			Usage:       app.Name + " [global options] ps [options]",
+			Description: "List containers",
+			Action:      commands.CommandPs,
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "all, a",
@@ -54,9 +87,10 @@ func main() {
 			},
 		},
 		{
-			Name:   "images",
-			Usage:  "List images",
-			Action: commands.CommandImages,
+			Name:        "images",
+			Usage:       app.Name + " [global options] images [options] [NAME[:TAG]]",
+			Description: "List images",
+			Action:      commands.CommandImages,
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "all, a",
