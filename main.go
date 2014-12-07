@@ -47,6 +47,10 @@ func main() {
 					Name:  "size, s",
 					Usage: "Display sizes",
 				},
+				cli.BoolFlag{
+					Name:  "no-header, n",
+					Usage: "Omit the header",
+				},
 			},
 		},
 		{

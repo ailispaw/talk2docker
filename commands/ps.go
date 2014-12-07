@@ -85,7 +85,9 @@ func CommandPs(ctx *cli.Context) {
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader(header)
+	if !ctx.Bool("no-header") {
+		table.SetHeader(header)
+	}
 	table.SetBorder(false)
 	table.AppendBulk(items)
 	table.Render()
