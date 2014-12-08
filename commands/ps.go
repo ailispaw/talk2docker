@@ -66,7 +66,7 @@ func CommandPs(ctx *cli.Context) {
 			formatPorts(container.Ports),
 		}
 		if ctx.Bool("size") {
-			out = append(out, fmt.Sprintf("%.4g MB", float64(container.SizeRw)/1000000.0))
+			out = append(out, fmt.Sprintf("%.3f", float64(container.SizeRw)/1000000.0))
 		}
 		items = append(items, out)
 	}
@@ -81,7 +81,7 @@ func CommandPs(ctx *cli.Context) {
 		"Ports",
 	}
 	if ctx.Bool("size") {
-		header = append(header, "Size")
+		header = append(header, "Size in MB")
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
