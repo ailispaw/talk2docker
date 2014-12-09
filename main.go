@@ -106,6 +106,12 @@ OPTIONS:
 				},
 			},
 		},
+		{
+			Name:        "version",
+			Usage:       app.Name + " [global options] version",
+			Description: "Show the version information",
+			Action:      commands.CommandVersion,
+		},
 	}
 
 	app.Run(os.Args)

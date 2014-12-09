@@ -42,6 +42,7 @@ AUTHOR:
 COMMANDS:
    ps           List containers
    images       List images
+   version      Show the version information
    help, h      Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
