@@ -8,12 +8,13 @@ import (
 	"time"
 
 	"github.com/codegangsta/cli"
-	docker "github.com/yungsang/dockerclient"
+	api "github.com/yungsang/dockerclient"
 	"github.com/yungsang/tablewriter"
+	"github.com/yungsang/talk2docker/client"
 )
 
 func CommandPs(ctx *cli.Context) {
-	client, err := docker.NewDockerClient(ctx.GlobalString("host"), nil)
+	docker, err := client.GetDockerClient(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -26,7 +27,7 @@ func CommandPs(ctx *cli.Context) {
 		filters += "&size=1"
 	}
 
-	containers, err := client.ListContainers(ctx.Bool("all"), ctx.Bool("size"), filters)
+	containers, err := docker.ListContainers(ctx.Bool("all"), ctx.Bool("size"), filters)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -45,7 +46,7 @@ func CommandPs(ctx *cli.Context) {
 		return ss
 	}
 
-	formatPorts := func(ports []docker.Port) string {
+	formatPorts := func(ports []api.Port) string {
 		result := []string{}
 		for _, p := range ports {
 			result = append(result, fmt.Sprintf("%s:%d->%d/%s",

@@ -56,6 +56,15 @@ OPTIONS:
 			Usage:  "Location of the Docker socket",
 			EnvVar: "DOCKER_HOST",
 		},
+		cli.StringFlag{
+			Name:   "tls",
+			Usage:  "Path to the certificate files for TLS",
+			EnvVar: "DOCKER_CERT_PATH",
+		},
+		cli.BoolFlag{
+			Name:  "insecure-tls",
+			Usage: "Skip verification of the certificates for TLS. Must verify by default.",
+		},
 	}
 
 	app.Commands = []cli.Command{

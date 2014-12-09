@@ -6,8 +6,9 @@ import (
 	"runtime"
 
 	"github.com/codegangsta/cli"
-	docker "github.com/yungsang/dockerclient"
+	api "github.com/yungsang/dockerclient"
 	"github.com/yungsang/tablewriter"
+	"github.com/yungsang/talk2docker/client"
 	"github.com/yungsang/talk2docker/version"
 )
 
@@ -17,7 +18,7 @@ func CommandVersion(ctx *cli.Context) {
 	out := []string{
 		"Talk2Docker",
 		"v" + ctx.App.Version,
-		docker.APIVersion,
+		api.APIVersion,
 		runtime.Version(),
 		version.GITCOMMIT,
 	}
@@ -25,14 +26,14 @@ func CommandVersion(ctx *cli.Context) {
 
 	var e error
 
-	client, err := docker.NewDockerClient(ctx.GlobalString("host"), nil)
+	docker, err := client.GetDockerClient(ctx)
 	if err != nil {
 		e = err
 		goto Display
 	}
 
 	{
-		version, err := client.Version()
+		version, err := docker.Version()
 		if err != nil {
 			e = err
 			goto Display

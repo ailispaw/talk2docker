@@ -8,17 +8,18 @@ import (
 	"time"
 
 	"github.com/codegangsta/cli"
-	docker "github.com/yungsang/dockerclient"
+	api "github.com/yungsang/dockerclient"
 	"github.com/yungsang/tablewriter"
+	"github.com/yungsang/talk2docker/client"
 )
 
 func CommandImages(ctx *cli.Context) {
-	client, err := docker.NewDockerClient(ctx.GlobalString("host"), nil)
+	docker, err := client.GetDockerClient(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	images, err := client.ListImages(ctx.Bool("all"))
+	images, err := docker.ListImages(ctx.Bool("all"))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -55,8 +56,8 @@ func CommandImages(ctx *cli.Context) {
 	var items [][]string
 
 	if ctx.Bool("all") {
-		roots := make([]*docker.Image, 0)
-		parents := make(map[string][]*docker.Image)
+		roots := make([]*api.Image, 0)
+		parents := make(map[string][]*api.Image)
 		for _, image := range images {
 			if image.ParentId == "" {
 				roots = append(roots, image)
@@ -64,7 +65,7 @@ func CommandImages(ctx *cli.Context) {
 				if children, exists := parents[image.ParentId]; exists {
 					parents[image.ParentId] = append(children, image)
 				} else {
-					children := make([]*docker.Image, 0)
+					children := make([]*api.Image, 0)
 					parents[image.ParentId] = append(children, image)
 				}
 			}
@@ -107,8 +108,8 @@ func CommandImages(ctx *cli.Context) {
 	table.Render()
 }
 
-func walkTree(images []*docker.Image, parents map[string][]*docker.Image, prefix string, items [][]string) [][]string {
-	printImage := func(prefix string, image *docker.Image, isLeaf bool) {
+func walkTree(images []*api.Image, parents map[string][]*api.Image, prefix string, items [][]string) [][]string {
+	printImage := func(prefix string, image *api.Image, isLeaf bool) {
 		name := strings.Join(image.RepoTags, ",\u00a0")
 		if name == "<none>:<none>" {
 			if isLeaf {
