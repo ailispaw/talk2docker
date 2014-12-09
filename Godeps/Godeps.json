@@ -8,10 +8,6 @@
 			"Rev": "fbda1ce02d5dabcee952040e5f4025753b6c9ce0"
 		},
 		{
-			"ImportPath": "github.com/olekukonko/tablewriter",
-			"Rev": "37f85ed61c00a85092550bf43fc51087a10475fd"
-		},
-		{
 			"ImportPath": "github.com/stretchr/objx",
 			"Rev": "cbeaeb16a013161a98496fad62933b1d21786672"
 		},
@@ -26,6 +22,10 @@
 		{
 			"ImportPath": "github.com/yungsang/dockerclient",
 			"Rev": "cb3b57e6fcca060b19f1af51461dca661d18bb57"
+		},
+		{
+			"ImportPath": "github.com/yungsang/tablewriter",
+			"Rev": "eba6dace82c9e6094891bdeb032283c3a8424155"
 		}
 	]
 }

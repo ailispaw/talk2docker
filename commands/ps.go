@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/codegangsta/cli"
-	"github.com/olekukonko/tablewriter"
 	docker "github.com/yungsang/dockerclient"
+	"github.com/yungsang/tablewriter"
 )
 
 func CommandPs(ctx *cli.Context) {
