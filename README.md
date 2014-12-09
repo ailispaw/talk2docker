@@ -34,7 +34,7 @@ USAGE:
    talk2docker [global options] command [options] [arguments...]
 
 VERSION:
-   0.1.0+git
+   0.1.0
 
 AUTHOR:
   YungSang - <yungsang@gmail.com>
