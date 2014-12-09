@@ -5,6 +5,7 @@ import (
 
 	"github.com/codegangsta/cli"
 	"github.com/yungsang/talk2docker/commands"
+	"github.com/yungsang/talk2docker/version"
 )
 
 func main() {
@@ -44,7 +45,7 @@ OPTIONS:
 
 	app.Name = "talk2docker"
 	app.Usage = "A simple Docker client to talk to a Docker daemon"
-	app.Version = Version
+	app.Version = version.Version
 	app.Author = "YungSang"
 	app.Email = "yungsang@gmail.com"
 

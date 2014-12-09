@@ -8,6 +8,7 @@ import (
 	"github.com/codegangsta/cli"
 	docker "github.com/yungsang/dockerclient"
 	"github.com/yungsang/tablewriter"
+	"github.com/yungsang/talk2docker/version"
 )
 
 func CommandVersion(ctx *cli.Context) {
@@ -18,7 +19,7 @@ func CommandVersion(ctx *cli.Context) {
 		"v" + ctx.App.Version,
 		docker.APIVersion,
 		runtime.Version(),
-		"",
+		version.GITCOMMIT,
 	}
 	items = append(items, out)
 

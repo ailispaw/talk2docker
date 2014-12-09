@@ -1,4 +1,8 @@
+PROJECT := "github.com/yungsang/talk2docker"
+
 WORKSPACE := $(shell pwd)/Godeps/_workspace
+
+GITCOMMIT := $(shell git rev-parse --short HEAD)
 
 all: build
 
@@ -6,10 +10,10 @@ fmt:
 	go fmt -x ./...
 
 build: fmt dep-restore
-	godep go build -v
+	godep go build -v -ldflags "-X $(PROJECT)/version.GITCOMMIT '$(GITCOMMIT)'"
 
 install: build
-	godep go install -v
+	godep go install -v -ldflags "-X $(PROJECT)/version.GITCOMMIT '$(GITCOMMIT)'"
 
 uninstall:
 	go clean -x -i
