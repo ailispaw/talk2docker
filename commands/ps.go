@@ -81,7 +81,7 @@ func CommandPs(ctx *cli.Context) {
 		"Ports",
 	}
 	if ctx.Bool("size") {
-		header = append(header, "Size in MB")
+		header = append(header, "Size(MB)")
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)

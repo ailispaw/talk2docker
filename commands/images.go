@@ -81,8 +81,8 @@ func CommandImages(ctx *cli.Context) {
 				out := []string{
 					Truncate(image.Id, 12),
 					name,
-					FormatDateTime(time.Unix(image.Created, 0)),
 					fmt.Sprintf("%.3f", float64(image.VirtualSize)/1000000.0),
+					FormatDateTime(time.Unix(image.Created, 0)),
 				}
 				items = append(items, out)
 			}
@@ -92,8 +92,10 @@ func CommandImages(ctx *cli.Context) {
 	var header = []string{
 		"ID",
 		"Name:Tags",
-		"Created at",
-		"Size in MB",
+		"Size(MB)",
+	}
+	if !ctx.Bool("all") {
+		header = append(header, "Created at")
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
@@ -118,7 +120,6 @@ func walkTree(images []*docker.Image, parents map[string][]*docker.Image, prefix
 		out := []string{
 			fmt.Sprintf("%s%s%s", prefix, "\u00a0", Truncate(image.Id, 12)),
 			name,
-			FormatDateTime(time.Unix(image.Created, 0)),
 			fmt.Sprintf("%.3f", float64(image.VirtualSize)/1000000.0),
 		}
 		items = append(items, out)
