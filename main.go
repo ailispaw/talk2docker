@@ -44,26 +44,20 @@ OPTIONS:
 	app := cli.NewApp()
 
 	app.Name = "talk2docker"
-	app.Usage = "A simple Docker client to talk to a Docker daemon"
+	app.Usage = "A simple Docker client to talk to Docker daemon"
 	app.Version = version.Version
 	app.Author = "YungSang"
 	app.Email = "yungsang@gmail.com"
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
-			Name:   "host, H",
-			Value:  "unix:///var/run/docker.sock",
-			Usage:  "Location of the Docker socket",
-			EnvVar: "DOCKER_HOST",
+			Name:  "config, C",
+			Value: "$HOME/.talk2docker/config",
+			Usage: "Path to the configuration file",
 		},
 		cli.StringFlag{
-			Name:   "tls",
-			Usage:  "Path to the certificate files for TLS",
-			EnvVar: "DOCKER_CERT_PATH",
-		},
-		cli.BoolFlag{
-			Name:  "insecure-tls",
-			Usage: "Skip verification of the certificates for TLS. Must verify by default.",
+			Name:  "host, H",
+			Usage: "Hostname to use its config (runtime only)",
 		},
 	}
 
