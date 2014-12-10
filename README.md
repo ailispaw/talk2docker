@@ -26,7 +26,7 @@ $ make
 ## How to Use
 
 ```
-$ ./talk2docker
+$ talk2docker
 Talk2Docker - A simple Docker client to talk to Docker daemon
 
 Usage:
@@ -34,7 +34,10 @@ Usage:
 
 Available Commands:
   ps                        List containers
-  images                    List images
+  ls [NAME[:TAG]]           List images
+  image [command]           Manage images
+  host [command]            Manage hosts
+  hosts                     Shortcut to list hosts
   version                   Show the version information
   help [command]            Help about any command
 
@@ -79,5 +82,5 @@ hosts:
 
 ```
 $ talk2docker version
-$ talk2docker --host boot2docker version
+$ talk2docker --host=boot2docker version
 ```
