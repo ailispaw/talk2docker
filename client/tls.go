@@ -6,18 +6,18 @@ import (
 	"io/ioutil"
 )
 
-func getTLSConfig(hostConfig *HostConfig) (*tls.Config, error) {
+func getTLSConfig(host *Host) (*tls.Config, error) {
 	var tlsConfig tls.Config
 
-	if !hostConfig.TLS {
+	if !host.TLS {
 		return nil, nil
 	}
 
-	tlsConfig.InsecureSkipVerify = !hostConfig.TLSVerufy
+	tlsConfig.InsecureSkipVerify = !host.TLSVerufy
 
-	if hostConfig.TLSVerufy {
+	if host.TLSVerufy {
 		certPool := x509.NewCertPool()
-		file, err := ioutil.ReadFile(hostConfig.TLSCaCert)
+		file, err := ioutil.ReadFile(host.TLSCaCert)
 		if err != nil {
 			return nil, err
 		}
@@ -25,7 +25,7 @@ func getTLSConfig(hostConfig *HostConfig) (*tls.Config, error) {
 		tlsConfig.RootCAs = certPool
 	}
 
-	cert, err := tls.LoadX509KeyPair(hostConfig.TLSCert, hostConfig.TLSKey)
+	cert, err := tls.LoadX509KeyPair(host.TLSCert, host.TLSKey)
 	if err != nil {
 		return nil, err
 	}

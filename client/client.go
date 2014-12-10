@@ -15,17 +15,17 @@ func GetDockerClient(ctx *cobra.Command) (*api.DockerClient, error) {
 		return nil, err
 	}
 
-	hostConfig, err := config.GetHostConfig(ctx.Flag("host").Value.String())
+	host, err := config.GetHost(ctx.Flag("host").Value.String())
 	if err != nil {
 		return nil, err
 	}
 
-	tlsConfig, err := getTLSConfig(hostConfig)
+	tlsConfig, err := getTLSConfig(host)
 	if err != nil {
 		return nil, err
 	}
 
-	docker, err := api.NewDockerClient(hostConfig.Host, tlsConfig)
+	docker, err := api.NewDockerClient(host.URL, tlsConfig)
 	if err != nil {
 		return nil, err
 	}

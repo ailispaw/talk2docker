@@ -66,9 +66,10 @@ You can edit/add multiple hosts where Docker daemon runs.
 default: default
 hosts:
 - name: default
-  host: tcp://localhost:2375
+  url: tcp://localhost:2375
 - name: boot2docker
-  host: tcp://192.168.59.104:2376
+  url: tcp://192.168.59.104:2376
+  description: on boot2docker-vm managed by boot2docker
   tls: true
   tls-ca-cert: /Users/yungsang/.boot2docker/certs/boot2docker-vm/ca.pem
   tls-cert: /Users/yungsang/.boot2docker/certs/boot2docker-vm/cert.pem
