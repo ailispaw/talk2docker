@@ -71,7 +71,7 @@ func CommandImages(ctx *cli.Context) {
 			}
 		}
 
-		items = walkTree(roots, parents, "\u2063", items)
+		items = walkTree(roots, parents, "", items)
 	} else {
 		for _, image := range images {
 			if (matchName == "") || matchImageByName(image.RepoTags, matchName) {
@@ -148,7 +148,7 @@ func walkTree(images []*api.Image, parents map[string][]*api.Image, prefix strin
 			subimages, exists := parents[image.Id]
 			printImage(prefix+"└", image, !exists)
 			if exists {
-				items = walkTree(subimages, parents, prefix+"\u00a0", items)
+				items = walkTree(subimages, parents, prefix+"\u2063", items)
 			}
 		}
 	}
