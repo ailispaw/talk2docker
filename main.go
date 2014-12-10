@@ -55,9 +55,10 @@ func main() {
 
 	// image command
 	var cmdImage = &cobra.Command{
-		Use:   "image [command]",
-		Short: "Manage images",
-		Long:  appName + " image - Manage images",
+		Use:     "image [command]",
+		Aliases: []string{"img"},
+		Short:   "Manage images",
+		Long:    appName + " image - Manage images",
 		Run: func(ctx *cobra.Command, args []string) {
 			ctx.Usage()
 		},
@@ -154,10 +155,11 @@ func main() {
 
 	// version command
 	var cmdVersion = &cobra.Command{
-		Use:   "version",
-		Short: "Show the version information",
-		Long:  appName + " version - Show the version information",
-		Run:   commands.Version,
+		Use:     "version",
+		Aliases: []string{"v"},
+		Short:   "Show the version information",
+		Long:    appName + " version - Show the version information",
+		Run:     commands.Version,
 	}
 	app.AddCommand(cmdVersion)
 
