@@ -13,7 +13,7 @@ Contributions and suggestions would be appreciated, though it's aimed at my lear
 
 - https://docs.docker.com/reference/api/docker_remote_api/
 - https://github.com/samalba/dockerclient
-- https://github.com/codegangsta/cli
+- https://github.com/spf13/cobra
 - https://github.com/olekukonko/tablewriter
 
 ## How to Build
@@ -27,29 +27,23 @@ $ make
 
 ```
 $ ./talk2docker
-NAME:
-   talk2docker - A simple Docker client to talk to Docker daemon
+Talk2Docker - A simple Docker client to talk to Docker daemon
 
-USAGE:
-   talk2docker [global options] command [options] [arguments...]
+Usage:
+  talk2docker [command]
 
-VERSION:
-   0.2.0-dev
+Available Commands:
+  ps                        List containers
+  images                    List images
+  version                   Show the version information
+  help [command]            Help about any command
 
-AUTHOR:
-  YungSang - <yungsang@gmail.com>
+ Available Flags:
+      --config="$HOME/.talk2docker/config": Path to the configuration file
+  -h, --help=false: help for talk2docker
+      --host="": Hostname to use its config (runtime only)
 
-COMMANDS:
-   ps           List containers
-   images       List images
-   version      Show the version information
-   help, h      Shows a list of commands or help for one command
-
-GLOBAL OPTIONS:
-   --config, -C '$HOME/.talk2docker/config'     Path to the configuration file
-   --host, -H                                   Hostname to use its config (runtime only)
-   --help, -h                                   show help
-   --version, -v                                print the version
+Use "talk2docker help [command]" for more information about that command.
 
 ```
 
