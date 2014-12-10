@@ -88,7 +88,7 @@ func (config *Config) GetHost(name string) (*Host, error) {
 			return &host, nil
 		}
 	}
-	return nil, errors.New(fmt.Sprintf("Host[%s] not found in the config", name))
+	return nil, errors.New(fmt.Sprintf("\"%s\" not found in the config", name))
 }
 
 func (config *Config) SaveConfig(path string) error {

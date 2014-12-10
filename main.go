@@ -46,6 +46,7 @@ func main() {
 			ctx.Usage()
 		},
 	}
+
 	var cmdListImages = &cobra.Command{
 		Use:   "list [NAME[:TAG]]",
 		Short: "List images",
@@ -59,6 +60,7 @@ func main() {
 	cmdListImages.Flags().BoolP(
 		"no-header", "n", false, "Omit the header")
 	cmdImage.AddCommand(cmdListImages)
+
 	app.AddCommand(cmdImage)
 
 	// images command
