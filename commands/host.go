@@ -83,7 +83,7 @@ func SwitchHost(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("\"%s\" is the default host from now on.\n", config.Default)
+	ListHosts(ctx, args)
 }
 
 func AddHost(ctx *cobra.Command, args []string) {
