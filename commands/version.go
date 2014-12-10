@@ -12,7 +12,7 @@ import (
 	"github.com/yungsang/talk2docker/version"
 )
 
-func CommandVersion(ctx *cobra.Command, args []string) {
+func Version(ctx *cobra.Command, args []string) {
 	var items [][]string
 
 	out := []string{

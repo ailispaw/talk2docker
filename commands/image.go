@@ -13,7 +13,7 @@ import (
 	"github.com/yungsang/talk2docker/client"
 )
 
-func CommandImages(ctx *cobra.Command, args []string) {
+func ListImages(ctx *cobra.Command, args []string) {
 	docker, err := client.GetDockerClient(ctx)
 	if err != nil {
 		log.Fatal(err)
