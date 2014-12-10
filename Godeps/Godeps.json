@@ -8,20 +8,8 @@
 			"Rev": "fbda1ce02d5dabcee952040e5f4025753b6c9ce0"
 		},
 		{
-			"ImportPath": "github.com/stretchr/objx",
-			"Rev": "cbeaeb16a013161a98496fad62933b1d21786672"
-		},
-		{
-			"ImportPath": "github.com/stretchr/testify/assert",
-			"Rev": "1297dc01ed0a819ff634c89707081a4df43baf6b"
-		},
-		{
-			"ImportPath": "github.com/stretchr/testify/mock",
-			"Rev": "1297dc01ed0a819ff634c89707081a4df43baf6b"
-		},
-		{
 			"ImportPath": "github.com/yungsang/dockerclient",
-			"Rev": "dd2b386fb34696a290a0f992a0173ba586a29ad4"
+			"Rev": "ed7d2558a6d5e8a554a7cd091f918a4155ade64d"
 		},
 		{
 			"ImportPath": "github.com/yungsang/tablewriter",
