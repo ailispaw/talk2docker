@@ -61,6 +61,7 @@ Display:
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader(header)
 	table.SetBorder(false)
+	table.SetAlignment(tablewriter.ALIGN_LEFT)
 	table.AppendBulk(items)
 	table.Render()
 
