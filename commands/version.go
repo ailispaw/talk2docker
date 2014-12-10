@@ -5,19 +5,19 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/codegangsta/cli"
+	"github.com/spf13/cobra"
 	api "github.com/yungsang/dockerclient"
 	"github.com/yungsang/tablewriter"
 	"github.com/yungsang/talk2docker/client"
 	"github.com/yungsang/talk2docker/version"
 )
 
-func CommandVersion(ctx *cli.Context) {
+func CommandVersion(ctx *cobra.Command, args []string) {
 	var items [][]string
 
 	out := []string{
 		"Talk2Docker",
-		"v" + ctx.App.Version,
+		"v" + version.Version,
 		api.APIVersion,
 		runtime.Version(),
 		version.GITCOMMIT,

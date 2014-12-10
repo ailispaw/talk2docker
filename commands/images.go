@@ -7,26 +7,26 @@ import (
 	"strings"
 	"time"
 
-	"github.com/codegangsta/cli"
+	"github.com/spf13/cobra"
 	api "github.com/yungsang/dockerclient"
 	"github.com/yungsang/tablewriter"
 	"github.com/yungsang/talk2docker/client"
 )
 
-func CommandImages(ctx *cli.Context) {
+func CommandImages(ctx *cobra.Command, args []string) {
 	docker, err := client.GetDockerClient(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	images, err := docker.ListImages(ctx.Bool("all"))
+	images, err := docker.ListImages(GetBoolFlag(ctx, "all"))
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	var matchName = ""
-	if len(ctx.Args()) > 0 {
-		matchName = ctx.Args()[0]
+	if len(args) > 0 {
+		matchName = args[0]
 	}
 
 	matchImageByName := func(tags []string, name string) bool {
@@ -44,7 +44,7 @@ func CommandImages(ctx *cli.Context) {
 		return false
 	}
 
-	if ctx.Bool("quiet") {
+	if GetBoolFlag(ctx, "quiet") {
 		for _, image := range images {
 			if (matchName == "") || matchImageByName(image.RepoTags, matchName) {
 				fmt.Println(Truncate(image.Id, 12))
@@ -55,7 +55,7 @@ func CommandImages(ctx *cli.Context) {
 
 	var items [][]string
 
-	if ctx.Bool("all") {
+	if GetBoolFlag(ctx, "all") {
 		roots := make([]*api.Image, 0)
 		parents := make(map[string][]*api.Image)
 		for _, image := range images {
@@ -95,12 +95,12 @@ func CommandImages(ctx *cli.Context) {
 		"Name:Tags",
 		"Size(MB)",
 	}
-	if !ctx.Bool("all") {
+	if !GetBoolFlag(ctx, "all") {
 		header = append(header, "Created at")
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	if !ctx.Bool("no-header") {
+	if !GetBoolFlag(ctx, "no-header") {
 		table.SetHeader(header)
 	}
 	table.SetBorder(false)

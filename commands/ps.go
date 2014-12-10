@@ -7,32 +7,32 @@ import (
 	"strings"
 	"time"
 
-	"github.com/codegangsta/cli"
+	"github.com/spf13/cobra"
 	api "github.com/yungsang/dockerclient"
 	"github.com/yungsang/tablewriter"
 	"github.com/yungsang/talk2docker/client"
 )
 
-func CommandPs(ctx *cli.Context) {
+func CommandPs(ctx *cobra.Command, args []string) {
 	docker, err := client.GetDockerClient(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	var filters = ""
-	if ctx.Bool("latest") {
+	if GetBoolFlag(ctx, "latest") {
 		filters += "&limit=1"
 	}
-	if ctx.Bool("size") {
+	if GetBoolFlag(ctx, "size") {
 		filters += "&size=1"
 	}
 
-	containers, err := docker.ListContainers(ctx.Bool("all"), ctx.Bool("size"), filters)
+	containers, err := docker.ListContainers(GetBoolFlag(ctx, "all"), GetBoolFlag(ctx, "size"), filters)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if ctx.Bool("quiet") {
+	if GetBoolFlag(ctx, "quiet") {
 		for _, container := range containers {
 			fmt.Println(Truncate(container.Id, 12))
 		}
@@ -66,7 +66,7 @@ func CommandPs(ctx *cli.Context) {
 			container.Status,
 			formatPorts(container.Ports),
 		}
-		if ctx.Bool("size") {
+		if GetBoolFlag(ctx, "size") {
 			out = append(out, fmt.Sprintf("%.3f", float64(container.SizeRw)/1000000.0))
 		}
 		items = append(items, out)
@@ -81,12 +81,12 @@ func CommandPs(ctx *cli.Context) {
 		"Status",
 		"Ports",
 	}
-	if ctx.Bool("size") {
+	if GetBoolFlag(ctx, "size") {
 		header = append(header, "Size(MB)")
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	if !ctx.Bool("no-header") {
+	if !GetBoolFlag(ctx, "no-header") {
 		table.SetHeader(header)
 	}
 	table.SetBorder(false)

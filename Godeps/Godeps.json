@@ -3,9 +3,12 @@
 	"GoVersion": "go1.3.3",
 	"Deps": [
 		{
-			"ImportPath": "github.com/codegangsta/cli",
-			"Comment": "1.2.0-42-gfbda1ce",
-			"Rev": "fbda1ce02d5dabcee952040e5f4025753b6c9ce0"
+			"ImportPath": "github.com/spf13/cobra",
+			"Rev": "b825817fc0fc59fc1657bc8202204a04ae3d679d"
+		},
+		{
+			"ImportPath": "github.com/spf13/pflag",
+			"Rev": "463bdc838f2b35e9307e91d480878bda5fff7232"
 		},
 		{
 			"ImportPath": "github.com/yungsang/dockerclient",

@@ -3,19 +3,19 @@ package client
 import (
 	"os"
 
-	"github.com/codegangsta/cli"
+	"github.com/spf13/cobra"
 	api "github.com/yungsang/dockerclient"
 )
 
-func GetDockerClient(ctx *cli.Context) (*api.DockerClient, error) {
-	path := os.ExpandEnv(ctx.GlobalString("config"))
+func GetDockerClient(ctx *cobra.Command) (*api.DockerClient, error) {
+	path := os.ExpandEnv(ctx.Flag("config").Value.String())
 
 	config, err := LoadConfig(path)
 	if err != nil {
 		return nil, err
 	}
 
-	hostConfig, err := config.GetHostConfig(ctx.GlobalString("host"))
+	hostConfig, err := config.GetHostConfig(ctx.Flag("host").Value.String())
 	if err != nil {
 		return nil, err
 	}
