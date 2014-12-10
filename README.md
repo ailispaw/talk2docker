@@ -4,7 +4,7 @@ Talk2Docker is a simple Docker client to talk to Docker daemon.
 
 Contributions and suggestions would be appreciated, though it's aimed at my learning Go and Docker Remote API.
 
-## Requirments
+## Requirements
 
 - [go](http://golang.org/)
 - [godep](https://github.com/tools/godep)
