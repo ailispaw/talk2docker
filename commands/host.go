@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -164,6 +165,26 @@ func RmHost(ctx *cobra.Command, args []string) {
 	}
 
 	err = config.SaveConfig(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	ListHosts(ctx, args)
+}
+
+func EditHosts(ctx *cobra.Command, args []string) {
+	path := os.ExpandEnv(GetStringFlag(ctx, "config"))
+
+	editor := os.Getenv("EDITOR")
+	if editor == "" {
+		editor = "vi"
+	}
+
+	cmd := exec.Command(editor, path)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
 	if err != nil {
 		log.Fatal(err)
 	}

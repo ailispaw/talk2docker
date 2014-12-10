@@ -128,6 +128,15 @@ func main() {
 	}
 	cmdHost.AddCommand(cmdRmHost)
 
+	var cmdEditHost = &cobra.Command{
+		Use:     "edit <NAME>",
+		Aliases: []string{"ed"},
+		Short:   "Edit the config file",
+		Long:    appName + " host edit - Edit the config file",
+		Run:     commands.EditHosts,
+	}
+	cmdHost.AddCommand(cmdEditHost)
+
 	app.AddCommand(cmdHost)
 
 	// hosts command
