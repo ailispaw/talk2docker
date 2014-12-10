@@ -8,11 +8,19 @@ import (
 )
 
 func GetStringFlag(ctx *cobra.Command, name string) string {
-	return ctx.Flag(name).Value.String()
+	flag := ctx.Flag(name)
+	if flag == nil {
+		return ""
+	}
+	return flag.Value.String()
 }
 
 func GetBoolFlag(ctx *cobra.Command, name string) bool {
-	return ctx.Flag(name).Value.String() == "true"
+	flag := ctx.Flag(name)
+	if flag == nil {
+		return false
+	}
+	return flag.Value.String() == "true"
 }
 
 func FormatDateTime(t time.Time) string {
