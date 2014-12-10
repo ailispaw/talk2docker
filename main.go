@@ -37,6 +37,22 @@ func main() {
 		"no-header", "n", false, "Omit the header")
 	app.AddCommand(cmdPs)
 
+	// images command
+	var cmdImages = &cobra.Command{
+		Use:     "ls [NAME[:TAG]]",
+		Aliases: []string{"images"},
+		Short:   "List images",
+		Long:    appName + " ls - List images",
+		Run:     commands.ListImages,
+	}
+	cmdImages.Flags().BoolP(
+		"all", "a", false, "Show all images. Only named/taged and leaf images are shown by default.")
+	cmdImages.Flags().BoolP(
+		"quiet", "q", false, "Only display numeric IDs")
+	cmdImages.Flags().BoolP(
+		"no-header", "n", false, "Omit the header")
+	app.AddCommand(cmdImages)
+
 	// image command
 	var cmdImage = &cobra.Command{
 		Use:   "image [command]",
@@ -48,10 +64,11 @@ func main() {
 	}
 
 	var cmdListImages = &cobra.Command{
-		Use:   "list [NAME[:TAG]]",
-		Short: "List images",
-		Long:  appName + " image list - List images",
-		Run:   commands.ListImages,
+		Use:     "list [NAME[:TAG]]",
+		Aliases: []string{"ls"},
+		Short:   "List images",
+		Long:    appName + " image list - List images",
+		Run:     commands.ListImages,
 	}
 	cmdListImages.Flags().BoolP(
 		"all", "a", false, "Show all images. Only named/taged and leaf images are shown by default.")
@@ -62,21 +79,6 @@ func main() {
 	cmdImage.AddCommand(cmdListImages)
 
 	app.AddCommand(cmdImage)
-
-	// images command
-	var cmdImages = &cobra.Command{
-		Use:   "images [NAME[:TAG]]",
-		Short: "Shortcut to list images",
-		Long:  appName + " images - List images",
-		Run:   commands.ListImages,
-	}
-	cmdImages.Flags().BoolP(
-		"all", "a", false, "Show all images. Only named/taged and leaf images are shown by default.")
-	cmdImages.Flags().BoolP(
-		"quiet", "q", false, "Only display numeric IDs")
-	cmdImages.Flags().BoolP(
-		"no-header", "n", false, "Omit the header")
-	app.AddCommand(cmdImages)
 
 	// host command
 	var cmdHost = &cobra.Command{
@@ -90,7 +92,7 @@ func main() {
 
 	var cmdListHosts = &cobra.Command{
 		Use:     "list",
-		Aliases: []string{"l"},
+		Aliases: []string{"ls"},
 		Short:   "List hosts",
 		Long:    appName + " host list - List hosts",
 		Run:     commands.ListHosts,
@@ -103,7 +105,7 @@ func main() {
 
 	var cmdSwitchHost = &cobra.Command{
 		Use:     "switch <NAME>",
-		Aliases: []string{"s"},
+		Aliases: []string{"sw"},
 		Short:   "Switch the default host",
 		Long:    appName + " host switch - Switch the default host",
 		Run:     commands.SwitchHost,
@@ -111,20 +113,18 @@ func main() {
 	cmdHost.AddCommand(cmdSwitchHost)
 
 	var cmdAddHost = &cobra.Command{
-		Use:     "add <NAME> <URL> [DESCRIPTION]",
-		Aliases: []string{"a"},
-		Short:   "Add a new host into the config file",
-		Long:    appName + " host add - Add a new host into the config",
-		Run:     commands.AddHost,
+		Use:   "add <NAME> <URL> [DESCRIPTION]",
+		Short: "Add a new host into the config file",
+		Long:  appName + " host add - Add a new host into the config",
+		Run:   commands.AddHost,
 	}
 	cmdHost.AddCommand(cmdAddHost)
 
 	var cmdRmHost = &cobra.Command{
-		Use:     "rm <NAME>",
-		Aliases: []string{"r"},
-		Short:   "Rmove a host from the config file",
-		Long:    appName + " host rm - Rmove a host from the config file",
-		Run:     commands.RmHost,
+		Use:   "rm <NAME>",
+		Short: "Rmove a host from the config file",
+		Long:  appName + " host rm - Rmove a host from the config file",
+		Run:   commands.RmHost,
 	}
 	cmdHost.AddCommand(cmdRmHost)
 
