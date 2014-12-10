@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -34,4 +35,16 @@ func Truncate(s string, maxlen int) string {
 		return s
 	}
 	return s[:maxlen]
+}
+
+func FormatNonBreakingString(str string) string {
+	return strings.Replace(str, " ", "\u00a0", -1)
+}
+
+func FormatBool(b bool, str string) string {
+	if b {
+		return str
+	} else {
+		return ""
+	}
 }

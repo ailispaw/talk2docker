@@ -78,6 +78,71 @@ func main() {
 		"no-header", "n", false, "Omit the header")
 	app.AddCommand(cmdImages)
 
+	// host command
+	var cmdHost = &cobra.Command{
+		Use:   "host [command]",
+		Short: "Manage hosts",
+		Long:  appName + " host - Manage hosts",
+		Run: func(ctx *cobra.Command, args []string) {
+			ctx.Usage()
+		},
+	}
+
+	var cmdListHosts = &cobra.Command{
+		Use:     "list",
+		Aliases: []string{"l"},
+		Short:   "List hosts",
+		Long:    appName + " host list - List hosts",
+		Run:     commands.ListHosts,
+	}
+	cmdListHosts.Flags().BoolP(
+		"quiet", "q", false, "Only display numeric IDs")
+	cmdListHosts.Flags().BoolP(
+		"no-header", "n", false, "Omit the header")
+	cmdHost.AddCommand(cmdListHosts)
+
+	var cmdSwitchHost = &cobra.Command{
+		Use:     "switch <NAME>",
+		Aliases: []string{"s"},
+		Short:   "Switch the default host",
+		Long:    appName + " host switch - Switch the default host",
+		Run:     commands.SwitchHost,
+	}
+	cmdHost.AddCommand(cmdSwitchHost)
+
+	var cmdAddHost = &cobra.Command{
+		Use:     "add <NAME> <URL> [DESCRIPTION]",
+		Aliases: []string{"a"},
+		Short:   "Add a new host into the config file",
+		Long:    appName + " host add - Add a new host into the config",
+		Run:     commands.AddHost,
+	}
+	cmdHost.AddCommand(cmdAddHost)
+
+	var cmdRmHost = &cobra.Command{
+		Use:     "rm <NAME>",
+		Aliases: []string{"r"},
+		Short:   "Rmove a host from the config file",
+		Long:    appName + " host rm - Rmove a host from the config file",
+		Run:     commands.RmHost,
+	}
+	cmdHost.AddCommand(cmdRmHost)
+
+	app.AddCommand(cmdHost)
+
+	// hosts command
+	var cmdHosts = &cobra.Command{
+		Use:   "hosts",
+		Short: "Shortcut to list hosts",
+		Long:  appName + " hosts - List hosts",
+		Run:   commands.ListHosts,
+	}
+	cmdHosts.Flags().BoolP(
+		"quiet", "q", false, "Only display numeric IDs")
+	cmdHosts.Flags().BoolP(
+		"no-header", "n", false, "Omit the header")
+	app.AddCommand(cmdHosts)
+
 	// version command
 	var cmdVersion = &cobra.Command{
 		Use:   "version",
