@@ -6,9 +6,12 @@ import (
 )
 
 func main() {
+	var appName = "Talk2Docker"
+
 	var app = &cobra.Command{
-		Use:  "talk2docker",
-		Long: "Talk2Docker - A simple Docker client to talk to Docker daemon",
+		Use:   "talk2docker",
+		Short: "A simple Docker client to talk to Docker daemon",
+		Long:  appName + " - A simple Docker client to talk to Docker daemon",
 	}
 	app.PersistentFlags().String(
 		"config", "$HOME/.talk2docker/config", "Path to the configuration file")
@@ -19,6 +22,7 @@ func main() {
 	var cmdPs = &cobra.Command{
 		Use:   "ps",
 		Short: "List containers",
+		Long:  appName + " ps - List containers",
 		Run:   commands.CommandPs,
 	}
 	cmdPs.Flags().BoolP(
@@ -37,6 +41,7 @@ func main() {
 	var cmdImages = &cobra.Command{
 		Use:   "images",
 		Short: "List images",
+		Long:  appName + " images - List images",
 		Run:   commands.CommandImages,
 	}
 	cmdImages.Flags().BoolP(
@@ -51,6 +56,7 @@ func main() {
 	var cmdVersion = &cobra.Command{
 		Use:   "version",
 		Short: "Show the version information",
+		Long:  appName + " version - Show the version information",
 		Run:   commands.CommandVersion,
 	}
 	app.AddCommand(cmdVersion)
