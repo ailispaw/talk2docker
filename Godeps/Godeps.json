@@ -12,7 +12,7 @@
 		},
 		{
 			"ImportPath": "github.com/yungsang/dockerclient",
-			"Rev": "ed7d2558a6d5e8a554a7cd091f918a4155ade64d"
+			"Rev": "5d9e18765f1798ddc098f5f7a33e9117d6fcde77"
 		},
 		{
 			"ImportPath": "github.com/yungsang/tablewriter",
