@@ -148,7 +148,7 @@ func RmHost(ctx *cobra.Command, args []string) {
 
 	_, err = config.GetHost(name)
 	if err != nil {
-		log.Fatal(fmt.Sprintf("\"%s\" doesn't exist", name))
+		log.Fatal(err)
 	}
 
 	hosts := []client.Host{}
