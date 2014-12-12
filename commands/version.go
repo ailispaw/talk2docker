@@ -9,24 +9,32 @@ import (
 	api "github.com/yungsang/dockerclient"
 	"github.com/yungsang/tablewriter"
 	"github.com/yungsang/talk2docker/client"
-	"github.com/yungsang/talk2docker/version"
+	v "github.com/yungsang/talk2docker/version"
 )
 
-func Version(ctx *cobra.Command, args []string) {
+var cmdVersion = &cobra.Command{
+	Use:     "version",
+	Aliases: []string{"v"},
+	Short:   "Show the version information",
+	Long:    appName + " version - Show the version information",
+	Run:     version,
+}
+
+func version(ctx *cobra.Command, args []string) {
 	var items [][]string
 
 	out := []string{
 		"Talk2Docker",
-		"v" + version.Version,
+		"v" + v.Version,
 		api.APIVersion,
 		runtime.Version(),
-		version.GITCOMMIT,
+		v.GITCOMMIT,
 	}
 	items = append(items, out)
 
 	var e error
 
-	docker, err := client.GetDockerClient(ctx)
+	docker, err := client.GetDockerClient(configPath, hostName)
 	if err != nil {
 		e = err
 		goto Display

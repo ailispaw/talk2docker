@@ -13,26 +13,43 @@ import (
 	"github.com/yungsang/talk2docker/client"
 )
 
-func Ps(ctx *cobra.Command, args []string) {
-	docker, err := client.GetDockerClient(ctx)
+var cmdPs = &cobra.Command{
+	Use:   "ps",
+	Short: "List containers",
+	Long:  appName + " ps - List containers",
+}
+
+var boolAll, boolLatest, boolQuiet, boolSize, boolNoHeader bool
+
+func init() {
+	cmdPs.Flags().BoolVarP(&boolAll, "all", "a", false, "Show all containers. Only running containers are shown by default.")
+	cmdPs.Flags().BoolVarP(&boolLatest, "latest", "l", false, "Show only the latest created container, include non-running ones.")
+	cmdPs.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
+	cmdPs.Flags().BoolVarP(&boolSize, "size", "s", false, "Display sizes")
+	cmdPs.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+	cmdPs.Run = ps
+}
+
+func ps(ctx *cobra.Command, args []string) {
+	docker, err := client.GetDockerClient(configPath, hostName)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	var filters = ""
-	if GetBoolFlag(ctx, "latest") {
+	if boolLatest {
 		filters += "&limit=1"
 	}
-	if GetBoolFlag(ctx, "size") {
+	if boolSize {
 		filters += "&size=1"
 	}
 
-	containers, err := docker.ListContainers(GetBoolFlag(ctx, "all"), GetBoolFlag(ctx, "size"), filters)
+	containers, err := docker.ListContainers(boolAll, boolSize, filters)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if GetBoolFlag(ctx, "quiet") {
+	if boolQuiet {
 		for _, container := range containers {
 			fmt.Println(Truncate(container.Id, 12))
 		}
@@ -66,7 +83,7 @@ func Ps(ctx *cobra.Command, args []string) {
 			container.Status,
 			formatPorts(container.Ports),
 		}
-		if GetBoolFlag(ctx, "size") {
+		if boolSize {
 			out = append(out, fmt.Sprintf("%.3f", float64(container.SizeRw)/1000000.0))
 		}
 		items = append(items, out)
@@ -81,12 +98,12 @@ func Ps(ctx *cobra.Command, args []string) {
 		"Status",
 		"Ports",
 	}
-	if GetBoolFlag(ctx, "size") {
+	if boolSize {
 		header = append(header, "Size(MB)")
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	if !GetBoolFlag(ctx, "no-header") {
+	if !boolNoHeader {
 		table.SetHeader(header)
 	}
 	table.SetBorder(false)

@@ -13,13 +13,53 @@ import (
 	"github.com/yungsang/talk2docker/client"
 )
 
-func ListImages(ctx *cobra.Command, args []string) {
-	docker, err := client.GetDockerClient(ctx)
+var cmdIs = &cobra.Command{
+	Use:     "ls [NAME[:TAG]]",
+	Aliases: []string{"images"},
+	Short:   "List images",
+	Long:    appName + " ls - List images",
+	Run:     listImages,
+}
+
+var cmdImage = &cobra.Command{
+	Use:     "image [command]",
+	Aliases: []string{"img"},
+	Short:   "Manage images",
+	Long:    appName + " image - Manage images",
+	Run: func(ctx *cobra.Command, args []string) {
+		ctx.Usage()
+	},
+}
+var cmdListImages = &cobra.Command{
+	Use:     "list [NAME[:TAG]]",
+	Aliases: []string{"ls"},
+	Short:   "List images",
+	Long:    appName + " image list - List images",
+	Run:     listImages,
+}
+
+// Define at ps.go
+// var boolAll, boolQuiet, boolNoHeader bool
+
+func init() {
+	cmdIs.Flags().BoolVarP(&boolAll, "all", "a", false, "Show all images. Only named/taged and leaf images are shown by default.")
+	cmdIs.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
+	cmdIs.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+
+	cmdListImages.Flags().BoolVarP(&boolAll, "all", "a", false, "Show all images. Only named/taged and leaf images are shown by default.")
+	cmdListImages.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
+	cmdListImages.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+
+	cmdImage.AddCommand(cmdListImages)
+}
+
+func listImages(ctx *cobra.Command, args []string) {
+	docker, err := client.GetDockerClient(configPath, hostName)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	images, err := docker.ListImages(GetBoolFlag(ctx, "all"))
+	images, err := docker.ListImages(boolAll)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -44,7 +84,7 @@ func ListImages(ctx *cobra.Command, args []string) {
 		return false
 	}
 
-	if GetBoolFlag(ctx, "quiet") {
+	if boolQuiet {
 		for _, image := range images {
 			if (matchName == "") || matchImageByName(image.RepoTags, matchName) {
 				fmt.Println(Truncate(image.Id, 12))
@@ -55,7 +95,7 @@ func ListImages(ctx *cobra.Command, args []string) {
 
 	var items [][]string
 
-	if GetBoolFlag(ctx, "all") {
+	if boolAll {
 		roots := make([]*api.Image, 0)
 		parents := make(map[string][]*api.Image)
 		for _, image := range images {
@@ -95,12 +135,12 @@ func ListImages(ctx *cobra.Command, args []string) {
 		"Name:Tags",
 		"Size(MB)",
 	}
-	if !GetBoolFlag(ctx, "all") {
+	if !boolAll {
 		header = append(header, "Created at")
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	if !GetBoolFlag(ctx, "no-header") {
+	if !boolNoHeader {
 		table.SetHeader(header)
 	}
 	table.SetBorder(false)

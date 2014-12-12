@@ -12,15 +12,76 @@ import (
 	"github.com/yungsang/talk2docker/client"
 )
 
-func ListHosts(ctx *cobra.Command, args []string) {
-	path := os.ExpandEnv(GetStringFlag(ctx, "config"))
+var cmdHost = &cobra.Command{
+	Use:   "host [command]",
+	Short: "Manage hosts",
+	Long:  appName + " host - Manage hosts",
+	Run: func(ctx *cobra.Command, args []string) {
+		ctx.Usage()
+	},
+}
+
+var cmdListHosts = &cobra.Command{
+	Use:     "list",
+	Aliases: []string{"ls"},
+	Short:   "List hosts",
+	Long:    appName + " host list - List hosts",
+	Run:     listHosts,
+}
+
+var cmdSwitchHost = &cobra.Command{
+	Use:     "switch <NAME>",
+	Aliases: []string{"sw"},
+	Short:   "Switch the default host",
+	Long:    appName + " host switch - Switch the default host",
+	Run:     switchHost,
+}
+
+var cmdAddHost = &cobra.Command{
+	Use:   "add <NAME> <URL> [DESCRIPTION]",
+	Short: "Add a new host into the config file",
+	Long:  appName + " host add - Add a new host into the config",
+	Run:   addHost,
+}
+
+var cmdRmHost = &cobra.Command{
+	Use:   "rm <NAME>",
+	Short: "Rmove a host from the config file",
+	Long:  appName + " host rm - Rmove a host from the config file",
+	Run:   rmHost,
+}
+
+var cmdEditHost = &cobra.Command{
+	Use:     "edit",
+	Aliases: []string{"ed"},
+	Short:   "Edit the config file",
+	Long:    appName + " host edit - Edit the config file",
+	Run:     editHosts,
+}
+
+// Define at ps.go
+// var boolQuite, boolNoHeader bool
+
+func init() {
+	cmdListHosts.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
+	cmdListHosts.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+
+	cmdHost.AddCommand(cmdListHosts)
+	cmdHost.AddCommand(cmdSwitchHost)
+	cmdHost.AddCommand(cmdAddHost)
+	cmdHost.AddCommand(cmdRmHost)
+	cmdHost.AddCommand(cmdEditHost)
+}
+
+func listHosts(ctx *cobra.Command, args []string) {
+	path := os.ExpandEnv(configPath)
 
 	config, err := client.LoadConfig(path)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if GetBoolFlag(ctx, "quiet") {
+	if boolQuiet {
 		for _, host := range config.Hosts {
 			fmt.Println(host.Name)
 		}
@@ -48,7 +109,7 @@ func ListHosts(ctx *cobra.Command, args []string) {
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	if !GetBoolFlag(ctx, "no-header") {
+	if !boolNoHeader {
 		table.SetHeader(header)
 	}
 	table.SetBorder(false)
@@ -56,14 +117,14 @@ func ListHosts(ctx *cobra.Command, args []string) {
 	table.Render()
 }
 
-func SwitchHost(ctx *cobra.Command, args []string) {
+func switchHost(ctx *cobra.Command, args []string) {
 	if len(args) == 0 {
 		fmt.Println("Needs an argument <NAME> to switch")
 		ctx.Usage()
 		return
 	}
 
-	path := os.ExpandEnv(GetStringFlag(ctx, "config"))
+	path := os.ExpandEnv(configPath)
 
 	config, err := client.LoadConfig(path)
 	if err != nil {
@@ -84,10 +145,10 @@ func SwitchHost(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	ListHosts(ctx, args)
+	listHosts(ctx, args)
 }
 
-func AddHost(ctx *cobra.Command, args []string) {
+func addHost(ctx *cobra.Command, args []string) {
 	if len(args) < 2 {
 		fmt.Println("Needs two arguments <NAME> and <URL> at least")
 		ctx.Usage()
@@ -101,7 +162,7 @@ func AddHost(ctx *cobra.Command, args []string) {
 		desc = strings.Join(args[2:], " ")
 	}
 
-	path := os.ExpandEnv(GetStringFlag(ctx, "config"))
+	path := os.ExpandEnv(configPath)
 
 	config, err := client.LoadConfig(path)
 	if err != nil {
@@ -127,10 +188,10 @@ func AddHost(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	ListHosts(ctx, args)
+	listHosts(ctx, args)
 }
 
-func RmHost(ctx *cobra.Command, args []string) {
+func rmHost(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
 		fmt.Println("Needs an argument <NAME> to remove")
 		ctx.Usage()
@@ -139,7 +200,7 @@ func RmHost(ctx *cobra.Command, args []string) {
 
 	name := args[0]
 
-	path := os.ExpandEnv(GetStringFlag(ctx, "config"))
+	path := os.ExpandEnv(configPath)
 
 	config, err := client.LoadConfig(path)
 	if err != nil {
@@ -169,11 +230,11 @@ func RmHost(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	ListHosts(ctx, args)
+	listHosts(ctx, args)
 }
 
-func EditHosts(ctx *cobra.Command, args []string) {
-	path := os.ExpandEnv(GetStringFlag(ctx, "config"))
+func editHosts(ctx *cobra.Command, args []string) {
+	path := os.ExpandEnv(configPath)
 
 	editor := os.Getenv("EDITOR")
 	if editor == "" {
@@ -189,5 +250,5 @@ func EditHosts(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	ListHosts(ctx, args)
+	listHosts(ctx, args)
 }
