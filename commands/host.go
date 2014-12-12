@@ -59,12 +59,22 @@ var cmdEditHost = &cobra.Command{
 	Run:     editHosts,
 }
 
+var cmdHosts = &cobra.Command{
+	Use:   "hosts",
+	Short: "Shortcut to list hosts",
+	Long:  appName + " hosts - List hosts",
+	Run:   listHosts,
+}
+
 // Define at ps.go
 // var boolQuite, boolNoHeader bool
 
 func init() {
 	cmdListHosts.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
 	cmdListHosts.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+
+	cmdHosts.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display host names")
+	cmdHosts.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 
 	cmdHost.AddCommand(cmdListHosts)
 	cmdHost.AddCommand(cmdSwitchHost)
