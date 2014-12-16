@@ -173,7 +173,19 @@ func getHostInfo(ctx *cobra.Command, args []string) {
 		hostName = args[0]
 	}
 
-	docker, err := client.GetDockerClient(configPath, hostName)
+	path := os.ExpandEnv(configPath)
+
+	config, err := client.LoadConfig(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	host, err := config.GetHost(hostName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	docker, err := client.GetDockerClient(configPath, host.Name)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -184,6 +196,33 @@ func getHostInfo(ctx *cobra.Command, args []string) {
 	}
 
 	var items [][]string
+
+	items = append(items, []string{
+		"Host", host.Name,
+	})
+	items = append(items, []string{
+		"URL", host.URL,
+	})
+	items = append(items, []string{
+		"Description", FormatNonBreakingString(host.Description),
+	})
+	items = append(items, []string{
+		"TLS", FormatBool(host.TLS, "Supported", "No"),
+	})
+	if host.TLS {
+		items = append(items, []string{
+			FormatNonBreakingString("  CA Certificate file"), FormatNonBreakingString(host.TLSCaCert),
+		})
+		items = append(items, []string{
+			FormatNonBreakingString("  Certificate file"), FormatNonBreakingString(host.TLSCert),
+		})
+		items = append(items, []string{
+			FormatNonBreakingString("  Key file"), FormatNonBreakingString(host.TLSKey),
+		})
+		items = append(items, []string{
+			FormatNonBreakingString("  Verify"), FormatBool(host.TLSVerify, "Required", "No"),
+		})
+	}
 
 	items = append(items, []string{
 		"Containers", strconv.Itoa(info.Containers),
