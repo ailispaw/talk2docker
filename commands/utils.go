@@ -20,12 +20,15 @@ func Truncate(s string, maxlen int) string {
 }
 
 func FormatNonBreakingString(str string) string {
+	if strings.HasPrefix(str, " ") {
+		str = strings.Replace(str, " ", "\u2063", 1)
+	}
 	return strings.Replace(str, " ", "\u00a0", -1)
 }
 
-func FormatBool(b bool, str string) string {
+func FormatBool(b bool, strTrue, strFalse string) string {
 	if b {
-		return str
+		return strTrue
 	} else {
 		return ""
 	}

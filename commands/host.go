@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -35,6 +36,13 @@ var cmdSwitchHost = &cobra.Command{
 	Short:   "Switch the default host",
 	Long:    appName + " host switch - Switch the default host",
 	Run:     switchHost,
+}
+
+var cmdGetHostInfo = &cobra.Command{
+	Use:   "info [NAME]",
+	Short: "Get the host information",
+	Long:  appName + " host info - Get the host information",
+	Run:   getHostInfo,
 }
 
 var cmdAddHost = &cobra.Command{
@@ -78,6 +86,7 @@ func init() {
 
 	cmdHost.AddCommand(cmdListHosts)
 	cmdHost.AddCommand(cmdSwitchHost)
+	cmdHost.AddCommand(cmdGetHostInfo)
 	cmdHost.AddCommand(cmdAddHost)
 	cmdHost.AddCommand(cmdRmHost)
 	cmdHost.AddCommand(cmdEditHost)
@@ -101,11 +110,11 @@ func listHosts(ctx *cobra.Command, args []string) {
 	var items [][]string
 	for _, host := range config.Hosts {
 		out := []string{
-			FormatBool(host.Name == config.Default, "*"),
+			FormatBool(host.Name == config.Default, "*", ""),
 			host.Name,
 			host.URL,
 			FormatNonBreakingString(host.Description),
-			FormatBool(host.TLS, "YES"),
+			FormatBool(host.TLS, "YES", ""),
 		}
 		items = append(items, out)
 	}
@@ -156,6 +165,113 @@ func switchHost(ctx *cobra.Command, args []string) {
 	}
 
 	listHosts(ctx, args)
+}
+
+func getHostInfo(ctx *cobra.Command, args []string) {
+	var hostName = ""
+	if len(args) > 0 {
+		hostName = args[0]
+	}
+
+	docker, err := client.GetDockerClient(configPath, hostName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	info, err := docker.Info()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var items [][]string
+
+	items = append(items, []string{
+		"Containers", strconv.Itoa(info.Containers),
+	})
+	items = append(items, []string{
+		"Images", strconv.Itoa(info.Images),
+	})
+	items = append(items, []string{
+		"Storage Driver", info.Driver,
+	})
+	for _, pair := range info.DriverStatus {
+		items = append(items, []string{
+			FormatNonBreakingString(fmt.Sprintf("  %s", pair[0])), FormatNonBreakingString(fmt.Sprintf("%s", pair[1])),
+		})
+	}
+	items = append(items, []string{
+		"Execution Driver", info.ExecutionDriver,
+	})
+	items = append(items, []string{
+		"Kernel Version", info.KernelVersion,
+	})
+	items = append(items, []string{
+		"Operating System", FormatNonBreakingString(info.OperatingSystem),
+	})
+	items = append(items, []string{
+		"CPUs", strconv.Itoa(info.NCPU),
+	})
+	items = append(items, []string{
+		"Total Memory", strconv.FormatInt(info.MemTotal, 10),
+	})
+
+	items = append(items, []string{
+		"Index Server Address", info.IndexServerAddress,
+	})
+
+	items = append(items, []string{
+		"Memory Limit", FormatBool(info.MemoryLimit != 0, "Supported", "No"),
+	})
+	items = append(items, []string{
+		"Swap Limit", FormatBool(info.SwapLimit != 0, "Supported", "No"),
+	})
+	items = append(items, []string{
+		"IPv4 Forwarding", FormatBool(info.IPv4Forwarding != 0, "Enabled", "Disabled"),
+	})
+
+	items = append(items, []string{
+		"ID", info.ID,
+	})
+	items = append(items, []string{
+		"Name", info.Name,
+	})
+	var labels []string
+	for _, pair := range info.Labels {
+		labels = append(labels, fmt.Sprintf("%s: %s\n", pair[0], pair[1]))
+	}
+	items = append(items, []string{
+		"Labels", FormatNonBreakingString(strings.Join(labels, ", ")),
+	})
+
+	items = append(items, []string{
+		"Debug Mode", FormatBool(info.Debug != 0, "Yes", "No"),
+	})
+	if info.Debug != 0 {
+		items = append(items, []string{
+			FormatNonBreakingString("  Events Listeners"), strconv.Itoa(info.NEventsListener),
+		})
+		items = append(items, []string{
+			FormatNonBreakingString("  Fds"), strconv.Itoa(info.NFd),
+		})
+		items = append(items, []string{
+			FormatNonBreakingString("  Goroutines"), strconv.Itoa(info.NGoroutines),
+		})
+
+		items = append(items, []string{
+			FormatNonBreakingString("  Init Path"), info.InitPath,
+		})
+		items = append(items, []string{
+			FormatNonBreakingString("  Init SHA1"), info.InitSha1,
+		})
+		items = append(items, []string{
+			FormatNonBreakingString("  Docker Root Dir"), info.DockerRootDir,
+		})
+	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetBorder(false)
+	table.AppendBulk(items)
+	table.Render()
 }
 
 func addHost(ctx *cobra.Command, args []string) {

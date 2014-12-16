@@ -115,13 +115,13 @@ func listImages(ctx *cobra.Command, args []string) {
 	} else {
 		for _, image := range images {
 			if (matchName == "") || matchImageByName(image.RepoTags, matchName) {
-				name := strings.Join(image.RepoTags, ",\u00a0")
+				name := strings.Join(image.RepoTags, ", ")
 				if name == "<none>:<none>" {
 					name = "<none>"
 				}
 				out := []string{
 					Truncate(image.Id, 12),
-					name,
+					FormatNonBreakingString(name),
 					fmt.Sprintf("%.3f", float64(image.VirtualSize)/1000000.0),
 					FormatDateTime(time.Unix(image.Created, 0)),
 				}
@@ -150,7 +150,7 @@ func listImages(ctx *cobra.Command, args []string) {
 
 func walkTree(images []*api.Image, parents map[string][]*api.Image, prefix string, items [][]string) [][]string {
 	printImage := func(prefix string, image *api.Image, isLeaf bool) {
-		name := strings.Join(image.RepoTags, ",\u00a0")
+		name := strings.Join(image.RepoTags, ", ")
 		if name == "<none>:<none>" {
 			if isLeaf {
 				name = "<none>"
@@ -159,8 +159,8 @@ func walkTree(images []*api.Image, parents map[string][]*api.Image, prefix strin
 			}
 		}
 		out := []string{
-			fmt.Sprintf("%s%s%s", prefix, "\u00a0", Truncate(image.Id, 12)),
-			name,
+			FormatNonBreakingString(fmt.Sprintf("%s %s", prefix, Truncate(image.Id, 12))),
+			FormatNonBreakingString(name),
 			fmt.Sprintf("%.3f", float64(image.VirtualSize)/1000000.0),
 		}
 		items = append(items, out)
@@ -173,7 +173,7 @@ func walkTree(images []*api.Image, parents map[string][]*api.Image, prefix strin
 				subimages, exists := parents[image.Id]
 				printImage(prefix+"└", image, !exists)
 				if exists {
-					items = walkTree(subimages, parents, prefix+"\u00a0", items)
+					items = walkTree(subimages, parents, prefix+" ", items)
 				}
 			} else {
 				subimages, exists := parents[image.Id]
@@ -188,7 +188,7 @@ func walkTree(images []*api.Image, parents map[string][]*api.Image, prefix strin
 			subimages, exists := parents[image.Id]
 			printImage(prefix+"└", image, !exists)
 			if exists {
-				items = walkTree(subimages, parents, prefix+"\u2063", items)
+				items = walkTree(subimages, parents, prefix+" ", items)
 			}
 		}
 	}
