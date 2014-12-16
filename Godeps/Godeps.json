@@ -1,7 +1,11 @@
 {
 	"ImportPath": "github.com/yungsang/talk2docker",
-	"GoVersion": "go1.3.3",
+	"GoVersion": "go1.4",
 	"Deps": [
+		{
+			"ImportPath": "code.google.com/p/gopass",
+			"Rev": "3b39664481b57ad99d34c86bd64090c28eacc7a1"
+		},
 		{
 			"ImportPath": "github.com/spf13/cobra",
 			"Rev": "b825817fc0fc59fc1657bc8202204a04ae3d679d"
@@ -12,7 +16,7 @@
 		},
 		{
 			"ImportPath": "github.com/yungsang/dockerclient",
-			"Rev": "b9bb72ce7624936054ec87eb04b20ee7679bd4a0"
+			"Rev": "14b4a3c1213d98cc099aed9f4d2351c7ae17fb83"
 		},
 		{
 			"ImportPath": "github.com/yungsang/tablewriter",

@@ -1,11 +1,13 @@
 package client
 
 import (
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"gopkg.in/yaml.v2"
 )
@@ -14,6 +16,8 @@ type Config struct {
 	Default string `yaml:"default"`
 
 	Hosts []Host `yaml:"hosts"`
+
+	IndexServers []IndexServer `yaml:"indexservers,omitempty"`
 }
 
 type Host struct {
@@ -26,6 +30,15 @@ type Host struct {
 	TLSKey      string `yaml:"tls-key,omitempty"`
 	TLSVerify   bool   `yaml:"tls-verify,omitempty"`
 }
+
+type IndexServer struct {
+	URL      string `yaml:"url"`
+	Username string `json:"username"`
+	Auth     string `json:"auth"`
+	Email    string `json:"email"`
+}
+
+const INDEXSERVER = "https://index.docker.io/v1/"
 
 func getDefaultConfig() *Config {
 	var config Config
@@ -110,4 +123,46 @@ func (config *Config) SaveConfig(path string) error {
 
 	file.Close()
 	return os.Rename(path+".new", path)
+}
+
+func (config *Config) GetIndexServer(url string) (*IndexServer, error) {
+	if url == "" {
+		url = INDEXSERVER
+	}
+	for _, server := range config.IndexServers {
+		if server.URL == url {
+			return &server, nil
+		}
+	}
+	return &IndexServer{
+		URL: INDEXSERVER,
+	}, errors.New(fmt.Sprintf("\"%s\" not found in the config", url))
+}
+
+func (server *IndexServer) Encode(username, password string) string {
+	authStr := username + ":" + password
+	msg := []byte(authStr)
+	encoded := make([]byte, base64.StdEncoding.EncodedLen(len(msg)))
+	base64.StdEncoding.Encode(encoded, msg)
+	return string(encoded)
+}
+
+func (server *IndexServer) Decode() (string, string, error) {
+	authStr := server.Auth
+	decLen := base64.StdEncoding.DecodedLen(len(authStr))
+	decoded := make([]byte, decLen)
+	authByte := []byte(authStr)
+	n, err := base64.StdEncoding.Decode(decoded, authByte)
+	if err != nil {
+		return "", "", err
+	}
+	if n > decLen {
+		return "", "", fmt.Errorf("Something went wrong decoding auth configuration")
+	}
+	arr := strings.SplitN(string(decoded), ":", 2)
+	if len(arr) != 2 {
+		return "", "", fmt.Errorf("Invalid auth configuration")
+	}
+	password := strings.Trim(arr[1], "\x00")
+	return arr[0], password, nil
 }

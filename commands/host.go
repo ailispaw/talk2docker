@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"os"
@@ -8,7 +9,9 @@ import (
 	"strconv"
 	"strings"
 
+	"code.google.com/p/gopass"
 	"github.com/spf13/cobra"
+	api "github.com/yungsang/dockerclient"
 	"github.com/yungsang/tablewriter"
 	"github.com/yungsang/talk2docker/client"
 )
@@ -43,6 +46,13 @@ var cmdGetHostInfo = &cobra.Command{
 	Short: "Get the host information",
 	Long:  appName + " host info - Get the host information",
 	Run:   getHostInfo,
+}
+
+var cmdLogin = &cobra.Command{
+	Use:   "login [NAME]",
+	Short: "Log in to a Docker registry server through the host",
+	Long:  appName + " host login - Log in to a Docker registry server through the host",
+	Run:   login,
 }
 
 var cmdAddHost = &cobra.Command{
@@ -87,6 +97,7 @@ func init() {
 	cmdHost.AddCommand(cmdListHosts)
 	cmdHost.AddCommand(cmdSwitchHost)
 	cmdHost.AddCommand(cmdGetHostInfo)
+	cmdHost.AddCommand(cmdLogin)
 	cmdHost.AddCommand(cmdAddHost)
 	cmdHost.AddCommand(cmdRmHost)
 	cmdHost.AddCommand(cmdEditHost)
@@ -311,6 +322,93 @@ func getHostInfo(ctx *cobra.Command, args []string) {
 	table.SetBorder(false)
 	table.AppendBulk(items)
 	table.Render()
+}
+
+func login(ctx *cobra.Command, args []string) {
+	var hostName = ""
+	if len(args) > 0 {
+		hostName = args[0]
+	}
+
+	path := os.ExpandEnv(configPath)
+
+	config, err := client.LoadConfig(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	host, err := config.GetHost(hostName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	docker, err := client.GetDockerClient(configPath, host.Name)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	info, err := docker.Info()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	indexServerAddress := info.IndexServerAddress
+
+	server, notFound := config.GetIndexServer(indexServerAddress)
+
+	var authConfig api.AuthConfig
+	authConfig.ServerAddress = server.URL
+
+	promptDefault := func(prompt string, configDefault string) {
+		if configDefault == "" {
+			fmt.Printf("%s: ", prompt)
+		} else {
+			fmt.Printf("%s (%s): ", prompt, configDefault)
+		}
+	}
+
+	readInput := func() string {
+		reader := bufio.NewReader(os.Stdin)
+		line, _, err := reader.ReadLine()
+		if err != nil {
+			log.Fatal(err)
+		}
+		return string(line)
+	}
+
+	promptDefault("Username", server.Username)
+	authConfig.Username = readInput()
+	if authConfig.Username == "" {
+		authConfig.Username = server.Username
+	}
+
+	authConfig.Password, err = gopass.GetPass("Password: ")
+
+	promptDefault("Email", server.Email)
+	authConfig.Email = readInput()
+	if authConfig.Email == "" {
+		authConfig.Email = server.Email
+	}
+
+	err = docker.Auth(&authConfig)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	server.Username = authConfig.Username
+	server.Email = authConfig.Email
+	server.Auth = server.Encode(authConfig.Username, authConfig.Password)
+
+	if notFound != nil {
+		config.IndexServers = append(config.IndexServers, *server)
+	}
+
+	err = config.SaveConfig(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Login Succeeded!")
 }
 
 func addHost(ctx *cobra.Command, args []string) {
