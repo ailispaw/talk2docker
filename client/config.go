@@ -24,7 +24,7 @@ type Host struct {
 	TLSCaCert   string `yaml:"tls-ca-cert,omitempty"`
 	TLSCert     string `yaml:"tls-cert,omitempty"`
 	TLSKey      string `yaml:"tls-key,omitempty"`
-	TLSVerufy   bool   `yaml:"tls-verify,omitempty"`
+	TLSVerify   bool   `yaml:"tls-verify,omitempty"`
 }
 
 func getDefaultConfig() *Config {
@@ -47,7 +47,7 @@ func getDefaultConfig() *Config {
 		host.TLSCaCert = filepath.Join(certPath, "ca.pem")
 		host.TLSCert = filepath.Join(certPath, "cert.pem")
 		host.TLSKey = filepath.Join(certPath, "key.pem")
-		host.TLSVerufy = true
+		host.TLSVerify = true
 	}
 
 	config.Hosts = append(config.Hosts, host)

@@ -13,9 +13,9 @@ func getTLSConfig(host *Host) (*tls.Config, error) {
 		return nil, nil
 	}
 
-	tlsConfig.InsecureSkipVerify = !host.TLSVerufy
+	tlsConfig.InsecureSkipVerify = !host.TLSVerify
 
-	if host.TLSVerufy {
+	if host.TLSVerify {
 		certPool := x509.NewCertPool()
 		file, err := ioutil.ReadFile(host.TLSCaCert)
 		if err != nil {

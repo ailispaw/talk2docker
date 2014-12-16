@@ -30,6 +30,6 @@ func FormatBool(b bool, strTrue, strFalse string) string {
 	if b {
 		return strTrue
 	} else {
-		return ""
+		return strFalse
 	}
 }
