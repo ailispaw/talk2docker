@@ -38,6 +38,7 @@ Available Commands:
   image [command]           Manage images
   host [command]            Manage hosts
   hosts                     Shortcut to list hosts
+  config [command]          Manage the configuration file
   version                   Show the version information
   help [command]            Help about any command
 

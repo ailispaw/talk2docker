@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"strconv"
 	"strings"
 
@@ -69,14 +68,6 @@ var cmdRmHost = &cobra.Command{
 	Run:   rmHost,
 }
 
-var cmdEditHost = &cobra.Command{
-	Use:     "edit",
-	Aliases: []string{"ed"},
-	Short:   "Edit the config file",
-	Long:    appName + " host edit - Edit the config file",
-	Run:     editHosts,
-}
-
 var cmdHosts = &cobra.Command{
 	Use:   "hosts",
 	Short: "Shortcut to list hosts",
@@ -100,7 +91,6 @@ func init() {
 	cmdHost.AddCommand(cmdLogin)
 	cmdHost.AddCommand(cmdAddHost)
 	cmdHost.AddCommand(cmdRmHost)
-	cmdHost.AddCommand(cmdEditHost)
 }
 
 func listHosts(ctx *cobra.Command, args []string) {
@@ -489,26 +479,6 @@ func rmHost(ctx *cobra.Command, args []string) {
 	}
 
 	err = config.SaveConfig(path)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	listHosts(ctx, args)
-}
-
-func editHosts(ctx *cobra.Command, args []string) {
-	path := os.ExpandEnv(configPath)
-
-	editor := os.Getenv("EDITOR")
-	if editor == "" {
-		editor = "vi"
-	}
-
-	cmd := exec.Command(editor, path)
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err := cmd.Run()
 	if err != nil {
 		log.Fatal(err)
 	}
