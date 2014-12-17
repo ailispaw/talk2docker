@@ -29,10 +29,10 @@ func init() {
 	cmdPs.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
 	cmdPs.Flags().BoolVarP(&boolSize, "size", "s", false, "Display sizes")
 	cmdPs.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
-	cmdPs.Run = ps
+	cmdPs.Run = listContainers
 }
 
-func ps(ctx *cobra.Command, args []string) {
+func listContainers(ctx *cobra.Command, args []string) {
 	docker, err := client.GetDockerClient(configPath, hostName)
 	if err != nil {
 		log.Fatal(err)
