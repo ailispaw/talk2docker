@@ -18,6 +18,33 @@ import (
 	api "github.com/yungsang/dockerclient"
 )
 
+var (
+	terminalWidth, terminalHeight int
+)
+
+func init() {
+	terminalHeight, terminalWidth = getTerminalSize()
+}
+
+func getTerminalSize() (int, int) {
+	cmd := exec.Command("stty", "size")
+	cmd.Stdin = os.Stdin
+	out, err := cmd.Output()
+	if err != nil {
+		return 0, 0
+	}
+	arr := strings.Split(strings.TrimSpace(string(out)), " ")
+	height, err := strconv.Atoi(arr[0])
+	if err != nil {
+		height = 0
+	}
+	width, err := strconv.Atoi(arr[1])
+	if err != nil {
+		width = 0
+	}
+	return height, width
+}
+
 func DoStreamRequest(client *api.DockerClient, method string, path string, body []byte, headers map[string]string) error {
 	b := bytes.NewBuffer(body)
 	req, err := http.NewRequest(method, client.URL.String()+path, b)
@@ -75,34 +102,13 @@ type JSONProgress struct {
 	Start      int64 `json:"start,omitempty"`
 }
 
-func getTerminalSize() (int, int) {
-	cmd := exec.Command("stty", "size")
-	cmd.Stdin = os.Stdin
-	out, err := cmd.Output()
-	if err != nil {
-		return 0, 0
-	}
-	arr := strings.Split(strings.TrimSpace(string(out)), " ")
-	height, err := strconv.Atoi(arr[0])
-	if err != nil {
-		height = 0
-	}
-	width, err := strconv.Atoi(arr[1])
-	if err != nil {
-		width = 0
-	}
-	return height, width
-}
-
 func (p *JSONProgress) String() string {
 	var (
-		width       = 200
+		width       = terminalWidth
 		pbBox       string
 		numbersBox  string
 		timeLeftBox string
 	)
-
-	_, width = getTerminalSize()
 
 	if p.Current <= 0 && p.Total <= 0 {
 		return ""
