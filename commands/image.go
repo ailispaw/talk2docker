@@ -258,7 +258,7 @@ func pullImage(ctx *cobra.Command, args []string) {
 
 	server, err := config.GetIndexServer(info.IndexServerAddress)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Please login prior to pulling an image.")
 	}
 
 	v := url.Values{}
