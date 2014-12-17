@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -30,12 +31,20 @@ var cmdImage = &cobra.Command{
 		ctx.Usage()
 	},
 }
+
 var cmdListImages = &cobra.Command{
 	Use:     "list [NAME[:TAG]]",
 	Aliases: []string{"ls"},
 	Short:   "List images",
 	Long:    appName + " image list - List images",
 	Run:     listImages,
+}
+
+var cmdPullImage = &cobra.Command{
+	Use:   "pull <NAME[:TAG]>",
+	Short: "Pull an image",
+	Long:  appName + " image pull - Pull an image",
+	Run:   pullImage,
 }
 
 // Define at ps.go
@@ -50,7 +59,10 @@ func init() {
 	cmdListImages.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
 	cmdListImages.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 
+	cmdPullImage.Flags().BoolVarP(&boolAll, "all", "a", false, "Pull all tagged images in the repository. Only the \"latest\" tagged image is pulled by default.")
+
 	cmdImage.AddCommand(cmdListImages)
+	cmdImage.AddCommand(cmdPullImage)
 }
 
 func listImages(ctx *cobra.Command, args []string) {
@@ -193,4 +205,71 @@ func walkTree(images []*api.Image, parents map[string][]*api.Image, prefix strin
 		}
 	}
 	return items
+}
+
+func pullImage(ctx *cobra.Command, args []string) {
+	if len(args) < 1 {
+		fmt.Println("Needs an argument <NAME> to pull")
+		ctx.Usage()
+		return
+	}
+
+	var name = args[0]
+	var tag = ""
+	n := strings.LastIndex(name, ":")
+	if n >= 0 {
+		if !strings.Contains(name[n+1:], "/") {
+			tag = name[n+1:]
+			name = name[:n]
+		}
+	}
+
+	if tag == "" {
+		tag = "latest"
+	}
+
+	var repository = name + ":" + tag
+
+	if boolAll {
+		repository = name
+	}
+
+	path := os.ExpandEnv(configPath)
+
+	config, err := client.LoadConfig(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	host, err := config.GetHost(hostName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	docker, err := client.GetDockerClient(configPath, host.Name)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	info, err := docker.Info()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	server, err := config.GetIndexServer(info.IndexServerAddress)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	v := url.Values{}
+	v.Set("fromImage", repository)
+	uri := fmt.Sprintf("/%s/images/create?%s", api.APIVersion, v.Encode())
+
+	headers := make(map[string]string)
+	headers["X-Registry-Auth"] = server.Auth
+
+	err = client.DoStreamRequest(docker, "POST", uri, nil, headers)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
