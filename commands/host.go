@@ -447,6 +447,10 @@ func rmHost(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
+	if config.Default == name {
+		log.Fatal("You can't remove the default host.")
+	}
+
 	_, err = config.GetHost(name)
 	if err != nil {
 		log.Fatal(err)
@@ -461,9 +465,6 @@ func rmHost(ctx *cobra.Command, args []string) {
 	}
 
 	config.Hosts = hosts
-	if config.Default == name {
-		config.Default = hosts[0].Name
-	}
 
 	err = config.SaveConfig(path)
 	if err != nil {
