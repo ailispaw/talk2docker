@@ -13,13 +13,15 @@ import (
 	"github.com/yungsang/talk2docker/client"
 )
 
+var (
+	boolAll, boolLatest, boolQuiet, boolSize, boolNoHeader bool
+)
+
 var cmdPs = &cobra.Command{
 	Use:   "ps",
 	Short: "List containers",
 	Long:  appName + " ps - List containers",
 }
-
-var boolAll, boolLatest, boolQuiet, boolSize, boolNoHeader bool
 
 func init() {
 	cmdPs.Flags().BoolVarP(&boolAll, "all", "a", false, "Show all containers. Only running containers are shown by default.")

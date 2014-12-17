@@ -75,9 +75,6 @@ var cmdHosts = &cobra.Command{
 	Run:   listHosts,
 }
 
-// Define at ps.go
-// var boolQuite, boolNoHeader bool
-
 func init() {
 	cmdListHosts.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
 	cmdListHosts.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")

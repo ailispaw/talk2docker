@@ -47,9 +47,6 @@ var cmdPullImage = &cobra.Command{
 	Run:   pullImage,
 }
 
-// Define at ps.go
-// var boolAll, boolQuiet, boolNoHeader bool
-
 func init() {
 	cmdIs.Flags().BoolVarP(&boolAll, "all", "a", false, "Show all images. Only named/taged and leaf images are shown by default.")
 	cmdIs.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
