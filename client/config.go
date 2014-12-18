@@ -33,9 +33,9 @@ type Host struct {
 
 type IndexServer struct {
 	URL      string `yaml:"url"`
-	Username string `json:"username"`
-	Auth     string `json:"auth"`
-	Email    string `json:"email"`
+	Username string `yaml:"username"`
+	Auth     string `yaml:"auth,omitempty"`
+	Email    string `yaml:"email"`
 }
 
 const INDEXSERVER = "https://index.docker.io/v1/"
@@ -137,6 +137,30 @@ func (config *Config) GetIndexServer(url string) (*IndexServer, error) {
 	return &IndexServer{
 		URL: INDEXSERVER,
 	}, errors.New(fmt.Sprintf("\"%s\" not found in the config", url))
+}
+
+func (config *Config) SetIndexServer(newServer *IndexServer) {
+	for i, server := range config.IndexServers {
+		if server.URL == newServer.URL {
+			config.IndexServers[i] = *newServer
+			return
+		}
+	}
+	config.IndexServers = append(config.IndexServers, *newServer)
+	return
+}
+
+func (config *Config) LogoutIndexServer(url string) {
+	if url == "" {
+		return
+	}
+	for i, server := range config.IndexServers {
+		if server.URL == url {
+			config.IndexServers[i].Auth = ""
+			return
+		}
+	}
+	return
 }
 
 func (server *IndexServer) Encode(username, password string) string {

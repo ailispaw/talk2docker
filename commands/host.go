@@ -54,6 +54,13 @@ var cmdLogin = &cobra.Command{
 	Run:   login,
 }
 
+var cmdLogout = &cobra.Command{
+	Use:   "logout [NAME]",
+	Short: "Log out from a Docker registry server through the host",
+	Long:  appName + " host logout - Log out from a Docker registry server through the host",
+	Run:   logout,
+}
+
 var cmdAddHost = &cobra.Command{
 	Use:   "add <NAME> <URL> [DESCRIPTION]",
 	Short: "Add a new host into the config file",
@@ -89,6 +96,7 @@ func init() {
 	cmdHost.AddCommand(cmdSwitchHost)
 	cmdHost.AddCommand(cmdGetHostInfo)
 	cmdHost.AddCommand(cmdLogin)
+	cmdHost.AddCommand(cmdLogout)
 	cmdHost.AddCommand(cmdAddHost)
 	cmdHost.AddCommand(cmdRemoveHost)
 }
@@ -345,7 +353,7 @@ func login(ctx *cobra.Command, args []string) {
 
 	indexServerAddress := info.IndexServerAddress
 
-	server, notFound := config.GetIndexServer(indexServerAddress)
+	server, _ := config.GetIndexServer(indexServerAddress)
 
 	var authConfig api.AuthConfig
 	authConfig.ServerAddress = server.URL
@@ -390,9 +398,7 @@ func login(ctx *cobra.Command, args []string) {
 	server.Email = authConfig.Email
 	server.Auth = server.Encode(authConfig.Username, authConfig.Password)
 
-	if notFound != nil {
-		config.IndexServers = append(config.IndexServers, *server)
-	}
+	config.SetIndexServer(server)
 
 	err = config.SaveConfig(path)
 	if err != nil {
@@ -400,6 +406,50 @@ func login(ctx *cobra.Command, args []string) {
 	}
 
 	fmt.Println("Login Succeeded!")
+}
+
+func logout(ctx *cobra.Command, args []string) {
+	if len(args) > 0 {
+		hostName = args[0]
+	}
+
+	path := os.ExpandEnv(configPath)
+
+	config, err := client.LoadConfig(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	host, err := config.GetHost(hostName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	docker, err := client.GetDockerClient(configPath, host.Name)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	info, err := docker.Info()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	indexServerAddress := info.IndexServerAddress
+
+	server, notFound := config.GetIndexServer(indexServerAddress)
+	if (notFound != nil) || (server.Auth == "") {
+		log.Fatal("Not logged in")
+	}
+
+	config.LogoutIndexServer(indexServerAddress)
+
+	err = config.SaveConfig(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Logout Succeeded!")
 }
 
 func addHost(ctx *cobra.Command, args []string) {
