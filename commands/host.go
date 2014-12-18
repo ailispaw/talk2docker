@@ -41,14 +41,14 @@ var cmdSwitchHost = &cobra.Command{
 }
 
 var cmdGetHostInfo = &cobra.Command{
-	Use:   "info",
+	Use:   "info [NAME]",
 	Short: "Get the host information",
 	Long:  appName + " host info - Get the host information",
 	Run:   getHostInfo,
 }
 
 var cmdLogin = &cobra.Command{
-	Use:   "login",
+	Use:   "login [NAME]",
 	Short: "Log in to a Docker registry server through the host",
 	Long:  appName + " host login - Log in to a Docker registry server through the host",
 	Run:   login,
@@ -170,6 +170,10 @@ func switchHost(ctx *cobra.Command, args []string) {
 }
 
 func getHostInfo(ctx *cobra.Command, args []string) {
+	if len(args) > 0 {
+		hostName = args[0]
+	}
+
 	path := os.ExpandEnv(configPath)
 
 	config, err := client.LoadConfig(path)
@@ -313,6 +317,10 @@ func getHostInfo(ctx *cobra.Command, args []string) {
 }
 
 func login(ctx *cobra.Command, args []string) {
+	if len(args) > 0 {
+		hostName = args[0]
+	}
+
 	path := os.ExpandEnv(configPath)
 
 	config, err := client.LoadConfig(path)
