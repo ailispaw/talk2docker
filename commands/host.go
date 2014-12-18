@@ -61,12 +61,12 @@ var cmdAddHost = &cobra.Command{
 	Run:   addHost,
 }
 
-var cmdRmHost = &cobra.Command{
-	Use:   "remove <NAME>",
+var cmdRemoveHost = &cobra.Command{
+	Use:     "remove <NAME>",
 	Aliases: []string{"rm", "delete", "del"},
-	Short: "Rmove a host from the config file",
-	Long:  appName + " host remove - Rmove a host from the config file",
-	Run:   rmHost,
+	Short:   "Remove a host from the config file",
+	Long:    appName + " host remove - Remove a host from the config file",
+	Run:     removeHost,
 }
 
 var cmdHosts = &cobra.Command{
@@ -90,7 +90,7 @@ func init() {
 	cmdHost.AddCommand(cmdGetHostInfo)
 	cmdHost.AddCommand(cmdLogin)
 	cmdHost.AddCommand(cmdAddHost)
-	cmdHost.AddCommand(cmdRmHost)
+	cmdHost.AddCommand(cmdRemoveHost)
 }
 
 func listHosts(ctx *cobra.Command, args []string) {
@@ -445,7 +445,7 @@ func addHost(ctx *cobra.Command, args []string) {
 	listHosts(ctx, args)
 }
 
-func rmHost(ctx *cobra.Command, args []string) {
+func removeHost(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
 		fmt.Println("Needs an argument <NAME> to remove")
 		ctx.Usage()
