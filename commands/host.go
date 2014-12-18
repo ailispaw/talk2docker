@@ -62,9 +62,10 @@ var cmdAddHost = &cobra.Command{
 }
 
 var cmdRmHost = &cobra.Command{
-	Use:   "rm <NAME>",
+	Use:   "remove <NAME>",
+	Aliases: []string{"rm", "delete", "del"},
 	Short: "Rmove a host from the config file",
-	Long:  appName + " host rm - Rmove a host from the config file",
+	Long:  appName + " host remove - Rmove a host from the config file",
 	Run:   rmHost,
 }
 
