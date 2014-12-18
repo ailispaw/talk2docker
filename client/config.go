@@ -69,9 +69,12 @@ func getDefaultConfig() *Config {
 }
 
 func LoadConfig(path string) (*Config, error) {
+	path = os.ExpandEnv(path)
+
 	data, err := ioutil.ReadFile(path)
 	if os.IsNotExist(err) {
-		return getDefaultConfig(), nil
+		config := getDefaultConfig()
+		return config, config.SaveConfig(path)
 	}
 	if err != nil {
 		return nil, err
@@ -82,9 +85,7 @@ func LoadConfig(path string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	if config.Hosts == nil {
-		config.Hosts = []Host{}
-	}
+
 	return &config, nil
 }
 
@@ -105,6 +106,8 @@ func (config *Config) GetHost(name string) (*Host, error) {
 }
 
 func (config *Config) SaveConfig(path string) error {
+	path = os.ExpandEnv(path)
+
 	os.Remove(path + ".new")
 	os.Mkdir(filepath.Dir(path), 0700)
 	file, err := os.Create(path + ".new")

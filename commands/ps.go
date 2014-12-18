@@ -38,7 +38,7 @@ func listContainers(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	var filters = ""
+	filters := ""
 	if boolLatest {
 		filters += "&limit=1"
 	}
@@ -91,7 +91,7 @@ func listContainers(ctx *cobra.Command, args []string) {
 		items = append(items, out)
 	}
 
-	var header = []string{
+	header := []string{
 		"ID",
 		"Names",
 		"Image",

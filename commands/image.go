@@ -73,7 +73,7 @@ func listImages(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	var matchName = ""
+	matchName := ""
 	if len(args) > 0 {
 		matchName = args[0]
 	}
@@ -139,7 +139,7 @@ func listImages(ctx *cobra.Command, args []string) {
 		}
 	}
 
-	var header = []string{
+	header := []string{
 		"ID",
 		"Name:Tags",
 		"Size(MB)",
@@ -212,8 +212,11 @@ func pullImage(ctx *cobra.Command, args []string) {
 		return
 	}
 
-	var name = args[0]
-	var tag = ""
+	var (
+		name = args[0]
+		tag  = ""
+	)
+
 	n := strings.LastIndex(name, ":")
 	if n >= 0 {
 		if !strings.Contains(name[n+1:], "/") {
@@ -226,25 +229,13 @@ func pullImage(ctx *cobra.Command, args []string) {
 		tag = "latest"
 	}
 
-	var repository = name + ":" + tag
+	repository := name + ":" + tag
 
 	if boolAll {
 		repository = name
 	}
 
-	path := os.ExpandEnv(configPath)
-
-	config, err := client.LoadConfig(path)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	host, err := config.GetHost(hostName)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	docker, err := client.GetDockerClient(configPath, host.Name)
+	docker, err := client.GetDockerClient(configPath, hostName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -254,8 +245,13 @@ func pullImage(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	server, err := config.GetIndexServer(info.IndexServerAddress)
+	config, err := client.LoadConfig(configPath)
 	if err != nil {
+		log.Fatal(err)
+	}
+
+	server, err := config.GetIndexServer(info.IndexServerAddress)
+	if (err != nil) || (server.Auth == "") {
 		log.Fatal("Please login prior to pulling an image.")
 	}
 

@@ -102,9 +102,7 @@ func init() {
 }
 
 func listHosts(ctx *cobra.Command, args []string) {
-	path := os.ExpandEnv(configPath)
-
-	config, err := client.LoadConfig(path)
+	config, err := client.LoadConfig(configPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -128,7 +126,7 @@ func listHosts(ctx *cobra.Command, args []string) {
 		items = append(items, out)
 	}
 
-	var header = []string{
+	header := []string{
 		"",
 		"Name",
 		"URL",
@@ -147,20 +145,18 @@ func listHosts(ctx *cobra.Command, args []string) {
 }
 
 func switchHost(ctx *cobra.Command, args []string) {
-	if len(args) == 0 {
+	if len(args) < 1 {
 		fmt.Println("Needs an argument <NAME> to switch")
 		ctx.Usage()
 		return
 	}
 
-	path := os.ExpandEnv(configPath)
+	name := args[0]
 
-	config, err := client.LoadConfig(path)
+	config, err := client.LoadConfig(configPath)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	var name = args[0]
 
 	host, err := config.GetHost(name)
 	if err != nil {
@@ -169,7 +165,7 @@ func switchHost(ctx *cobra.Command, args []string) {
 
 	config.Default = host.Name
 
-	err = config.SaveConfig(path)
+	err = config.SaveConfig(configPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -182,19 +178,12 @@ func getHostInfo(ctx *cobra.Command, args []string) {
 		hostName = args[0]
 	}
 
-	path := os.ExpandEnv(configPath)
-
-	config, err := client.LoadConfig(path)
+	config, err := client.LoadConfig(configPath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	host, err := config.GetHost(hostName)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	docker, err := client.GetDockerClient(configPath, host.Name)
+	docker, err := client.GetDockerClient(configPath, hostName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -205,6 +194,11 @@ func getHostInfo(ctx *cobra.Command, args []string) {
 	}
 
 	var items [][]string
+
+	host, err := config.GetHost(hostName)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	items = append(items, []string{
 		"Host", host.Name,
@@ -329,19 +323,7 @@ func login(ctx *cobra.Command, args []string) {
 		hostName = args[0]
 	}
 
-	path := os.ExpandEnv(configPath)
-
-	config, err := client.LoadConfig(path)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	host, err := config.GetHost(hostName)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	docker, err := client.GetDockerClient(configPath, host.Name)
+	docker, err := client.GetDockerClient(configPath, hostName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -351,12 +333,16 @@ func login(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	indexServerAddress := info.IndexServerAddress
+	config, err := client.LoadConfig(configPath)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	server, _ := config.GetIndexServer(indexServerAddress)
+	server, _ := config.GetIndexServer(info.IndexServerAddress)
 
-	var authConfig api.AuthConfig
-	authConfig.ServerAddress = server.URL
+	authConfig := api.AuthConfig{
+		ServerAddress: server.URL,
+	}
 
 	promptDefault := func(prompt string, configDefault string) {
 		if configDefault == "" {
@@ -400,7 +386,7 @@ func login(ctx *cobra.Command, args []string) {
 
 	config.SetIndexServer(server)
 
-	err = config.SaveConfig(path)
+	err = config.SaveConfig(configPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -413,19 +399,12 @@ func logout(ctx *cobra.Command, args []string) {
 		hostName = args[0]
 	}
 
-	path := os.ExpandEnv(configPath)
-
-	config, err := client.LoadConfig(path)
+	config, err := client.LoadConfig(configPath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	host, err := config.GetHost(hostName)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	docker, err := client.GetDockerClient(configPath, host.Name)
+	docker, err := client.GetDockerClient(configPath, hostName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -435,16 +414,14 @@ func logout(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	indexServerAddress := info.IndexServerAddress
-
-	server, notFound := config.GetIndexServer(indexServerAddress)
+	server, notFound := config.GetIndexServer(info.IndexServerAddress)
 	if (notFound != nil) || (server.Auth == "") {
 		log.Fatal("Not logged in")
 	}
 
-	config.LogoutIndexServer(indexServerAddress)
+	config.LogoutIndexServer(info.IndexServerAddress)
 
-	err = config.SaveConfig(path)
+	err = config.SaveConfig(configPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -459,16 +436,17 @@ func addHost(ctx *cobra.Command, args []string) {
 		return
 	}
 
-	name := args[0]
-	url := args[1]
-	desc := ""
+	var (
+		name = args[0]
+		url  = args[1]
+		desc = ""
+	)
+
 	if len(args) > 2 {
 		desc = strings.Join(args[2:], " ")
 	}
 
-	path := os.ExpandEnv(configPath)
-
-	config, err := client.LoadConfig(path)
+	config, err := client.LoadConfig(configPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -487,7 +465,7 @@ func addHost(ctx *cobra.Command, args []string) {
 	config.Default = newHost.Name
 	config.Hosts = append(config.Hosts, newHost)
 
-	err = config.SaveConfig(path)
+	err = config.SaveConfig(configPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -504,9 +482,7 @@ func removeHost(ctx *cobra.Command, args []string) {
 
 	name := args[0]
 
-	path := os.ExpandEnv(configPath)
-
-	config, err := client.LoadConfig(path)
+	config, err := client.LoadConfig(configPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -530,7 +506,7 @@ func removeHost(ctx *cobra.Command, args []string) {
 
 	config.Hosts = hosts
 
-	err = config.SaveConfig(path)
+	err = config.SaveConfig(configPath)
 	if err != nil {
 		log.Fatal(err)
 	}

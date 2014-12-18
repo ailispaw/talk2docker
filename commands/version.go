@@ -62,7 +62,7 @@ func version(ctx *cobra.Command, args []string) {
 	}
 
 Display:
-	var header = []string{
+	header := []string{
 		"",
 		"Version",
 		"API Version",
