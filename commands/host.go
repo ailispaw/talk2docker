@@ -82,6 +82,8 @@ func init() {
 	cmdHosts.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display host names")
 	cmdHosts.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 
+	cmdGetHostInfo.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+
 	cmdHost.AddCommand(cmdListHosts)
 	cmdHost.AddCommand(cmdSwitchHost)
 	cmdHost.AddCommand(cmdGetHostInfo)
@@ -128,8 +130,9 @@ func listHosts(ctx *cobra.Command, args []string) {
 	table := tablewriter.NewWriter(os.Stdout)
 	if !boolNoHeader {
 		table.SetHeader(header)
+	} else {
+		table.SetBorder(false)
 	}
-	table.SetBorder(false)
 	table.AppendBulk(items)
 	table.Render()
 }
@@ -301,7 +304,9 @@ func getHostInfo(ctx *cobra.Command, args []string) {
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetBorder(false)
+	if boolNoHeader {
+		table.SetBorder(false)
+	}
 	table.AppendBulk(items)
 	table.Render()
 }

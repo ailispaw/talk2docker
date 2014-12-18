@@ -151,8 +151,9 @@ func listImages(ctx *cobra.Command, args []string) {
 	table := tablewriter.NewWriter(os.Stdout)
 	if !boolNoHeader {
 		table.SetHeader(header)
+	} else {
+		table.SetBorder(false)
 	}
-	table.SetBorder(false)
 	table.AppendBulk(items)
 	table.Render()
 }

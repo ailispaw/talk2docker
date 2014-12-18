@@ -20,6 +20,10 @@ var cmdVersion = &cobra.Command{
 	Run:     version,
 }
 
+func init() {
+	cmdVersion.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+}
+
 func version(ctx *cobra.Command, args []string) {
 	var items [][]string
 
@@ -67,8 +71,11 @@ Display:
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader(header)
-	table.SetBorder(false)
+	if !boolNoHeader {
+		table.SetHeader(header)
+	} else {
+		table.SetBorder(false)
+	}
 	table.SetAlignment(tablewriter.ALIGN_LEFT)
 	table.AppendBulk(items)
 	table.Render()
