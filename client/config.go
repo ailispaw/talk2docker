@@ -13,10 +13,8 @@ import (
 )
 
 type Config struct {
-	Default string `yaml:"default"`
-
-	Hosts []Host `yaml:"hosts"`
-
+	Default      string        `yaml:"default"`
+	Hosts        []Host        `yaml:"hosts"`
 	IndexServers []IndexServer `yaml:"indexservers,omitempty"`
 }
 
