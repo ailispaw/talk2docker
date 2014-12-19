@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -40,6 +41,12 @@ func FormatNumber(n float64, prec int) string {
 	if n < 0 {
 		sign = "-"
 		n = -n
+	}
+
+	if prec > 0 {
+		f := math.Pow10(prec)
+		x := n * f
+		n = math.Floor(x+0.5) / f
 	}
 
 	str := strconv.FormatFloat(n, 'f', prec, 64)

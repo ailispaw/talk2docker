@@ -9,6 +9,9 @@ all: build
 fmt:
 	go fmt -x ./...
 
+test: fmt
+	godep go test -v ./...
+
 build: fmt dep-restore
 	godep go build -v -ldflags "-X $(PROJECT)/version.GITCOMMIT '$(GITCOMMIT)'"
 
