@@ -131,7 +131,7 @@ func listImages(ctx *cobra.Command, args []string) {
 				out := []string{
 					Truncate(image.Id, 12),
 					FormatNonBreakingString(name),
-					fmt.Sprintf("%.3f", float64(image.VirtualSize)/1000000.0),
+					FormatFloat(float64(image.VirtualSize) / 1000000),
 					FormatDateTime(time.Unix(image.Created, 0)),
 				}
 				items = append(items, out)
@@ -171,7 +171,7 @@ func walkTree(images []*api.Image, parents map[string][]*api.Image, prefix strin
 		out := []string{
 			FormatNonBreakingString(fmt.Sprintf("%s %s", prefix, Truncate(image.Id, 12))),
 			FormatNonBreakingString(name),
-			fmt.Sprintf("%.3f", float64(image.VirtualSize)/1000000.0),
+			FormatFloat(float64(image.VirtualSize) / 1000000),
 		}
 		items = append(items, out)
 	}

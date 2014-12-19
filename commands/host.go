@@ -254,7 +254,7 @@ func getHostInfo(ctx *cobra.Command, args []string) {
 		"CPUs", strconv.Itoa(info.NCPU),
 	})
 	items = append(items, []string{
-		"Total Memory", strconv.FormatInt(info.MemTotal, 10),
+		"Total Memory", fmt.Sprintf("%s GB", FormatFloat(float64(info.MemTotal)/1000000000)),
 	})
 
 	items = append(items, []string{
@@ -314,6 +314,7 @@ func getHostInfo(ctx *cobra.Command, args []string) {
 	if boolNoHeader {
 		table.SetBorder(false)
 	}
+	table.SetAlignment(tablewriter.ALIGN_LEFT)
 	table.AppendBulk(items)
 	table.Render()
 }

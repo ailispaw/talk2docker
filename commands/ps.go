@@ -86,7 +86,7 @@ func listContainers(ctx *cobra.Command, args []string) {
 			formatPorts(container.Ports),
 		}
 		if boolSize {
-			out = append(out, fmt.Sprintf("%.3f", float64(container.SizeRw)/1000000.0))
+			out = append(out, FormatFloat(float64(container.SizeRw)/1000000))
 		}
 		items = append(items, out)
 	}

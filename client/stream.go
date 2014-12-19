@@ -113,11 +113,11 @@ func (p *JSONProgress) String() string {
 	if p.Current <= 0 && p.Total <= 0 {
 		return ""
 	}
-	current := fmt.Sprintf("%.3f MB", float64(p.Current)/1000000.0)
+	current := fmt.Sprintf("%.3f MB", float64(p.Current)/1000000)
 	if p.Total <= 0 {
 		return fmt.Sprintf("%8v", current)
 	}
-	total := fmt.Sprintf("%.3f MB", float64(p.Total)/1000000.0)
+	total := fmt.Sprintf("%.3f MB", float64(p.Total)/1000000)
 	percentage := int(float64(p.Current)/float64(p.Total)*100) / 2
 	if width > 110 {
 		// this number can't be negetive gh#7136
