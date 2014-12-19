@@ -15,6 +15,7 @@ Contributions and suggestions would be appreciated, though it's aimed at my lear
 - https://github.com/samalba/dockerclient
 - https://github.com/spf13/cobra
 - https://github.com/olekukonko/tablewriter
+- http://code.google.com/p/gopass/
 
 ## How to Build
 
