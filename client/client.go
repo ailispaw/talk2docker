@@ -1,10 +1,12 @@
 package client
 
 import (
-	api "github.com/yungsang/dockerclient"
+	"time"
+
+	"github.com/yungsang/talk2docker/api"
 )
 
-func GetDockerClient(configPath, hostName string) (*api.DockerClient, error) {
+func NewDockerClient(configPath, hostName string) (*api.DockerClient, error) {
 	config, err := LoadConfig(configPath)
 	if err != nil {
 		return nil, err
@@ -15,12 +17,12 @@ func GetDockerClient(configPath, hostName string) (*api.DockerClient, error) {
 		return nil, err
 	}
 
-	tlsConfig, err := getTLSConfig(host)
+	tlsConfig, err := host.getTLSConfig()
 	if err != nil {
 		return nil, err
 	}
 
-	docker, err := api.NewDockerClient(host.URL, tlsConfig)
+	docker, err := api.NewDockerClient(host.URL, tlsConfig, 30*time.Second)
 	if err != nil {
 		return nil, err
 	}

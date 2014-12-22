@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	api "github.com/yungsang/dockerclient"
 	"github.com/yungsang/tablewriter"
+	"github.com/yungsang/talk2docker/api"
 	"github.com/yungsang/talk2docker/client"
 )
 
@@ -33,20 +33,17 @@ func init() {
 }
 
 func listContainers(ctx *cobra.Command, args []string) {
-	docker, err := client.GetDockerClient(configPath, hostName)
+	docker, err := client.NewDockerClient(configPath, hostName)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	filters := ""
+	limit := 0
 	if boolLatest {
-		filters += "&limit=1"
-	}
-	if boolSize {
-		filters += "&size=1"
+		limit = 1
 	}
 
-	containers, err := docker.ListContainers(boolAll, boolSize, filters)
+	containers, err := docker.ListContainers(boolAll, boolSize, limit, "", "", nil)
 	if err != nil {
 		log.Fatal(err)
 	}

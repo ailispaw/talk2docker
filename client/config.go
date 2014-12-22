@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"gopkg.in/yaml.v2"
 )
@@ -170,24 +169,4 @@ func (server *IndexServer) Encode(username, password string) string {
 	encoded := make([]byte, base64.StdEncoding.EncodedLen(len(msg)))
 	base64.StdEncoding.Encode(encoded, msg)
 	return string(encoded)
-}
-
-func (server *IndexServer) Decode() (string, string, error) {
-	authStr := server.Auth
-	decLen := base64.StdEncoding.DecodedLen(len(authStr))
-	decoded := make([]byte, decLen)
-	authByte := []byte(authStr)
-	n, err := base64.StdEncoding.Decode(decoded, authByte)
-	if err != nil {
-		return "", "", err
-	}
-	if n > decLen {
-		return "", "", fmt.Errorf("Something went wrong decoding auth configuration")
-	}
-	arr := strings.SplitN(string(decoded), ":", 2)
-	if len(arr) != 2 {
-		return "", "", fmt.Errorf("Invalid auth configuration")
-	}
-	password := strings.Trim(arr[1], "\x00")
-	return arr[0], password, nil
 }

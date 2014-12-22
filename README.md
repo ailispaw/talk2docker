@@ -12,10 +12,10 @@ Contributions and suggestions would be appreciated, though it's aimed at my lear
 ## References
 
 - https://docs.docker.com/reference/api/docker_remote_api/
-- https://github.com/samalba/dockerclient
 - https://github.com/spf13/cobra
 - https://github.com/olekukonko/tablewriter
 - http://code.google.com/p/gopass/
+- http://gopkg.in/yaml.v2
 
 ## How to Build
 

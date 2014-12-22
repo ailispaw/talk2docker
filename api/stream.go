@@ -1,21 +1,14 @@
-package client
+package api
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
-	"mime"
-	"net/http"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
-	"syscall"
 	"time"
-
-	api "github.com/yungsang/dockerclient"
 )
 
 var (
@@ -43,47 +36,6 @@ func getTerminalSize() (int, int) {
 		width = 0
 	}
 	return height, width
-}
-
-func DoStreamRequest(client *api.DockerClient, method string, path string, body []byte, headers map[string]string) error {
-	b := bytes.NewBuffer(body)
-	req, err := http.NewRequest(method, client.URL.String()+path, b)
-	if err != nil {
-		return err
-	}
-	req.Header.Add("Content-Type", "application/json")
-	if headers != nil {
-		for header, value := range headers {
-			req.Header.Add(header, value)
-		}
-	}
-	resp, err := client.HTTPClient.Do(req)
-	if err != nil {
-		if !strings.Contains(err.Error(), "connection refused") && client.TLSConfig == nil {
-			return fmt.Errorf("%v. Are you trying to connect to a TLS-enabled daemon without TLS?", err)
-		}
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return err
-		}
-		if len(body) == 0 {
-			return fmt.Errorf("Error :%s", http.StatusText(resp.StatusCode))
-		}
-		return fmt.Errorf("Error: %s", bytes.TrimSpace(body))
-	}
-
-	mimetype, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
-	if err == nil && mimetype == "application/json" {
-		return displayJSONMessagesStream(resp.Body, os.Stdout, uintptr(syscall.Stdin), true)
-	}
-
-	_, err = io.Copy(os.Stdout, resp.Body)
-	return err
 }
 
 type JSONError struct {
@@ -193,7 +145,7 @@ func (jm *JSONMessage) Display(out io.Writer, isTerminal bool) error {
 func displayJSONMessagesStream(in io.Reader, out io.Writer, terminalFd uintptr, isTerminal bool) error {
 	var (
 		dec  = json.NewDecoder(in)
-		ids  = make(map[string]int)
+		ids  = map[string]int{}
 		diff = 0
 	)
 	for {
