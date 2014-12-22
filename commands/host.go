@@ -10,8 +10,8 @@ import (
 
 	"code.google.com/p/gopass"
 	"github.com/spf13/cobra"
-	api "github.com/yungsang/dockerclient"
 	"github.com/yungsang/tablewriter"
+	"github.com/yungsang/talk2docker/api"
 	"github.com/yungsang/talk2docker/client"
 )
 
@@ -183,7 +183,7 @@ func getHostInfo(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	docker, err := client.GetDockerClient(configPath, hostName)
+	docker, err := client.NewDockerClient(configPath, hostName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -320,7 +320,7 @@ func login(ctx *cobra.Command, args []string) {
 		hostName = args[0]
 	}
 
-	docker, err := client.GetDockerClient(configPath, hostName)
+	docker, err := client.NewDockerClient(configPath, hostName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -401,7 +401,7 @@ func logout(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	docker, err := client.GetDockerClient(configPath, hostName)
+	docker, err := client.NewDockerClient(configPath, hostName)
 	if err != nil {
 		log.Fatal(err)
 	}

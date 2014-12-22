@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 )
 
-func getTLSConfig(host *Host) (*tls.Config, error) {
+func (host *Host) getTLSConfig() (*tls.Config, error) {
 	var tlsConfig tls.Config
 
 	if !host.TLS {

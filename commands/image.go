@@ -3,14 +3,13 @@ package commands
 import (
 	"fmt"
 	"log"
-	"net/url"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
-	api "github.com/yungsang/dockerclient"
 	"github.com/yungsang/tablewriter"
+	"github.com/yungsang/talk2docker/api"
 	"github.com/yungsang/talk2docker/client"
 )
 
@@ -63,12 +62,12 @@ func init() {
 }
 
 func listImages(ctx *cobra.Command, args []string) {
-	docker, err := client.GetDockerClient(configPath, hostName)
+	docker, err := client.NewDockerClient(configPath, hostName)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	images, err := docker.ListImages(boolAll)
+	images, err := docker.ListImages(boolAll, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -105,8 +104,8 @@ func listImages(ctx *cobra.Command, args []string) {
 	var items [][]string
 
 	if boolAll {
-		roots := make([]*api.Image, 0)
-		parents := make(map[string][]*api.Image)
+		roots := []api.Image{}
+		parents := map[string][]api.Image{}
 		for _, image := range images {
 			if image.ParentId == "" {
 				roots = append(roots, image)
@@ -114,7 +113,7 @@ func listImages(ctx *cobra.Command, args []string) {
 				if children, exists := parents[image.ParentId]; exists {
 					parents[image.ParentId] = append(children, image)
 				} else {
-					children := make([]*api.Image, 0)
+					children := []api.Image{}
 					parents[image.ParentId] = append(children, image)
 				}
 			}
@@ -158,8 +157,8 @@ func listImages(ctx *cobra.Command, args []string) {
 	table.Render()
 }
 
-func walkTree(images []*api.Image, parents map[string][]*api.Image, prefix string, items [][]string) [][]string {
-	printImage := func(prefix string, image *api.Image, isLeaf bool) {
+func walkTree(images []api.Image, parents map[string][]api.Image, prefix string, items [][]string) [][]string {
+	printImage := func(prefix string, image api.Image, isLeaf bool) {
 		name := strings.Join(image.RepoTags, ", ")
 		if name == "<none>:<none>" {
 			if isLeaf {
@@ -235,7 +234,7 @@ func pullImage(ctx *cobra.Command, args []string) {
 		repository = name
 	}
 
-	docker, err := client.GetDockerClient(configPath, hostName)
+	docker, err := client.NewDockerClient(configPath, hostName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -255,14 +254,7 @@ func pullImage(ctx *cobra.Command, args []string) {
 		log.Fatal("Please login prior to pulling an image.")
 	}
 
-	v := url.Values{}
-	v.Set("fromImage", repository)
-	uri := fmt.Sprintf("/%s/images/create?%s", api.APIVersion, v.Encode())
-
-	headers := make(map[string]string)
-	headers["X-Registry-Auth"] = server.Auth
-
-	err = client.DoStreamRequest(docker, "POST", uri, nil, headers)
+	err = docker.PullImage(repository, server.Auth)
 	if err != nil {
 		log.Fatal(err)
 	}

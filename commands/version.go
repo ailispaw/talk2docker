@@ -6,10 +6,10 @@ import (
 	"runtime"
 
 	"github.com/spf13/cobra"
-	api "github.com/yungsang/dockerclient"
 	"github.com/yungsang/tablewriter"
+	"github.com/yungsang/talk2docker/api"
 	"github.com/yungsang/talk2docker/client"
-	v "github.com/yungsang/talk2docker/version"
+	"github.com/yungsang/talk2docker/version"
 )
 
 var cmdVersion = &cobra.Command{
@@ -17,35 +17,35 @@ var cmdVersion = &cobra.Command{
 	Aliases: []string{"v"},
 	Short:   "Show the version information",
 	Long:    appName + " version - Show the version information",
-	Run:     version,
+	Run:     showVersion,
 }
 
 func init() {
 	cmdVersion.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 }
 
-func version(ctx *cobra.Command, args []string) {
+func showVersion(ctx *cobra.Command, args []string) {
 	var items [][]string
 
 	out := []string{
 		"Talk2Docker",
-		"v" + v.Version,
+		version.Version,
 		api.APIVersion,
 		runtime.Version(),
-		v.GITCOMMIT,
+		version.GITCOMMIT,
 	}
 	items = append(items, out)
 
 	var e error
 
-	docker, err := client.GetDockerClient(configPath, hostName)
+	docker, err := client.NewDockerClient(configPath, hostName)
 	if err != nil {
 		e = err
 		goto Display
 	}
 
 	{
-		version, err := docker.Version()
+		dockerVersion, err := docker.Version()
 		if err != nil {
 			e = err
 			goto Display
@@ -53,10 +53,10 @@ func version(ctx *cobra.Command, args []string) {
 
 		out = []string{
 			"Docker Server",
-			"v" + version.Version,
-			"v" + version.ApiVersion,
-			version.GoVersion,
-			version.GitCommit,
+			dockerVersion.Version,
+			dockerVersion.ApiVersion,
+			dockerVersion.GoVersion,
+			dockerVersion.GitCommit,
 		}
 		items = append(items, out)
 	}
