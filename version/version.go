@@ -1,5 +1,5 @@
 package version
 
-const Version = "0.3.0-dev"
+const Version = "0.3.0"
 
 var GITCOMMIT string // from Makefile
