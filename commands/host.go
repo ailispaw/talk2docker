@@ -277,12 +277,8 @@ func getHostInfo(ctx *cobra.Command, args []string) {
 	items = append(items, []string{
 		"Name", info.Name,
 	})
-	var labels []string
-	for _, pair := range info.Labels {
-		labels = append(labels, fmt.Sprintf("%s: %s\n", pair[0], pair[1]))
-	}
 	items = append(items, []string{
-		"Labels", FormatNonBreakingString(strings.Join(labels, ", ")),
+		"Labels", FormatNonBreakingString(strings.Join(info.Labels, ", ")),
 	})
 
 	items = append(items, []string{
