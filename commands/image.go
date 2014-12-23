@@ -21,7 +21,7 @@ var cmdIs = &cobra.Command{
 	Use:     "ls [NAME[:TAG]]",
 	Aliases: []string{"images"},
 	Short:   "List images",
-	Long:    appName + " ls - List images",
+	Long:    APP_NAME + " ls - List images",
 	Run:     listImages,
 }
 
@@ -29,7 +29,7 @@ var cmdImage = &cobra.Command{
 	Use:     "image [command]",
 	Aliases: []string{"img"},
 	Short:   "Manage images",
-	Long:    appName + " image - Manage images",
+	Long:    APP_NAME + " image - Manage images",
 	Run: func(ctx *cobra.Command, args []string) {
 		ctx.Usage()
 	},
@@ -39,14 +39,14 @@ var cmdListImages = &cobra.Command{
 	Use:     "list [NAME[:TAG]]",
 	Aliases: []string{"ls"},
 	Short:   "List images",
-	Long:    appName + " image list - List images",
+	Long:    APP_NAME + " image list - List images",
 	Run:     listImages,
 }
 
 var cmdPullImage = &cobra.Command{
 	Use:   "pull <NAME[:TAG]>",
 	Short: "Pull an image",
-	Long:  appName + " image pull - Pull an image",
+	Long:  APP_NAME + " image pull - Pull an image",
 	Run:   pullImage,
 }
 
@@ -54,7 +54,7 @@ var cmdRemoveImages = &cobra.Command{
 	Use:     "remove <NAME[:TAG]>...",
 	Aliases: []string{"rm"},
 	Short:   "Remove images",
-	Long:    appName + " image remove - Remove images",
+	Long:    APP_NAME + " image remove - Remove images",
 	Run:     removeImages,
 }
 
@@ -248,7 +248,7 @@ func pullImage(ctx *cobra.Command, args []string) {
 	}
 
 	if url == "" {
-		url = client.INDEXSERVER
+		url = client.INDEX_SERVER
 	}
 
 	registry, err := config.GetRegistry(url)

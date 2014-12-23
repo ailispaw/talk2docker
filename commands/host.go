@@ -15,7 +15,7 @@ import (
 var cmdHost = &cobra.Command{
 	Use:   "host [command]",
 	Short: "Manage hosts",
-	Long:  appName + " host - Manage hosts",
+	Long:  APP_NAME + " host - Manage hosts",
 	Run: func(ctx *cobra.Command, args []string) {
 		ctx.Usage()
 	},
@@ -25,7 +25,7 @@ var cmdListHosts = &cobra.Command{
 	Use:     "list",
 	Aliases: []string{"ls"},
 	Short:   "List hosts",
-	Long:    appName + " host list - List hosts",
+	Long:    APP_NAME + " host list - List hosts",
 	Run:     listHosts,
 }
 
@@ -33,21 +33,21 @@ var cmdSwitchHost = &cobra.Command{
 	Use:     "switch <NAME>",
 	Aliases: []string{"sw"},
 	Short:   "Switch the default host",
-	Long:    appName + " host switch - Switch the default host",
+	Long:    APP_NAME + " host switch - Switch the default host",
 	Run:     switchHost,
 }
 
 var cmdGetHostInfo = &cobra.Command{
 	Use:   "info [NAME]",
 	Short: "Get the host information",
-	Long:  appName + " host info - Get the host information",
+	Long:  APP_NAME + " host info - Get the host information",
 	Run:   getHostInfo,
 }
 
 var cmdAddHost = &cobra.Command{
 	Use:   "add <NAME> <URL> [DESCRIPTION]",
 	Short: "Add a new host into the config file",
-	Long:  appName + " host add - Add a new host into the config",
+	Long:  APP_NAME + " host add - Add a new host into the config",
 	Run:   addHost,
 }
 
@@ -55,14 +55,14 @@ var cmdRemoveHost = &cobra.Command{
 	Use:     "remove <NAME>",
 	Aliases: []string{"rm", "delete", "del"},
 	Short:   "Remove a host from the config file",
-	Long:    appName + " host remove - Remove a host from the config file",
+	Long:    APP_NAME + " host remove - Remove a host from the config file",
 	Run:     removeHost,
 }
 
 var cmdHosts = &cobra.Command{
 	Use:   "hosts",
 	Short: "Shortcut to list hosts",
-	Long:  appName + " hosts - List hosts",
+	Long:  APP_NAME + " hosts - List hosts",
 	Run:   listHosts,
 }
 

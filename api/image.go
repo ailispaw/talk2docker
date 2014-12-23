@@ -19,7 +19,7 @@ func (client *DockerClient) ListImages(all bool, filters map[string][]string) ([
 		}
 	}
 
-	uri := fmt.Sprintf("/v%s/images/json?%s", APIVersion, v.Encode())
+	uri := fmt.Sprintf("/v%s/images/json?%s", API_VERSION, v.Encode())
 	data, err := client.doRequest("GET", uri, nil, nil)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func (client *DockerClient) PullImage(name, auth string) error {
 	v := url.Values{}
 	v.Add("fromImage", name)
 
-	uri := fmt.Sprintf("/v%s/images/create?%s", APIVersion, v.Encode())
+	uri := fmt.Sprintf("/v%s/images/create?%s", API_VERSION, v.Encode())
 
 	headers := map[string]string{}
 	if auth != "" {
@@ -55,7 +55,7 @@ func (client *DockerClient) RemoveImage(name string, force, noprune bool) error 
 		v.Add("noprune", "1")
 	}
 
-	uri := fmt.Sprintf("/v%s/images/%s?%s", APIVersion, name, v.Encode())
+	uri := fmt.Sprintf("/v%s/images/%s?%s", API_VERSION, name, v.Encode())
 	data, err := client.doRequest("DELETE", uri, nil, nil)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)

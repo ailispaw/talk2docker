@@ -11,13 +11,13 @@ func (client *DockerClient) Auth(auth *AuthConfig) error {
 		return err
 	}
 
-	uri := fmt.Sprintf("/v%s/auth", APIVersion)
+	uri := fmt.Sprintf("/v%s/auth", API_VERSION)
 	_, err = client.doRequest("POST", uri, data, nil)
 	return err
 }
 
 func (client *DockerClient) Info() (*Info, error) {
-	uri := fmt.Sprintf("/v%s/info", APIVersion)
+	uri := fmt.Sprintf("/v%s/info", API_VERSION)
 	data, err := client.doRequest("GET", uri, nil, nil)
 	if err != nil {
 		return nil, err
@@ -32,7 +32,7 @@ func (client *DockerClient) Info() (*Info, error) {
 }
 
 func (client *DockerClient) Version() (*Version, error) {
-	uri := fmt.Sprintf("/v%s/version", APIVersion)
+	uri := fmt.Sprintf("/v%s/version", API_VERSION)
 	data, err := client.doRequest("GET", uri, nil, nil)
 	if err != nil {
 		return nil, err

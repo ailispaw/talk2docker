@@ -20,7 +20,7 @@ var (
 var cmdPs = &cobra.Command{
 	Use:   "ps",
 	Short: "List containers",
-	Long:  appName + " ps - List containers",
+	Long:  APP_NAME + " ps - List containers",
 }
 
 func init() {

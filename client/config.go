@@ -34,7 +34,10 @@ type Registry struct {
 	Auth     string `yaml:"auth,omitempty"`
 }
 
-const INDEXSERVER = "https://index.docker.io/v1/"
+const (
+	INDEX_SERVER  = "https://index.docker.io/v1/"
+	DOCKER_SOCKET = "unix:///var/run/docker.sock"
+)
 
 func getDefaultConfig() *Config {
 	var config Config
@@ -46,7 +49,7 @@ func getDefaultConfig() *Config {
 	host.Name = config.Default
 	url := os.Getenv("DOCKER_HOST")
 	if url == "" {
-		url = "unix:///var/run/docker.sock"
+		url = DOCKER_SOCKET
 	}
 	host.URL = url
 

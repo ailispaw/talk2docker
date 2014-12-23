@@ -31,7 +31,7 @@ func (client *DockerClient) ListContainers(all, size bool, limit int, since, bef
 		}
 	}
 
-	uri := fmt.Sprintf("/v%s/containers/json?%s", APIVersion, v.Encode())
+	uri := fmt.Sprintf("/v%s/containers/json?%s", API_VERSION, v.Encode())
 	data, err := client.doRequest("GET", uri, nil, nil)
 	if err != nil {
 		return nil, err

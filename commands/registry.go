@@ -17,7 +17,7 @@ var cmdRegistry = &cobra.Command{
 	Use:     "registry [command]",
 	Aliases: []string{"reg"},
 	Short:   "Manage registries",
-	Long:    appName + " registry - Manage registries",
+	Long:    APP_NAME + " registry - Manage registries",
 	Run: func(ctx *cobra.Command, args []string) {
 		ctx.Usage()
 	},
@@ -27,7 +27,7 @@ var cmdListRegistries = &cobra.Command{
 	Use:     "list",
 	Aliases: []string{"ls"},
 	Short:   "List registries",
-	Long:    appName + " registry list - List registries",
+	Long:    APP_NAME + " registry list - List registries",
 	Run:     listRegistries,
 }
 
@@ -35,7 +35,7 @@ var cmdLoginRegistry = &cobra.Command{
 	Use:     "login [SERVER]",
 	Aliases: []string{"in"},
 	Short:   "Log in to a Docker registry server through the host",
-	Long:    appName + " registry login - Log in to a Docker registry server through the host",
+	Long:    APP_NAME + " registry login - Log in to a Docker registry server through the host",
 	Run:     loginRegistry,
 }
 
@@ -43,7 +43,7 @@ var cmdLogoutRegistry = &cobra.Command{
 	Use:     "logout [SERVER]",
 	Aliases: []string{"out"},
 	Short:   "Log out from a Docker registry server through the host",
-	Long:    appName + " registry logout - Log out from a Docker registry server through the host",
+	Long:    APP_NAME + " registry logout - Log out from a Docker registry server through the host",
 	Run:     logoutRegistry,
 }
 
@@ -98,7 +98,7 @@ func listRegistries(ctx *cobra.Command, args []string) {
 }
 
 func loginRegistry(ctx *cobra.Command, args []string) {
-	url := client.INDEXSERVER
+	url := client.INDEX_SERVER
 	if len(args) > 0 {
 		url = args[0]
 	}
@@ -172,7 +172,7 @@ func loginRegistry(ctx *cobra.Command, args []string) {
 }
 
 func logoutRegistry(ctx *cobra.Command, args []string) {
-	url := client.INDEXSERVER
+	url := client.INDEX_SERVER
 	if len(args) > 0 {
 		url = args[0]
 	}

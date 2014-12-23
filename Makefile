@@ -2,7 +2,7 @@ PROJECT := "github.com/yungsang/talk2docker"
 
 WORKSPACE := $(shell godep path)
 
-GITCOMMIT := $(shell git rev-parse --short HEAD)
+GIT_COMMIT := $(shell git rev-parse --short HEAD)
 
 all: build
 
@@ -16,10 +16,10 @@ test:
 	godep go test ./...
 
 build: fmt restore
-	godep go build -v -ldflags "-X $(PROJECT)/version.GITCOMMIT '$(GITCOMMIT)'"
+	godep go build -v -ldflags "-X $(PROJECT)/version.GIT_COMMIT '$(GIT_COMMIT)'"
 
 install: fmt restore
-	godep go install -v -ldflags "-X $(PROJECT)/version.GITCOMMIT '$(GITCOMMIT)'"
+	godep go install -v -ldflags "-X $(PROJECT)/version.GIT_COMMIT '$(GIT_COMMIT)'"
 
 uninstall:
 	go clean -x -i

@@ -4,8 +4,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	APP_NAME = "Talk2Docker"
+)
+
 var (
-	appName    = "Talk2Docker"
 	configPath string
 	hostName   string
 )
@@ -13,7 +16,7 @@ var (
 var app = &cobra.Command{
 	Use:   "talk2docker",
 	Short: "A simple Docker client to talk to Docker daemon",
-	Long:  appName + " - A simple Docker client to talk to Docker daemon",
+	Long:  APP_NAME + " - A simple Docker client to talk to Docker daemon",
 }
 
 func init() {

@@ -1,5 +1,9 @@
 package version
 
-const Version = "0.5.0-dev"
+const (
+	APP_VERSION = "0.5.0-dev"
+)
 
-var GITCOMMIT string // from Makefile
+var (
+	GIT_COMMIT string // from Makefile
+)

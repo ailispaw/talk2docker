@@ -11,7 +11,7 @@ import (
 var cmdConfig = &cobra.Command{
 	Use:   "config [command]",
 	Short: "Manage the configuration file",
-	Long:  appName + " config - Manage the configuration file",
+	Long:  APP_NAME + " config - Manage the configuration file",
 	Run: func(ctx *cobra.Command, args []string) {
 		ctx.Usage()
 	},
@@ -20,7 +20,7 @@ var cmdConfig = &cobra.Command{
 var cmdCatConfig = &cobra.Command{
 	Use:   "cat",
 	Short: "Cat the configuration file",
-	Long:  appName + " config cat - Cat the configuration file",
+	Long:  APP_NAME + " config cat - Cat the configuration file",
 	Run:   catConfig,
 }
 
@@ -28,7 +28,7 @@ var cmdEditConfig = &cobra.Command{
 	Use:     "edit",
 	Aliases: []string{"ed"},
 	Short:   "Edit the configuration file",
-	Long:    appName + " config edit - Edit the configuration file",
+	Long:    APP_NAME + " config edit - Edit the configuration file",
 	Run:     editConfig,
 }
 

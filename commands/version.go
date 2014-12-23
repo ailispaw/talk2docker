@@ -16,7 +16,7 @@ var cmdVersion = &cobra.Command{
 	Use:     "version",
 	Aliases: []string{"v"},
 	Short:   "Show the version information",
-	Long:    appName + " version - Show the version information",
+	Long:    APP_NAME + " version - Show the version information",
 	Run:     showVersion,
 }
 
@@ -29,10 +29,10 @@ func showVersion(ctx *cobra.Command, args []string) {
 
 	out := []string{
 		"Talk2Docker",
-		version.Version,
-		api.APIVersion,
+		version.APP_VERSION,
+		api.API_VERSION,
 		runtime.Version(),
-		version.GITCOMMIT,
+		version.GIT_COMMIT,
 	}
 	items = append(items, out)
 
