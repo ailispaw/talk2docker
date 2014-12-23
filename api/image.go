@@ -10,12 +10,12 @@ import (
 func (client *DockerClient) ListImages(all bool, filters map[string][]string) ([]Image, error) {
 	v := url.Values{}
 	if all {
-		v.Add("all", "1")
+		v.Set("all", "1")
 	}
 	if (filters != nil) && (len(filters) > 0) {
 		buf, err := json.Marshal(filters)
 		if err == nil {
-			v.Add("filters", string(buf))
+			v.Set("filters", string(buf))
 		}
 	}
 
@@ -34,7 +34,7 @@ func (client *DockerClient) ListImages(all bool, filters map[string][]string) ([
 
 func (client *DockerClient) PullImage(name, auth string) error {
 	v := url.Values{}
-	v.Add("fromImage", name)
+	v.Set("fromImage", name)
 
 	uri := fmt.Sprintf("/v%s/images/create?%s", API_VERSION, v.Encode())
 
@@ -62,10 +62,10 @@ func (client *DockerClient) TagImage(name, repo, tag string, force bool) error {
 func (client *DockerClient) RemoveImage(name string, force, noprune bool) error {
 	v := url.Values{}
 	if force {
-		v.Add("force", "1")
+		v.Set("force", "1")
 	}
 	if noprune {
-		v.Add("noprune", "1")
+		v.Set("noprune", "1")
 	}
 
 	uri := fmt.Sprintf("/v%s/images/%s?%s", API_VERSION, name, v.Encode())

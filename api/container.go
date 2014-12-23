@@ -10,24 +10,24 @@ import (
 func (client *DockerClient) ListContainers(all, size bool, limit int, since, before string, filters map[string][]string) ([]Container, error) {
 	v := url.Values{}
 	if all {
-		v.Add("all", "1")
+		v.Set("all", "1")
 	}
 	if size {
-		v.Add("size", "1")
+		v.Set("size", "1")
 	}
 	if limit > 0 {
-		v.Add("limit", strconv.Itoa(limit))
+		v.Set("limit", strconv.Itoa(limit))
 	}
 	if since != "" {
-		v.Add("since", since)
+		v.Set("since", since)
 	}
 	if before != "" {
-		v.Add("before", before)
+		v.Set("before", before)
 	}
 	if (filters != nil) && (len(filters) > 0) {
 		buf, err := json.Marshal(filters)
 		if err == nil {
-			v.Add("filters", string(buf))
+			v.Set("filters", string(buf))
 		}
 	}
 
