@@ -44,7 +44,7 @@ func (config *Config) LogoutRegistry(url string) {
 func ParseRepositoryName(name string) (string, string, string, error) {
 	var (
 		registry = ""
-		tag      = ""
+		tag      = "latest"
 	)
 
 	if strings.Contains(name, "://") {

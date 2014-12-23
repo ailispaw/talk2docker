@@ -232,10 +232,6 @@ func pullImage(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	if tag == "" {
-		tag = "latest"
-	}
-
 	repository := name + ":" + tag
 
 	if boolAll {
