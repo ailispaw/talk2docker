@@ -46,6 +46,19 @@ func (client *DockerClient) PullImage(name, auth string) error {
 	return client.doStreamRequest("POST", uri, nil, headers)
 }
 
+func (client *DockerClient) TagImage(name, repo, tag string, force bool) error {
+	v := url.Values{}
+	v.Set("repo", repo)
+	v.Set("tag", tag)
+	if force {
+		v.Set("force", "1")
+	}
+
+	uri := fmt.Sprintf("/v%s/images/%s/tag?%s", API_VERSION, name, v.Encode())
+	_, err := client.doRequest("POST", uri, nil, nil)
+	return err
+}
+
 func (client *DockerClient) RemoveImage(name string, force, noprune bool) error {
 	v := url.Values{}
 	if force {

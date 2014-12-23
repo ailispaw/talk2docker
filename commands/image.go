@@ -50,8 +50,15 @@ var cmdPullImage = &cobra.Command{
 	Run:   pullImage,
 }
 
+var cmdTagImage = &cobra.Command{
+	Use:   "tag <NAME[:TAG]|ID> <NAME[:TAG]>",
+	Short: "Tag an image",
+	Long:  APP_NAME + " image tag - Tag an image",
+	Run:   tagImage,
+}
+
 var cmdRemoveImages = &cobra.Command{
-	Use:     "remove <NAME[:TAG]>...",
+	Use:     "remove <NAME[:TAG]|ID>...",
 	Aliases: []string{"rm"},
 	Short:   "Remove images",
 	Long:    APP_NAME + " image remove - Remove images",
@@ -69,11 +76,14 @@ func init() {
 
 	cmdPullImage.Flags().BoolVarP(&boolAll, "all", "a", false, "Pull all tagged images in the repository. Only the \"latest\" tagged image is pulled by default.")
 
+	cmdTagImage.Flags().BoolVarP(&boolForce, "force", "f", false, "Force to tag")
+
 	cmdRemoveImages.Flags().BoolVarP(&boolForce, "force", "f", false, "Force removal of the images")
 	cmdRemoveImages.Flags().BoolVarP(&boolNoPrune, "no-prune", "n", false, "Do not delete untagged parents")
 
 	cmdImage.AddCommand(cmdListImages)
 	cmdImage.AddCommand(cmdPullImage)
+	cmdImage.AddCommand(cmdTagImage)
 	cmdImage.AddCommand(cmdRemoveImages)
 }
 
@@ -227,7 +237,7 @@ func pullImage(ctx *cobra.Command, args []string) {
 		return
 	}
 
-	url, name, tag, err := client.ParseRepositoryName(args[0])
+	registry, name, tag, err := client.ParseRepositoryName(args[0])
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -238,8 +248,8 @@ func pullImage(ctx *cobra.Command, args []string) {
 		repository = name
 	}
 
-	if url != "" {
-		repository = url + "/" + repository
+	if registry != "" {
+		repository = registry + "/" + repository
 	}
 
 	config, err := client.LoadConfig(configPath)
@@ -247,13 +257,13 @@ func pullImage(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	if url == "" {
-		url = client.INDEX_SERVER
+	if registry == "" {
+		registry = client.INDEX_SERVER
 	}
 
-	registry, err := config.GetRegistry(url)
+	registryConfig, err := config.GetRegistry(registry)
 	// Some custom registries may not be needed to login.
-	//	if (err != nil) || (server.Auth == "") {
+	//	if (err != nil) || (registryConfig.Auth == "") {
 	//		log.Fatal("Please login prior to pulling an image.")
 	//	}
 
@@ -262,10 +272,39 @@ func pullImage(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	err = docker.PullImage(repository, registry.Auth)
+	err = docker.PullImage(repository, registryConfig.Auth)
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func tagImage(ctx *cobra.Command, args []string) {
+	if len(args) < 2 {
+		fmt.Println("Needs two arguments <IMAGE-NAME[:TAG] or IMAGE-ID> <NEW-NAME[:TAG]>")
+		ctx.Usage()
+		return
+	}
+
+	registry, name, tag, err := client.ParseRepositoryName(args[1])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if registry != "" {
+		name = registry + "/" + name
+	}
+
+	docker, err := client.NewDockerClient(configPath, hostName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = docker.TagImage(args[0], name, tag, boolForce)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Tagged %s as %s:%s\n", args[0], name, tag)
 }
 
 func removeImages(ctx *cobra.Command, args []string) {
