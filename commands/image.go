@@ -266,9 +266,10 @@ func pullImage(ctx *cobra.Command, args []string) {
 	}
 
 	server, err := config.GetIndexServer(info.IndexServerAddress)
-	if (err != nil) || (server.Auth == "") {
-		log.Fatal("Please login prior to pulling an image.")
-	}
+	// Some custom registries may not be needed to login.
+	//	if (err != nil) || (server.Auth == "") {
+	//		log.Fatal("Please login prior to pulling an image.")
+	//	}
 
 	err = docker.PullImage(repository, server.Auth)
 	if err != nil {

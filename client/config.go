@@ -125,16 +125,13 @@ func (config *Config) SaveConfig(path string) error {
 }
 
 func (config *Config) GetIndexServer(url string) (*IndexServer, error) {
-	if url == "" {
-		url = INDEXSERVER
-	}
 	for _, server := range config.IndexServers {
 		if server.URL == url {
 			return &server, nil
 		}
 	}
 	return &IndexServer{
-		URL: INDEXSERVER,
+		URL: url,
 	}, errors.New(fmt.Sprintf("\"%s\" not found in the config", url))
 }
 

@@ -330,6 +330,11 @@ func login(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
+	if info.IndexServerAddress == "" {
+		fmt.Println("No index server to login for the registry")
+		return
+	}
+
 	config, err := client.LoadConfig(configPath)
 	if err != nil {
 		log.Fatal(err)
