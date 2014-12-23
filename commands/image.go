@@ -227,17 +227,9 @@ func pullImage(ctx *cobra.Command, args []string) {
 		return
 	}
 
-	var (
-		name = args[0]
-		tag  = ""
-	)
-
-	n := strings.LastIndex(name, ":")
-	if n >= 0 {
-		if !strings.Contains(name[n+1:], "/") {
-			tag = name[n+1:]
-			name = name[:n]
-		}
+	url, name, tag, err := client.ParseRepositoryName(args[0])
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	if tag == "" {
@@ -250,14 +242,8 @@ func pullImage(ctx *cobra.Command, args []string) {
 		repository = name
 	}
 
-	docker, err := client.NewDockerClient(configPath, hostName)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	info, err := docker.Info()
-	if err != nil {
-		log.Fatal(err)
+	if url != "" {
+		repository = url + "/" + repository
 	}
 
 	config, err := client.LoadConfig(configPath)
@@ -265,13 +251,22 @@ func pullImage(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	server, err := config.GetIndexServer(info.IndexServerAddress)
+	if url == "" {
+		url = client.INDEXSERVER
+	}
+
+	registry, err := config.GetRegistry(url)
 	// Some custom registries may not be needed to login.
 	//	if (err != nil) || (server.Auth == "") {
 	//		log.Fatal("Please login prior to pulling an image.")
 	//	}
 
-	err = docker.PullImage(repository, server.Auth)
+	docker, err := client.NewDockerClient(configPath, hostName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = docker.PullImage(repository, registry.Auth)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -1,17 +1,14 @@
 package commands
 
 import (
-	"bufio"
 	"fmt"
 	"log"
 	"os"
 	"strconv"
 	"strings"
 
-	"code.google.com/p/gopass"
 	"github.com/spf13/cobra"
 	"github.com/yungsang/tablewriter"
-	"github.com/yungsang/talk2docker/api"
 	"github.com/yungsang/talk2docker/client"
 )
 
@@ -45,20 +42,6 @@ var cmdGetHostInfo = &cobra.Command{
 	Short: "Get the host information",
 	Long:  appName + " host info - Get the host information",
 	Run:   getHostInfo,
-}
-
-var cmdLogin = &cobra.Command{
-	Use:   "login [NAME]",
-	Short: "Log in to a Docker registry server through the host",
-	Long:  appName + " host login - Log in to a Docker registry server through the host",
-	Run:   login,
-}
-
-var cmdLogout = &cobra.Command{
-	Use:   "logout [NAME]",
-	Short: "Log out from a Docker registry server through the host",
-	Long:  appName + " host logout - Log out from a Docker registry server through the host",
-	Run:   logout,
 }
 
 var cmdAddHost = &cobra.Command{
@@ -95,8 +78,6 @@ func init() {
 	cmdHost.AddCommand(cmdListHosts)
 	cmdHost.AddCommand(cmdSwitchHost)
 	cmdHost.AddCommand(cmdGetHostInfo)
-	cmdHost.AddCommand(cmdLogin)
-	cmdHost.AddCommand(cmdLogout)
 	cmdHost.AddCommand(cmdAddHost)
 	cmdHost.AddCommand(cmdRemoveHost)
 }
@@ -313,122 +294,6 @@ func getHostInfo(ctx *cobra.Command, args []string) {
 	table.SetAlignment(tablewriter.ALIGN_LEFT)
 	table.AppendBulk(items)
 	table.Render()
-}
-
-func login(ctx *cobra.Command, args []string) {
-	if len(args) > 0 {
-		hostName = args[0]
-	}
-
-	docker, err := client.NewDockerClient(configPath, hostName)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	info, err := docker.Info()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if info.IndexServerAddress == "" {
-		fmt.Println("No index server to login for the registry")
-		return
-	}
-
-	config, err := client.LoadConfig(configPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	server, _ := config.GetIndexServer(info.IndexServerAddress)
-
-	authConfig := api.AuthConfig{
-		ServerAddress: server.URL,
-	}
-
-	promptDefault := func(prompt string, configDefault string) {
-		if configDefault == "" {
-			fmt.Printf("%s: ", prompt)
-		} else {
-			fmt.Printf("%s (%s): ", prompt, configDefault)
-		}
-	}
-
-	readInput := func() string {
-		reader := bufio.NewReader(os.Stdin)
-		line, _, err := reader.ReadLine()
-		if err != nil {
-			log.Fatal(err)
-		}
-		return string(line)
-	}
-
-	promptDefault("Username", server.Username)
-	authConfig.Username = readInput()
-	if authConfig.Username == "" {
-		authConfig.Username = server.Username
-	}
-
-	authConfig.Password, err = gopass.GetPass("Password: ")
-
-	promptDefault("Email", server.Email)
-	authConfig.Email = readInput()
-	if authConfig.Email == "" {
-		authConfig.Email = server.Email
-	}
-
-	err = docker.Auth(&authConfig)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	server.Username = authConfig.Username
-	server.Email = authConfig.Email
-	server.Auth = authConfig.Encode()
-
-	config.SetIndexServer(server)
-
-	err = config.SaveConfig(configPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("Login Succeeded!")
-}
-
-func logout(ctx *cobra.Command, args []string) {
-	if len(args) > 0 {
-		hostName = args[0]
-	}
-
-	config, err := client.LoadConfig(configPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	docker, err := client.NewDockerClient(configPath, hostName)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	info, err := docker.Info()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	server, notFound := config.GetIndexServer(info.IndexServerAddress)
-	if (notFound != nil) || (server.Auth == "") {
-		log.Fatal("Not logged in")
-	}
-
-	config.LogoutIndexServer(info.IndexServerAddress)
-
-	err = config.SaveConfig(configPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("Logout Succeeded!")
 }
 
 func addHost(ctx *cobra.Command, args []string) {
