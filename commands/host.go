@@ -379,7 +379,7 @@ func login(ctx *cobra.Command, args []string) {
 
 	server.Username = authConfig.Username
 	server.Email = authConfig.Email
-	server.Auth = server.Encode(authConfig.Username, authConfig.Password)
+	server.Auth = authConfig.Encode()
 
 	config.SetIndexServer(server)
 

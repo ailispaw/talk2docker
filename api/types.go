@@ -54,13 +54,6 @@ type Info struct {
 	Labels             []string
 }
 
-type AuthConfig struct {
-	Username      string `json:"username"`
-	Password      string `json:"password"`
-	Email         string `json:"email"`
-	ServerAddress string `json:"serveraddress"`
-}
-
 type Version struct {
 	ApiVersion string
 	Version    string

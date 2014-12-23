@@ -1,7 +1,6 @@
 package client
 
 import (
-	"encoding/base64"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -31,8 +30,8 @@ type Host struct {
 type IndexServer struct {
 	URL      string `yaml:"url"`
 	Username string `yaml:"username"`
-	Auth     string `yaml:"auth,omitempty"`
 	Email    string `yaml:"email"`
+	Auth     string `yaml:"auth,omitempty"`
 }
 
 const INDEXSERVER = "https://index.docker.io/v1/"
@@ -161,12 +160,4 @@ func (config *Config) LogoutIndexServer(url string) {
 		}
 	}
 	return
-}
-
-func (server *IndexServer) Encode(username, password string) string {
-	authStr := username + ":" + password
-	msg := []byte(authStr)
-	encoded := make([]byte, base64.StdEncoding.EncodedLen(len(msg)))
-	base64.StdEncoding.Encode(encoded, msg)
-	return string(encoded)
 }
