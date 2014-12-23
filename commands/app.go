@@ -27,6 +27,7 @@ func Execute() {
 	app.AddCommand(cmdImage)
 	app.AddCommand(cmdHost)
 	app.AddCommand(cmdHosts)
+	app.AddCommand(cmdRegistry)
 	app.AddCommand(cmdConfig)
 	app.AddCommand(cmdVersion)
 

@@ -11,9 +11,9 @@ import (
 )
 
 type Config struct {
-	Default      string        `yaml:"default"`
-	Hosts        []Host        `yaml:"hosts"`
-	IndexServers []IndexServer `yaml:"indexservers,omitempty"`
+	Default    string     `yaml:"default"`
+	Hosts      []Host     `yaml:"hosts"`
+	Registries []Registry `yaml:"registries,omitempty"`
 }
 
 type Host struct {
@@ -27,7 +27,7 @@ type Host struct {
 	TLSVerify   bool   `yaml:"tls-verify,omitempty"`
 }
 
-type IndexServer struct {
+type Registry struct {
 	URL      string `yaml:"url"`
 	Username string `yaml:"username"`
 	Email    string `yaml:"email"`
@@ -122,39 +122,4 @@ func (config *Config) SaveConfig(path string) error {
 
 	file.Close()
 	return os.Rename(path+".new", path)
-}
-
-func (config *Config) GetIndexServer(url string) (*IndexServer, error) {
-	for _, server := range config.IndexServers {
-		if server.URL == url {
-			return &server, nil
-		}
-	}
-	return &IndexServer{
-		URL: url,
-	}, errors.New(fmt.Sprintf("\"%s\" not found in the config", url))
-}
-
-func (config *Config) SetIndexServer(newServer *IndexServer) {
-	for i, server := range config.IndexServers {
-		if server.URL == newServer.URL {
-			config.IndexServers[i] = *newServer
-			return
-		}
-	}
-	config.IndexServers = append(config.IndexServers, *newServer)
-	return
-}
-
-func (config *Config) LogoutIndexServer(url string) {
-	if url == "" {
-		return
-	}
-	for i, server := range config.IndexServers {
-		if server.URL == url {
-			config.IndexServers[i].Auth = ""
-			return
-		}
-	}
-	return
 }
