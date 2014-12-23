@@ -3,7 +3,6 @@ package api
 import (
 	"bytes"
 	"crypto/tls"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -21,10 +20,6 @@ const (
 	APIVersion = "1.15"
 )
 
-var (
-	ErrNotFound = errors.New("Not found")
-)
-
 type DockerClient struct {
 	URL           *url.URL
 	HTTPClient    *http.Client
@@ -39,7 +34,7 @@ type Error struct {
 }
 
 func (e Error) Error() string {
-	return fmt.Sprintf("%s: %s", e.Status, e.msg)
+	return fmt.Sprintf("Error response from daemon: %s", strings.TrimSpace(e.msg))
 }
 
 func newHTTPClient(u *url.URL, tlsConfig *tls.Config, timeout time.Duration) *http.Client {
@@ -107,10 +102,7 @@ func (client *DockerClient) doRequest(method string, path string, body []byte, h
 	if err != nil {
 		return nil, err
 	}
-	if resp.StatusCode == 404 {
-		return nil, ErrNotFound
-	}
-	if resp.StatusCode >= 400 {
+	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
 		return nil, Error{StatusCode: resp.StatusCode, Status: resp.Status, msg: string(data)}
 	}
 	return data, nil

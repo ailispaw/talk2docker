@@ -13,6 +13,10 @@ import (
 	"github.com/yungsang/talk2docker/client"
 )
 
+var (
+	boolForce, boolNoPrune bool
+)
+
 var cmdIs = &cobra.Command{
 	Use:     "ls [NAME[:TAG]]",
 	Aliases: []string{"images"},
@@ -46,6 +50,14 @@ var cmdPullImage = &cobra.Command{
 	Run:   pullImage,
 }
 
+var cmdRemoveImages = &cobra.Command{
+	Use:     "remove <NAME[:TAG]>...",
+	Aliases: []string{"rm"},
+	Short:   "Remove images",
+	Long:    appName + " image remove - Remove images",
+	Run:     removeImages,
+}
+
 func init() {
 	cmdIs.Flags().BoolVarP(&boolAll, "all", "a", false, "Show all images. Only named/taged and leaf images are shown by default.")
 	cmdIs.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
@@ -57,8 +69,12 @@ func init() {
 
 	cmdPullImage.Flags().BoolVarP(&boolAll, "all", "a", false, "Pull all tagged images in the repository. Only the \"latest\" tagged image is pulled by default.")
 
+	cmdRemoveImages.Flags().BoolVarP(&boolForce, "force", "f", false, "Force removal of the images")
+	cmdRemoveImages.Flags().BoolVarP(&boolNoPrune, "no-prune", "n", false, "Do not delete untagged parents")
+
 	cmdImage.AddCommand(cmdListImages)
 	cmdImage.AddCommand(cmdPullImage)
+	cmdImage.AddCommand(cmdRemoveImages)
 }
 
 func listImages(ctx *cobra.Command, args []string) {
@@ -257,5 +273,29 @@ func pullImage(ctx *cobra.Command, args []string) {
 	err = docker.PullImage(repository, server.Auth)
 	if err != nil {
 		log.Fatal(err)
+	}
+}
+
+func removeImages(ctx *cobra.Command, args []string) {
+	if len(args) < 1 {
+		fmt.Println("Needs an argument <NAME> at least to remove")
+		ctx.Usage()
+		return
+	}
+
+	docker, err := client.NewDockerClient(configPath, hostName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var lastError error
+	for _, name := range args {
+		err = docker.RemoveImage(name, boolForce, boolNoPrune)
+		if err != nil {
+			lastError = err
+		}
+	}
+	if lastError != nil {
+		log.Fatal(lastError)
 	}
 }
