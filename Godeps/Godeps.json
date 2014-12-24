@@ -21,7 +21,7 @@
 		},
 		{
 			"ImportPath": "github.com/yungsang/tablewriter",
-			"Rev": "872a7826e4b79f143d2e8275f48cc6bacb0e5bc6"
+			"Rev": "42b381e04e11dd793d50403bab0ab36905be0fcf"
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",

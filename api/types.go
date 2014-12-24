@@ -40,6 +40,40 @@ type ImageHistory struct {
 	Tags      []string
 }
 
+type ImageSearchResult struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Official    bool   `json:"is_official"`
+	Automated   bool   `json:"is_trusted"`
+	Stars       int    `json:"star_count"`
+}
+
+type ImageSearchResults []ImageSearchResult
+
+func (images ImageSearchResults) Len() int {
+	return len(images)
+}
+
+func (images ImageSearchResults) Swap(i, j int) {
+	images[i], images[j] = images[j], images[i]
+}
+
+type SortImagesByName struct {
+	ImageSearchResults
+}
+
+func (by SortImagesByName) Less(i, j int) bool {
+	return by.ImageSearchResults[i].Name < by.ImageSearchResults[j].Name
+}
+
+type SortImagesByStars struct {
+	ImageSearchResults
+}
+
+func (by SortImagesByStars) Less(i, j int) bool {
+	return by.ImageSearchResults[i].Stars < by.ImageSearchResults[j].Stars
+}
+
 type ImageInfo struct {
 	Id              string
 	Parent          string

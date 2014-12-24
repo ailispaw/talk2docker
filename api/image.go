@@ -133,3 +133,20 @@ func (client *DockerClient) RemoveImage(name string, force, noprune bool) error 
 
 	return nil
 }
+
+func (client *DockerClient) SearchImages(term string) (ImageSearchResults, error) {
+	v := url.Values{}
+	v.Set("term", term)
+
+	uri := fmt.Sprintf("/v%s/images/search?%s", API_VERSION, v.Encode())
+	data, err := client.doRequest("GET", uri, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	images := ImageSearchResults{}
+	if err := json.Unmarshal(data, &images); err != nil {
+		return nil, err
+	}
+	return images, nil
+}

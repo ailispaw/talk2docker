@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 
@@ -18,7 +19,7 @@ import (
 )
 
 var (
-	boolForce, boolNoPrune bool
+	boolForce, boolNoPrune, boolStar bool
 )
 
 var cmdIs = &cobra.Command{
@@ -92,6 +93,13 @@ var cmdRemoveImages = &cobra.Command{
 	Run:     removeImages,
 }
 
+var cmdSearchImages = &cobra.Command{
+	Use:   "search <TERM>",
+	Short: "Search images",
+	Long:  APP_NAME + " image search - Search images",
+	Run:   searchImages,
+}
+
 func init() {
 	cmdIs.Flags().BoolVarP(&boolAll, "all", "a", false, "Show all images. Only named/taged and leaf images are shown by default.")
 	cmdIs.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
@@ -111,6 +119,10 @@ func init() {
 	cmdRemoveImages.Flags().BoolVarP(&boolForce, "force", "f", false, "Force removal of the images")
 	cmdRemoveImages.Flags().BoolVarP(&boolNoPrune, "no-prune", "n", false, "Do not delete untagged parents")
 
+	cmdSearchImages.Flags().BoolVarP(&boolStar, "star", "s", false, "Sort by star")
+	cmdSearchImages.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display names")
+	cmdSearchImages.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+
 	cmdImage.AddCommand(cmdListImages)
 	cmdImage.AddCommand(cmdPullImage)
 	cmdImage.AddCommand(cmdTagImage)
@@ -118,6 +130,7 @@ func init() {
 	cmdImage.AddCommand(cmdInspectImage)
 	cmdImage.AddCommand(cmdPushImage)
 	cmdImage.AddCommand(cmdRemoveImages)
+	cmdImage.AddCommand(cmdSearchImages)
 }
 
 func listImages(ctx *cobra.Command, args []string) {
@@ -504,4 +517,66 @@ func removeImages(ctx *cobra.Command, args []string) {
 	if lastError != nil {
 		log.Fatal(lastError)
 	}
+}
+
+func searchImages(ctx *cobra.Command, args []string) {
+	if len(args) < 1 {
+		fmt.Println("Needs an argument <TERM> to search")
+		ctx.Usage()
+		return
+	}
+
+	docker, err := client.NewDockerClient(configPath, hostName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	images, err := docker.SearchImages(args[0])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if boolStar {
+		sort.Sort(sort.Reverse(api.SortImagesByStars{images}))
+	} else {
+		sort.Sort(api.SortImagesByName{images})
+	}
+
+	if boolQuiet {
+		for _, image := range images {
+			fmt.Println(image.Name)
+		}
+		return
+	}
+
+	var items [][]string
+
+	for _, image := range images {
+		out := []string{
+			image.Name,
+			image.Description,
+			FormatInt(int64(image.Stars)),
+			FormatBool(image.Official, "*", " "),
+			FormatBool(image.Automated, "*", " "),
+		}
+		items = append(items, out)
+	}
+
+	header := []string{
+		"Name",
+		"Description",
+		"Stars",
+		"Official",
+		"Automated",
+	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetColWidth(50)
+	if !boolNoHeader {
+		table.SetHeader(header)
+	} else {
+		table.SetBorder(false)
+	}
+	table.AppendBulk(items)
+	table.Render()
 }
