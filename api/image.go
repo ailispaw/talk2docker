@@ -87,6 +87,20 @@ func (client *DockerClient) InspectImage(name string) (*ImageInfo, error) {
 	return imageInfo, nil
 }
 
+func (client *DockerClient) PushImage(name, tag, auth string) error {
+	v := url.Values{}
+	v.Set("tag", tag)
+
+	uri := fmt.Sprintf("/v%s/images/%s/push?%s", API_VERSION, name, v.Encode())
+
+	headers := map[string]string{}
+	if auth != "" {
+		headers["X-Registry-Auth"] = auth
+	}
+
+	return client.doStreamRequest("POST", uri, nil, headers)
+}
+
 func (client *DockerClient) RemoveImage(name string, force, noprune bool) error {
 	v := url.Values{}
 	if force {

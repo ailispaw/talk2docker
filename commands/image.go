@@ -77,6 +77,13 @@ var cmdInspectImage = &cobra.Command{
 	Run:     inspectImage,
 }
 
+var cmdPushImage = &cobra.Command{
+	Use:   "push <NAME[:TAG]>",
+	Short: "Push an image",
+	Long:  APP_NAME + " image push - Push an image",
+	Run:   pushImage,
+}
+
 var cmdRemoveImages = &cobra.Command{
 	Use:     "remove <NAME[:TAG]|ID>...",
 	Aliases: []string{"rm"},
@@ -109,6 +116,7 @@ func init() {
 	cmdImage.AddCommand(cmdTagImage)
 	cmdImage.AddCommand(cmdShowImageHistory)
 	cmdImage.AddCommand(cmdInspectImage)
+	cmdImage.AddCommand(cmdPushImage)
 	cmdImage.AddCommand(cmdRemoveImages)
 }
 
@@ -423,6 +431,52 @@ func inspectImage(ctx *cobra.Command, args []string) {
 	indented.WriteString("\n")
 
 	_, err = io.Copy(os.Stdout, indented)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func pushImage(ctx *cobra.Command, args []string) {
+	if len(args) < 1 {
+		fmt.Println("Needs an argument <NAME[:TAG]> to push")
+		ctx.Usage()
+		return
+	}
+
+	registry, name, tag, err := client.ParseRepositoryName(args[0])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if len(strings.SplitN(name, "/", 2)) == 1 {
+		log.Fatal(fmt.Sprintf("You cannot push a \"root\" repository. Please rename your repository in <yourname>/%s", name))
+	}
+
+	if registry != "" {
+		name = registry + "/" + name
+	}
+
+	config, err := client.LoadConfig(configPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if registry == "" {
+		registry = client.INDEX_SERVER
+	}
+
+	registryConfig, err := config.GetRegistry(registry)
+	// Some custom registries may not be needed to login.
+	//	if (err != nil) || (registryConfig.Auth == "") {
+	//		log.Fatal("Please login prior to pulling an image.")
+	//	}
+
+	docker, err := client.NewDockerClient(configPath, hostName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = docker.PushImage(name, tag, registryConfig.Auth)
 	if err != nil {
 		log.Fatal(err)
 	}
