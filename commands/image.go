@@ -346,13 +346,15 @@ func showImageHistory(ctx *cobra.Command, args []string) {
 		createdBy = re.ReplaceAllLiteralString(createdBy, "")
 		re = regexp.MustCompile("^/bin/sh -c")
 		createdBy = re.ReplaceAllLiteralString(createdBy, "RUN")
+		tags := strings.Join(image.Tags, ", ")
 		if !boolAll {
 			createdBy = FormatNonBreakingString(Truncate(createdBy, 50))
+			tags = FormatNonBreakingString(tags)
 		}
 		out := []string{
 			Truncate(image.Id, 12),
 			createdBy,
-			strings.Join(image.Tags, ", "),
+			tags,
 			FormatDateTime(time.Unix(image.Created, 0)),
 			FormatFloat(float64(image.Size) / 1000000),
 		}
