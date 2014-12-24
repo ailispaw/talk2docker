@@ -257,7 +257,7 @@ func walkTree(images []api.Image, parents map[string][]api.Image, prefix string,
 
 func pullImage(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		fmt.Println("Needs an argument <NAME> to pull")
+		fmt.Println("Needs an argument <NAME[:TAG]> to pull")
 		ctx.Usage()
 		return
 	}
@@ -430,7 +430,7 @@ func inspectImage(ctx *cobra.Command, args []string) {
 
 func removeImages(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		fmt.Println("Needs an argument <NAME> at least to remove")
+		fmt.Println("Needs an argument <NAME[:TAG]> at least to remove")
 		ctx.Usage()
 		return
 	}
