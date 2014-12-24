@@ -21,6 +21,7 @@ Contributions and suggestions would be appreciated, though it's aimed at my lear
 
 ```
 $ git clone https://github.com/YungSang/talk2docker.git
+$ cd talk2docker
 $ make
 ```
 
