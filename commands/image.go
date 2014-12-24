@@ -339,7 +339,8 @@ func showImageHistory(ctx *cobra.Command, args []string) {
 
 	var items [][]string
 
-	for _, image := range history {
+	for i := len(history) - 1; i >= 0; i-- {
+		image := history[i]
 		re := regexp.MustCompile("\\s+")
 		createdBy := re.ReplaceAllLiteralString(image.CreatedBy, " ")
 		re = regexp.MustCompile("^/bin/sh -c #\\(nop\\) ")
