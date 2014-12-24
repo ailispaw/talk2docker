@@ -77,7 +77,7 @@ func listContainers(ctx *cobra.Command, args []string) {
 			Truncate(container.Id, 12),
 			strings.Join(trimNamePrefix(container.Names), ", "),
 			container.Image,
-			Truncate(container.Command, 20),
+			container.Command,
 			FormatDateTime(time.Unix(container.Created, 0)),
 			container.Status,
 			formatPorts(container.Ports),

@@ -371,6 +371,7 @@ func showImageHistory(ctx *cobra.Command, args []string) {
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
+	table.SetColWidth(20)
 	if !boolNoHeader {
 		table.SetHeader(header)
 	} else {
