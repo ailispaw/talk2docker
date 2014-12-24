@@ -1,7 +1,10 @@
 package commands
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"regexp"
@@ -66,6 +69,14 @@ var cmdShowImageHistory = &cobra.Command{
 	Run:     showImageHistory,
 }
 
+var cmdInspectImage = &cobra.Command{
+	Use:     "inspect <NAME[:TAG]|ID>",
+	Aliases: []string{"ins"},
+	Short:   "Inspect an image",
+	Long:    APP_NAME + " image inspect - Inspect an image",
+	Run:     inspectImage,
+}
+
 var cmdRemoveImages = &cobra.Command{
 	Use:     "remove <NAME[:TAG]|ID>...",
 	Aliases: []string{"rm"},
@@ -97,6 +108,7 @@ func init() {
 	cmdImage.AddCommand(cmdPullImage)
 	cmdImage.AddCommand(cmdTagImage)
 	cmdImage.AddCommand(cmdShowImageHistory)
+	cmdImage.AddCommand(cmdInspectImage)
 	cmdImage.AddCommand(cmdRemoveImages)
 }
 
@@ -379,6 +391,41 @@ func showImageHistory(ctx *cobra.Command, args []string) {
 	}
 	table.AppendBulk(items)
 	table.Render()
+}
+
+func inspectImage(ctx *cobra.Command, args []string) {
+	if len(args) < 1 {
+		fmt.Println("Needs an argument <IMAGE-NAME[:TAG] or IMAGE-ID>")
+		ctx.Usage()
+		return
+	}
+
+	docker, err := client.NewDockerClient(configPath, hostName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	imageInfo, err := docker.InspectImage(args[0])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	data, err := json.Marshal(imageInfo)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	indented := new(bytes.Buffer)
+	err = json.Indent(indented, data, "", "  ")
+	if err != nil {
+		log.Fatal(err)
+	}
+	indented.WriteString("\n")
+
+	_, err = io.Copy(os.Stdout, indented)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func removeImages(ctx *cobra.Command, args []string) {

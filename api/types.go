@@ -1,5 +1,9 @@
 package api
 
+import (
+	"time"
+)
+
 type Container struct {
 	Id         string
 	Names      []string
@@ -34,6 +38,50 @@ type ImageHistory struct {
 	Id        string
 	Size      int64
 	Tags      []string
+}
+
+type ImageInfo struct {
+	Id              string
+	Parent          string
+	Comment         string
+	Created         time.Time
+	Container       string
+	ContainerConfig RunConfig
+	DockerVersion   string
+	Author          string
+	Config          RunConfig
+	Architecture    string
+	Os              string
+	Size            int64
+	VirtualSize     int64
+	Checksum        string
+}
+
+type RunConfig struct {
+	Hostname        string
+	Domainname      string
+	User            string
+	Memory          int64
+	MemorySwap      int64
+	CpuShares       int64
+	Cpuset          string
+	AttachStderr    bool
+	AttachStdin     bool
+	AttachStdout    bool
+	PortSpecs       []string
+	ExposedPorts    map[string]struct{}
+	Tty             bool
+	OpenStdin       bool
+	StdinOnce       bool
+	Env             []string
+	Cmd             []string
+	Image           string
+	Volumes         map[string]struct{}
+	WorkingDir      string
+	Entrypoint      []string
+	NetworkDisabled bool
+	MacAddress      string
+	OnBuild         []string
 }
 
 type Info struct {

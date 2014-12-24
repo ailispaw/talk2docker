@@ -73,6 +73,20 @@ func (client *DockerClient) TagImage(name, repo, tag string, force bool) error {
 	return err
 }
 
+func (client *DockerClient) InspectImage(name string) (*ImageInfo, error) {
+	uri := fmt.Sprintf("/v%s/images/%s/json", API_VERSION, name)
+	data, err := client.doRequest("GET", uri, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	imageInfo := &ImageInfo{}
+	if err := json.Unmarshal(data, imageInfo); err != nil {
+		return nil, err
+	}
+	return imageInfo, nil
+}
+
 func (client *DockerClient) RemoveImage(name string, force, noprune bool) error {
 	v := url.Values{}
 	if force {
