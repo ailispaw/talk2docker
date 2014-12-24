@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 
@@ -57,6 +58,14 @@ var cmdTagImage = &cobra.Command{
 	Run:   tagImage,
 }
 
+var cmdShowImageHistory = &cobra.Command{
+	Use:     "history <NAME[:TAG]|ID>",
+	Aliases: []string{"hist"},
+	Short:   "Show the histry of an image",
+	Long:    APP_NAME + " history tag - Show the histry of an image",
+	Run:     showImageHistory,
+}
+
 var cmdRemoveImages = &cobra.Command{
 	Use:     "remove <NAME[:TAG]|ID>...",
 	Aliases: []string{"rm"},
@@ -78,12 +87,16 @@ func init() {
 
 	cmdTagImage.Flags().BoolVarP(&boolForce, "force", "f", false, "Force to tag")
 
+	cmdShowImageHistory.Flags().BoolVarP(&boolAll, "all", "a", false, "Show all build instructions")
+	cmdShowImageHistory.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+
 	cmdRemoveImages.Flags().BoolVarP(&boolForce, "force", "f", false, "Force removal of the images")
 	cmdRemoveImages.Flags().BoolVarP(&boolNoPrune, "no-prune", "n", false, "Do not delete untagged parents")
 
 	cmdImage.AddCommand(cmdListImages)
 	cmdImage.AddCommand(cmdPullImage)
 	cmdImage.AddCommand(cmdTagImage)
+	cmdImage.AddCommand(cmdShowImageHistory)
 	cmdImage.AddCommand(cmdRemoveImages)
 }
 
@@ -305,6 +318,63 @@ func tagImage(ctx *cobra.Command, args []string) {
 	}
 
 	fmt.Printf("Tagged %s as %s:%s\n", args[0], name, tag)
+}
+
+func showImageHistory(ctx *cobra.Command, args []string) {
+	if len(args) < 1 {
+		fmt.Println("Needs an argument <IMAGE-NAME[:TAG] or IMAGE-ID>")
+		ctx.Usage()
+		return
+	}
+
+	docker, err := client.NewDockerClient(configPath, hostName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	history, err := docker.GetImageHistory(args[0])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var items [][]string
+
+	for _, image := range history {
+		re := regexp.MustCompile("\\s+")
+		createdBy := re.ReplaceAllLiteralString(image.CreatedBy, " ")
+		re = regexp.MustCompile("^/bin/sh -c #\\(nop\\) ")
+		createdBy = re.ReplaceAllLiteralString(createdBy, "")
+		re = regexp.MustCompile("^/bin/sh -c")
+		createdBy = re.ReplaceAllLiteralString(createdBy, "RUN")
+		if !boolAll {
+			createdBy = FormatNonBreakingString(Truncate(createdBy, 50))
+		}
+		out := []string{
+			Truncate(image.Id, 12),
+			createdBy,
+			strings.Join(image.Tags, ", "),
+			FormatDateTime(time.Unix(image.Created, 0)),
+			FormatFloat(float64(image.Size) / 1000000),
+		}
+		items = append(items, out)
+	}
+
+	header := []string{
+		"ID",
+		"Created by",
+		"Name:Tags",
+		"Created at",
+		"Size(MB)",
+	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+	if !boolNoHeader {
+		table.SetHeader(header)
+	} else {
+		table.SetBorder(false)
+	}
+	table.AppendBulk(items)
+	table.Render()
 }
 
 func removeImages(ctx *cobra.Command, args []string) {

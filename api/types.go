@@ -28,6 +28,14 @@ type Image struct {
 	VirtualSize int64
 }
 
+type ImageHistory struct {
+	Created   int64
+	CreatedBy string
+	Id        string
+	Size      int64
+	Tags      []string
+}
+
 type Info struct {
 	ID                 string
 	Containers         int

@@ -46,6 +46,20 @@ func (client *DockerClient) PullImage(name, auth string) error {
 	return client.doStreamRequest("POST", uri, nil, headers)
 }
 
+func (client *DockerClient) GetImageHistory(name string) ([]ImageHistory, error) {
+	uri := fmt.Sprintf("/v%s/images/%s/history", API_VERSION, name)
+	data, err := client.doRequest("GET", uri, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	imageHistory := []ImageHistory{}
+	if err := json.Unmarshal(data, &imageHistory); err != nil {
+		return nil, err
+	}
+	return imageHistory, nil
+}
+
 func (client *DockerClient) TagImage(name, repo, tag string, force bool) error {
 	v := url.Values{}
 	v.Set("repo", repo)
