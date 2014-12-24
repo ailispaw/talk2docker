@@ -104,12 +104,12 @@ func listImages(ctx *cobra.Command, args []string) {
 	}
 
 	matchImageByName := func(tags []string, name string) bool {
-		_name := strings.Split(name, ":")
+		arrName := strings.Split(name, ":")
 
 		for _, tag := range tags {
-			_tag := strings.Split(tag, ":")
-			if _tag[0] == _name[0] {
-				if (len(_name) < 2) || (_tag[1] == _name[1]) {
+			arrTag := strings.Split(tag, ":")
+			if arrTag[0] == arrName[0] {
+				if (len(arrName) < 2) || (arrTag[1] == arrName[1]) {
 					return true
 				}
 			}
