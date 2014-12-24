@@ -62,7 +62,7 @@ var cmdShowImageHistory = &cobra.Command{
 	Use:     "history <NAME[:TAG]|ID>",
 	Aliases: []string{"hist"},
 	Short:   "Show the histry of an image",
-	Long:    APP_NAME + " history tag - Show the histry of an image",
+	Long:    APP_NAME + " image history - Show the histry of an image",
 	Run:     showImageHistory,
 }
 
