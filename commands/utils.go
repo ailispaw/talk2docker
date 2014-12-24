@@ -22,9 +22,6 @@ func FormatDateTime(t time.Time) string {
 }
 
 func FormatNonBreakingString(str string) string {
-	if strings.HasPrefix(str, " ") {
-		str = strings.Replace(str, " ", "\u2063", 1)
-	}
 	return strings.Replace(str, " ", "\u00a0", -1)
 }
 

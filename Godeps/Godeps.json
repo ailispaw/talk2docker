@@ -7,6 +7,11 @@
 			"Rev": "3b39664481b57ad99d34c86bd64090c28eacc7a1"
 		},
 		{
+			"ImportPath": "github.com/mattn/go-runewidth",
+			"Comment": "travisish-26-g63c378b",
+			"Rev": "63c378b851290989b19ca955468386485f118c65"
+		},
+		{
 			"ImportPath": "github.com/spf13/cobra",
 			"Rev": "e1e66f7b4e667751cf530ddb6e72b79d6eeb0235"
 		},
@@ -16,7 +21,7 @@
 		},
 		{
 			"ImportPath": "github.com/yungsang/tablewriter",
-			"Rev": "6a487d9db6e7323701ca4a9a9913dfe0dc301d27"
+			"Rev": "9d327bb1bba1a441d0f62abdc38a202d57dddc3d"
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",
