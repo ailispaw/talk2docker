@@ -22,19 +22,18 @@ var cmdVersion = &cobra.Command{
 
 func init() {
 	cmdVersion.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+	cmdVersion.Flags().BoolVarP(&boolJSON, "json", "j", false, "Output in JSON format")
 }
 
 func showVersion(ctx *cobra.Command, args []string) {
-	var items [][]string
+	data := map[string]api.Version{}
 
-	out := []string{
-		"Talk2Docker",
-		version.APP_VERSION,
-		api.API_VERSION,
-		runtime.Version(),
-		version.GIT_COMMIT,
+	data[APP_NAME] = api.Version{
+		Version:    version.APP_VERSION,
+		ApiVersion: api.API_VERSION,
+		GoVersion:  runtime.Version(),
+		GitCommit:  version.GIT_COMMIT,
 	}
-	items = append(items, out)
 
 	var e error
 
@@ -51,17 +50,34 @@ func showVersion(ctx *cobra.Command, args []string) {
 			goto Display
 		}
 
-		out = []string{
-			"Docker Server",
-			dockerVersion.Version,
-			dockerVersion.ApiVersion,
-			dockerVersion.GoVersion,
-			dockerVersion.GitCommit,
+		data["Docker Server"] = *dockerVersion
+	}
+
+Display:
+	if boolJSON {
+		err = PrintInJSON(data)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if e != nil {
+			log.Fatal(e)
+		}
+		return
+	}
+
+	var items [][]string
+
+	for key, value := range data {
+		out := []string{
+			key,
+			value.Version,
+			value.ApiVersion,
+			value.GoVersion,
+			value.GitCommit,
 		}
 		items = append(items, out)
 	}
 
-Display:
 	header := []string{
 		"",
 		"Version",

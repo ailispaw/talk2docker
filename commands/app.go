@@ -11,6 +11,8 @@ const (
 var (
 	configPath string
 	hostName   string
+
+	boolAll, boolQuiet, boolNoHeader, boolJSON bool
 )
 
 var app = &cobra.Command{

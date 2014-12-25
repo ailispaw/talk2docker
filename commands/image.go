@@ -101,10 +101,12 @@ func init() {
 	cmdIs.Flags().BoolVarP(&boolAll, "all", "a", false, "Show all images. Only named/taged and leaf images are shown by default.")
 	cmdIs.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
 	cmdIs.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+	cmdIs.Flags().BoolVarP(&boolJSON, "json", "j", false, "Output in JSON format")
 
 	cmdListImages.Flags().BoolVarP(&boolAll, "all", "a", false, "Show all images. Only named/taged and leaf images are shown by default.")
 	cmdListImages.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
 	cmdListImages.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+	cmdListImages.Flags().BoolVarP(&boolJSON, "json", "j", false, "Output in JSON format")
 
 	cmdPullImage.Flags().BoolVarP(&boolAll, "all", "a", false, "Pull all tagged images in the repository. Only the \"latest\" tagged image is pulled by default.")
 
@@ -112,6 +114,7 @@ func init() {
 
 	cmdShowImageHistory.Flags().BoolVarP(&boolAll, "all", "a", false, "Show all build instructions")
 	cmdShowImageHistory.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+	cmdShowImageHistory.Flags().BoolVarP(&boolJSON, "json", "j", false, "Output in JSON format")
 
 	cmdRemoveImages.Flags().BoolVarP(&boolForce, "force", "f", false, "Force removal of the images")
 	cmdRemoveImages.Flags().BoolVarP(&boolNoPrune, "no-prune", "n", false, "Do not delete untagged parents")
@@ -119,6 +122,7 @@ func init() {
 	cmdSearchImages.Flags().BoolVarP(&boolStar, "star", "s", false, "Sort by star")
 	cmdSearchImages.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display names")
 	cmdSearchImages.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+	cmdSearchImages.Flags().BoolVarP(&boolJSON, "json", "j", false, "Output in JSON format")
 
 	cmdImage.AddCommand(cmdListImages)
 	cmdImage.AddCommand(cmdPullImage)
@@ -166,6 +170,20 @@ func listImages(ctx *cobra.Command, args []string) {
 			if (matchName == "") || matchImageByName(image.RepoTags, matchName) {
 				fmt.Println(Truncate(image.Id, 12))
 			}
+		}
+		return
+	}
+
+	if boolJSON {
+		items := []api.Image{}
+		for _, image := range images {
+			if (matchName == "") || matchImageByName(image.RepoTags, matchName) {
+				items = append(items, image)
+			}
+		}
+		err = PrintInJSON(items)
+		if err != nil {
+			log.Fatal(err)
 		}
 		return
 	}
@@ -367,6 +385,14 @@ func showImageHistory(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
+	if boolJSON {
+		err = PrintInJSON(history)
+		if err != nil {
+			log.Fatal(err)
+		}
+		return
+	}
+
 	var items [][]string
 
 	for i := len(history) - 1; i >= 0; i-- {
@@ -530,6 +556,14 @@ func searchImages(ctx *cobra.Command, args []string) {
 	if boolQuiet {
 		for _, image := range images {
 			fmt.Println(image.Name)
+		}
+		return
+	}
+
+	if boolJSON {
+		err = PrintInJSON(images)
+		if err != nil {
+			log.Fatal(err)
 		}
 		return
 	}
