@@ -69,7 +69,7 @@ var cmdShowImageHistory = &cobra.Command{
 
 var cmdInspectImage = &cobra.Command{
 	Use:     "inspect <NAME[:TAG]|ID>",
-	Aliases: []string{"ins"},
+	Aliases: []string{"ins", "info"},
 	Short:   "Inspect an image",
 	Long:    APP_NAME + " image inspect - Inspect an image",
 	Run:     inspectImage,
