@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	boolAll, boolLatest, boolQuiet, boolSize, boolNoHeader bool
+	boolLatest, boolSize bool
 )
 
 var cmdPs = &cobra.Command{
@@ -29,6 +29,8 @@ func init() {
 	cmdPs.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
 	cmdPs.Flags().BoolVarP(&boolSize, "size", "s", false, "Display sizes")
 	cmdPs.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+	cmdPs.Flags().BoolVarP(&boolJSON, "json", "j", false, "Output in JSON format")
+
 	cmdPs.Run = listContainers
 }
 
@@ -55,6 +57,14 @@ func listContainers(ctx *cobra.Command, args []string) {
 		return
 	}
 
+	if boolJSON {
+		err = PrintInJSON(containers)
+		if err != nil {
+			log.Fatal(err)
+		}
+		return
+	}
+
 	trimNamePrefix := func(ss []string) []string {
 		for i, s := range ss {
 			ss[i] = strings.TrimPrefix(s, "/")
@@ -77,7 +87,7 @@ func listContainers(ctx *cobra.Command, args []string) {
 			Truncate(container.Id, 12),
 			strings.Join(trimNamePrefix(container.Names), ", "),
 			container.Image,
-			container.Command,
+			Truncate(container.Command, 30),
 			FormatDateTime(time.Unix(container.Created, 0)),
 			container.Status,
 			formatPorts(container.Ports),

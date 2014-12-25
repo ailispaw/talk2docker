@@ -12,10 +12,6 @@ import (
 	"github.com/yungsang/talk2docker/client"
 )
 
-var (
-	boolJSON bool
-)
-
 var cmdHost = &cobra.Command{
 	Use:   "host [command]",
 	Short: "Manage hosts",
@@ -73,9 +69,11 @@ var cmdHosts = &cobra.Command{
 func init() {
 	cmdListHosts.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
 	cmdListHosts.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+	cmdListHosts.Flags().BoolVarP(&boolJSON, "json", "j", false, "Output in JSON format")
 
 	cmdHosts.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display host names")
 	cmdHosts.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+	cmdHosts.Flags().BoolVarP(&boolJSON, "json", "j", false, "Output in JSON format")
 
 	cmdGetHostInfo.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 	cmdGetHostInfo.Flags().BoolVarP(&boolJSON, "json", "j", false, "Output in JSON format")
@@ -96,6 +94,14 @@ func listHosts(ctx *cobra.Command, args []string) {
 	if boolQuiet {
 		for _, host := range config.Hosts {
 			fmt.Println(host.Name)
+		}
+		return
+	}
+
+	if boolJSON {
+		err = PrintInJSON(config.Hosts)
+		if err != nil {
+			log.Fatal(err)
 		}
 		return
 	}
