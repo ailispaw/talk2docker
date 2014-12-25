@@ -29,10 +29,13 @@ func showVersion(ctx *cobra.Command, args []string) {
 	data := map[string]api.Version{}
 
 	data[APP_NAME] = api.Version{
-		Version:    version.APP_VERSION,
-		ApiVersion: api.API_VERSION,
-		GoVersion:  runtime.Version(),
-		GitCommit:  version.GIT_COMMIT,
+		Version:       version.APP_VERSION,
+		ApiVersion:    api.API_VERSION,
+		GoVersion:     runtime.Version(),
+		GitCommit:     version.GIT_COMMIT,
+		Os:            runtime.GOOS,
+		KernelVersion: version.KERNEL_VERSION,
+		Arch:          runtime.GOARCH,
 	}
 
 	var e error
@@ -74,6 +77,9 @@ Display:
 			value.ApiVersion,
 			value.GoVersion,
 			value.GitCommit,
+			value.Os,
+			value.KernelVersion,
+			value.Arch,
 		}
 		items = append(items, out)
 	}
@@ -84,6 +90,9 @@ Display:
 		"API Version",
 		"Go Version",
 		"Git commit",
+		"OS",
+		"Kernel Version",
+		"Arch",
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)

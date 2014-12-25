@@ -145,8 +145,11 @@ type Info struct {
 }
 
 type Version struct {
-	ApiVersion string
-	Version    string
-	GitCommit  string
-	GoVersion  string
+	Version       string
+	ApiVersion    string
+	GoVersion     string
+	GitCommit     string
+	Os            string
+	KernelVersion string
+	Arch          string
 }

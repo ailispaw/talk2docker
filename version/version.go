@@ -4,6 +4,7 @@ const (
 	APP_VERSION = "0.5.0-dev"
 )
 
-var (
-	GIT_COMMIT string // from Makefile
+var ( // from Makefile
+	KERNEL_VERSION string
+	GIT_COMMIT     string
 )
