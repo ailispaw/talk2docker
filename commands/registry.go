@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"code.google.com/p/gopass"
+	"github.com/howeyc/gopass"
 	"github.com/spf13/cobra"
 	"github.com/yungsang/tablewriter"
 	"github.com/yungsang/talk2docker/api"
@@ -148,7 +148,8 @@ func loginRegistry(ctx *cobra.Command, args []string) {
 		authConfig.Username = registry.Username
 	}
 
-	authConfig.Password, err = gopass.GetPass("Password: ")
+	fmt.Printf("Password: ")
+	authConfig.Password = string(gopass.GetPasswdMasked())
 
 	promptDefault("Email", registry.Email)
 	authConfig.Email = readInput()

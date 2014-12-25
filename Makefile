@@ -1,10 +1,14 @@
 PROJECT := "github.com/yungsang/talk2docker"
 
-WORKSPACE := $(shell godep path)
+WORKSPACE := `godep path`
 
-GIT_COMMIT := $(shell git rev-parse --short HEAD)
+GIT_COMMIT := `git rev-parse --short HEAD`
 
-KERNEL_VERSION := $(shell uname -r)
+ifeq ($(OS),Windows_NT)
+	KERNEL_VERSION := ""
+else
+	KERNEL_VERSION := `uname -r`
+endif
 
 all: build
 
