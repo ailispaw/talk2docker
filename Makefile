@@ -32,16 +32,16 @@ uninstall:
 
 clean:
 	go clean -x
-	$(RM) -rf $(WORKSPACE)
+	$(RM) -rf "$(WORKSPACE)"
 
 save:
 	godep save
 
 update:
 	godep update ...
-	$(RM) -rf $(WORKSPACE)
+	$(RM) -rf "$(WORKSPACE)"
 
 restore:
-	GOPATH=$(WORKSPACE) godep restore
+	GOPATH="$(WORKSPACE)" godep restore
 
 .PHONY: all get fmt test build install uninstall clean save update restore
