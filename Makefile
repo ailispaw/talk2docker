@@ -18,8 +18,8 @@ test:
 build: fmt restore
 	godep go build -v -ldflags "-X $(PROJECT)/version.GIT_COMMIT '$(GIT_COMMIT)'"
 
-install: fmt restore
-	godep go install -v -ldflags "-X $(PROJECT)/version.GIT_COMMIT '$(GIT_COMMIT)'"
+install: fmt restore uninstall
+	godep go install -v -ldflags "-s -w -X $(PROJECT)/version.GIT_COMMIT '$(GIT_COMMIT)'"
 
 uninstall:
 	go clean -x -i
