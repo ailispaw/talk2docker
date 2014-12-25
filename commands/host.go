@@ -12,6 +12,10 @@ import (
 	"github.com/yungsang/talk2docker/client"
 )
 
+var (
+	boolJSON bool
+)
+
 var cmdHost = &cobra.Command{
 	Use:   "host [command]",
 	Short: "Manage hosts",
@@ -74,6 +78,7 @@ func init() {
 	cmdHosts.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 
 	cmdGetHostInfo.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+	cmdGetHostInfo.Flags().BoolVarP(&boolJSON, "json", "j", false, "Output in JSON format")
 
 	cmdHost.AddCommand(cmdListHosts)
 	cmdHost.AddCommand(cmdSwitchHost)
@@ -164,6 +169,11 @@ func getHostInfo(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
+	host, err := config.GetHost(hostName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	docker, err := client.NewDockerClient(configPath, hostName)
 	if err != nil {
 		log.Fatal(err)
@@ -174,12 +184,18 @@ func getHostInfo(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	var items [][]string
-
-	host, err := config.GetHost(hostName)
-	if err != nil {
-		log.Fatal(err)
+	if boolJSON {
+		data := make([]interface{}, 2)
+		data[0] = host
+		data[1] = info
+		err = PrintInJSON(data)
+		if err != nil {
+			log.Fatal(err)
+		}
+		return
 	}
+
+	var items [][]string
 
 	items = append(items, []string{
 		"Host", host.Name,

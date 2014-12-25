@@ -1,10 +1,7 @@
 package commands
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"regexp"
@@ -431,19 +428,7 @@ func inspectImage(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	data, err := json.Marshal(imageInfo)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	indented := new(bytes.Buffer)
-	err = json.Indent(indented, data, "", "  ")
-	if err != nil {
-		log.Fatal(err)
-	}
-	indented.WriteString("\n")
-
-	_, err = io.Copy(os.Stdout, indented)
+	err = PrintInJSON(imageInfo)
 	if err != nil {
 		log.Fatal(err)
 	}

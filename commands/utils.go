@@ -1,8 +1,12 @@
 package commands
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
 	"math"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -68,4 +72,25 @@ func FormatInt(n int64) string {
 
 func FormatFloat(n float64) string {
 	return FormatNumber(n, 3)
+}
+
+func PrintInJSON(value interface{}) error {
+	data, err := json.Marshal(value)
+	if err != nil {
+		return err
+	}
+
+	indented := new(bytes.Buffer)
+	err = json.Indent(indented, data, "", "  ")
+	if err != nil {
+		return err
+	}
+	indented.WriteString("\n")
+
+	_, err = io.Copy(os.Stdout, indented)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
