@@ -94,9 +94,8 @@ func listHosts(ctx *cobra.Command, args []string) {
 		return
 	}
 
-	if boolJSON {
-		err = PrintInJSON(ctx.Out(), config.Hosts)
-		if err != nil {
+	if boolYAML || boolJSON {
+		if err := FormatPrint(ctx.Out(), config.Hosts); err != nil {
 			log.Fatal(err)
 		}
 		return
@@ -179,12 +178,11 @@ func getHostInfo(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	if boolJSON {
+	if boolYAML || boolJSON {
 		data := make([]interface{}, 2)
 		data[0] = host
 		data[1] = info
-		err = PrintInJSON(ctx.Out(), data)
-		if err != nil {
+		if err := FormatPrint(ctx.Out(), data); err != nil {
 			log.Fatal(err)
 		}
 		return

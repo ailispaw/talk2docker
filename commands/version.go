@@ -55,9 +55,8 @@ func showVersion(ctx *cobra.Command, args []string) {
 	}
 
 Display:
-	if boolJSON {
-		err = PrintInJSON(ctx.Out(), data)
-		if err != nil {
+	if boolYAML || boolJSON {
+		if err := FormatPrint(ctx.Out(), data); err != nil {
 			log.Fatal(err)
 		}
 		if e != nil {

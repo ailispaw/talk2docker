@@ -14,7 +14,9 @@ var (
 	configPath string
 	hostName   string
 
-	boolAll, boolQuiet, boolNoHeader, boolJSON bool
+	boolYAML, boolJSON bool
+
+	boolAll, boolQuiet, boolNoHeader bool
 )
 
 var app = &cobra.Command{
@@ -27,7 +29,8 @@ func init() {
 	app.PersistentFlags().StringVar(&configPath, "config", "$HOME/.talk2docker/config", "Path to the configuration file")
 	app.PersistentFlags().StringVar(&hostName, "host", "", "Hostname to use its config (runtime only)")
 
-	app.PersistentFlags().BoolVar(&boolJSON, "json", false, "Output in JSON format instead of table")
+	app.PersistentFlags().BoolVar(&boolYAML, "yaml", false, "Output in YAML format")
+	app.PersistentFlags().BoolVar(&boolJSON, "json", false, "Output in JSON format")
 }
 
 func Execute() {

@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/yungsang/tablewriter"
+	"gopkg.in/yaml.v2"
 )
 
 func Truncate(s string, maxlen int) string {
@@ -92,6 +93,20 @@ func PrintInTable(out io.Writer, header []string, items [][]string, width, align
 	}
 	table.AppendBulk(items)
 	table.Render()
+}
+
+func FormatPrint(out io.Writer, value interface{}) error {
+	switch {
+	case boolJSON:
+		return PrintInJSON(out, value)
+	}
+	return PrintInYAML(out, value)
+}
+
+func PrintInYAML(out io.Writer, value interface{}) error {
+	data, err := yaml.Marshal(value)
+	_, err = out.Write(data)
+	return err
 }
 
 func PrintInJSON(out io.Writer, value interface{}) error {

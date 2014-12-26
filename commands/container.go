@@ -55,9 +55,8 @@ func listContainers(ctx *cobra.Command, args []string) {
 		return
 	}
 
-	if boolJSON {
-		err = PrintInJSON(ctx.Out(), containers)
-		if err != nil {
+	if boolYAML || boolJSON {
+		if err := FormatPrint(ctx.Out(), containers); err != nil {
 			log.Fatal(err)
 		}
 		return

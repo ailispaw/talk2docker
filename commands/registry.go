@@ -69,9 +69,8 @@ func listRegistries(ctx *cobra.Command, args []string) {
 		return
 	}
 
-	if boolJSON {
-		err = PrintInJSON(ctx.Out(), config.Registries)
-		if err != nil {
+	if boolYAML || boolJSON {
+		if err := FormatPrint(ctx.Out(), config.Registries); err != nil {
 			log.Fatal(err)
 		}
 		return

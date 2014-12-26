@@ -169,15 +169,14 @@ func listImages(ctx *cobra.Command, args []string) {
 		return
 	}
 
-	if boolJSON {
+	if boolYAML || boolJSON {
 		items := []api.Image{}
 		for _, image := range images {
 			if (matchName == "") || matchImageByName(image.RepoTags, matchName) {
 				items = append(items, image)
 			}
 		}
-		err = PrintInJSON(ctx.Out(), items)
-		if err != nil {
+		if err := FormatPrint(ctx.Out(), items); err != nil {
 			log.Fatal(err)
 		}
 		return
@@ -373,9 +372,8 @@ func showImageHistory(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	if boolJSON {
-		err = PrintInJSON(ctx.Out(), history)
-		if err != nil {
+	if boolYAML || boolJSON {
+		if err := FormatPrint(ctx.Out(), history); err != nil {
 			log.Fatal(err)
 		}
 		return
@@ -434,8 +432,7 @@ func inspectImage(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	err = PrintInJSON(ctx.Out(), imageInfo)
-	if err != nil {
+	if err := FormatPrint(ctx.Out(), imageInfo); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -540,9 +537,8 @@ func searchImages(ctx *cobra.Command, args []string) {
 		return
 	}
 
-	if boolJSON {
-		err = PrintInJSON(ctx.Out(), images)
-		if err != nil {
+	if boolYAML || boolJSON {
+		if err := FormatPrint(ctx.Out(), images); err != nil {
 			log.Fatal(err)
 		}
 		return
