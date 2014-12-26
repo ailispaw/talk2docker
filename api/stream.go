@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -16,18 +15,11 @@ var (
 	terminalWidth, terminalHeight int
 )
 
-func isTerminal(out io.Writer) bool {
+func getFd(out io.Writer) int {
 	if file, ok := out.(*os.File); ok {
-		return terminal.IsTerminal(int(file.Fd()))
+		return int(file.Fd())
 	}
-	return false
-}
-
-func getTerminalSize(out io.Writer) (int, int, error) {
-	if file, ok := out.(*os.File); ok {
-		return terminal.GetSize(int(file.Fd()))
-	}
-	return 0, 0, errors.New("Error: getTerminalSize")
+	panic("unreachable")
 }
 
 type JSONError struct {
@@ -47,11 +39,15 @@ type JSONProgress struct {
 
 func (p *JSONProgress) String() string {
 	var (
-		width       = terminalWidth
+		width       = 200
 		pbBox       string
 		numbersBox  string
 		timeLeftBox string
 	)
+
+	if terminalWidth > 0 {
+		width = terminalWidth
+	}
 
 	if p.Current <= 0 && p.Total <= 0 {
 		return ""
@@ -138,10 +134,15 @@ func displayJSONMessagesStream(in io.Reader, out io.Writer) error {
 		dec        = json.NewDecoder(in)
 		ids        = map[string]int{}
 		diff       = 0
-		isTerminal = isTerminal(out)
+		fd         = getFd(out)
+		isTerminal = terminal.IsTerminal(fd)
 	)
 
-	terminalWidth, terminalHeight, _ = getTerminalSize(out)
+	//oldState, err := terminal.MakeRaw(fd)
+	//if err == nil {
+	//	defer terminal.Restore(fd, oldState)
+	//}
+	terminalWidth, terminalHeight, _ = terminal.GetSize(fd)
 
 	for {
 		var jm JSONMessage
