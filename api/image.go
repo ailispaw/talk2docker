@@ -32,18 +32,13 @@ func (client *DockerClient) ListImages(all bool, filters map[string][]string) ([
 	return images, nil
 }
 
-func (client *DockerClient) PullImage(name, auth string) error {
+func (client *DockerClient) PullImage(name string) error {
 	v := url.Values{}
 	v.Set("fromImage", name)
 
 	uri := fmt.Sprintf("/v%s/images/create?%s", API_VERSION, v.Encode())
 
-	headers := map[string]string{}
-	if auth != "" {
-		headers["X-Registry-Auth"] = auth
-	}
-
-	return client.doStreamRequest("POST", uri, nil, headers)
+	return client.doStreamRequest("POST", uri, nil, nil)
 }
 
 func (client *DockerClient) GetImageHistory(name string) (ImageHistories, error) {
@@ -94,9 +89,7 @@ func (client *DockerClient) PushImage(name, tag, auth string) error {
 	uri := fmt.Sprintf("/v%s/images/%s/push?%s", API_VERSION, name, v.Encode())
 
 	headers := map[string]string{}
-	if auth != "" {
-		headers["X-Registry-Auth"] = auth
-	}
+	headers["X-Registry-Auth"] = auth
 
 	return client.doStreamRequest("POST", uri, nil, headers)
 }

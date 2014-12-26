@@ -300,27 +300,12 @@ func pullImage(ctx *cobra.Command, args []string) {
 		repository = registry + "/" + repository
 	}
 
-	config, err := client.LoadConfig(configPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if registry == "" {
-		registry = client.INDEX_SERVER
-	}
-
-	registryConfig, err := config.GetRegistry(registry)
-	// Some custom registries may not be needed to login.
-	//	if (err != nil) || (registryConfig.Auth == "") {
-	//		log.Fatal("Please login prior to pulling an image.")
-	//	}
-
 	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if err := docker.PullImage(repository, registryConfig.Auth); err != nil {
+	if err := docker.PullImage(repository); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -466,10 +451,9 @@ func pushImage(ctx *cobra.Command, args []string) {
 	}
 
 	registryConfig, err := config.GetRegistry(registry)
-	// Some custom registries may not be needed to login.
-	//	if (err != nil) || (registryConfig.Auth == "") {
-	//		log.Fatal("Please login prior to pulling an image.")
-	//	}
+	if (err != nil) || (registryConfig.Auth == "") {
+		log.Fatal("Please login prior to pushing an image.")
+	}
 
 	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
 	if err != nil {
