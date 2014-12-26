@@ -123,6 +123,13 @@ func (config *Config) SaveConfig(path string) error {
 		return err
 	}
 
+	os.Remove(path + ".bak")
+	err = os.Link(path, path+".bak")
+	if err != nil {
+		return err
+	}
+
 	file.Close()
+	os.Remove(path)
 	return os.Rename(path+".new", path)
 }
