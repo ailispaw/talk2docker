@@ -6,6 +6,7 @@ import (
 	"os/exec"
 
 	"github.com/spf13/cobra"
+	"github.com/yungsang/talk2docker/client"
 )
 
 var cmdConfig = &cobra.Command{
@@ -38,14 +39,12 @@ func init() {
 }
 
 func catConfig(ctx *cobra.Command, args []string) {
-	path := os.ExpandEnv(configPath)
-
-	cmd := exec.Command("cat", path)
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = ctx.Out()
-	cmd.Stderr = os.Stderr
-	err := cmd.Run()
+	config, err := client.LoadConfig(configPath)
 	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := FormatPrint(ctx.Out(), config); err != nil {
 		log.Fatal(err)
 	}
 }
