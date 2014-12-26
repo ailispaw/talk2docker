@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/bgentry/speakeasy"
+	"github.com/howeyc/gopass"
 	"github.com/spf13/cobra"
 	"github.com/yungsang/tablewriter"
 	"github.com/yungsang/talk2docker/api"
@@ -148,7 +148,8 @@ func loginRegistry(ctx *cobra.Command, args []string) {
 		authConfig.Username = registry.Username
 	}
 
-	authConfig.Password, _ = speakeasy.Ask("Password: ")
+	ctx.Printf("Password: ")
+	authConfig.Password = string(gopass.GetPasswdMasked())
 
 	promptDefault("Email", registry.Email)
 	authConfig.Email = readInput()

@@ -3,8 +3,8 @@
 	"GoVersion": "go1.4",
 	"Deps": [
 		{
-			"ImportPath": "github.com/bgentry/speakeasy",
-			"Rev": "5dfe43257d1f86b96484e760f2f0c4e2559089c7"
+			"ImportPath": "github.com/howeyc/gopass",
+			"Rev": "1af4cd08f75465cbb0fcec37b64b77c4a6b6d41a"
 		},
 		{
 			"ImportPath": "github.com/mattn/go-runewidth",
