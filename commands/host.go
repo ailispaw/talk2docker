@@ -145,8 +145,7 @@ func switchHost(ctx *cobra.Command, args []string) {
 
 	config.Default = host.Name
 
-	err = config.SaveConfig(configPath)
-	if err != nil {
+	if err := config.SaveConfig(configPath); err != nil {
 		log.Fatal(err)
 	}
 
@@ -321,9 +320,8 @@ func addHost(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	_, err = config.GetHost(name)
-	if err == nil {
-		log.Fatal(fmt.Sprintf("\"%s\" already exists", name))
+	if _, err := config.GetHost(name); err == nil {
+		log.Fatalf("\"%s\" already exists", name)
 	}
 
 	newHost := client.Host{
@@ -335,8 +333,7 @@ func addHost(ctx *cobra.Command, args []string) {
 	config.Default = newHost.Name
 	config.Hosts = append(config.Hosts, newHost)
 
-	err = config.SaveConfig(configPath)
-	if err != nil {
+	if err := config.SaveConfig(configPath); err != nil {
 		log.Fatal(err)
 	}
 
@@ -361,8 +358,7 @@ func removeHost(ctx *cobra.Command, args []string) {
 		log.Fatal("You can't remove the default host.")
 	}
 
-	_, err = config.GetHost(name)
-	if err != nil {
+	if _, err := config.GetHost(name); err != nil {
 		log.Fatal(err)
 	}
 
@@ -376,8 +372,7 @@ func removeHost(ctx *cobra.Command, args []string) {
 
 	config.Hosts = hosts
 
-	err = config.SaveConfig(configPath)
-	if err != nil {
+	if err := config.SaveConfig(configPath); err != nil {
 		log.Fatal(err)
 	}
 

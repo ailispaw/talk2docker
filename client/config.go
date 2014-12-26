@@ -1,7 +1,6 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -80,8 +79,7 @@ func LoadConfig(path string) (*Config, error) {
 	}
 
 	var config Config
-	err = yaml.Unmarshal(data, &config)
-	if err != nil {
+	if err := yaml.Unmarshal(data, &config); err != nil {
 		return nil, err
 	}
 
@@ -101,7 +99,7 @@ func (config *Config) GetHost(name string) (*Host, error) {
 			return &host, nil
 		}
 	}
-	return nil, errors.New(fmt.Sprintf("\"%s\" not found in the config", name))
+	return nil, fmt.Errorf("\"%s\" not found in the config", name)
 }
 
 func (config *Config) SaveConfig(path string) error {
@@ -118,14 +116,15 @@ func (config *Config) SaveConfig(path string) error {
 	defer os.Remove(path + ".new")
 
 	data, err := yaml.Marshal(config)
-	_, err = file.Write(data)
 	if err != nil {
+		return err
+	}
+	if _, err := file.Write(data); err != nil {
 		return err
 	}
 
 	os.Remove(path + ".bak")
-	err = os.Link(path, path+".bak")
-	if err != nil {
+	if err := os.Link(path, path+".bak"); err != nil {
 		return err
 	}
 

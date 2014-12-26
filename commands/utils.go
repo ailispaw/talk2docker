@@ -105,6 +105,9 @@ func FormatPrint(out io.Writer, value interface{}) error {
 
 func PrintInYAML(out io.Writer, value interface{}) error {
 	data, err := yaml.Marshal(value)
+	if err != nil {
+		return err
+	}
 	_, err = out.Write(data)
 	return err
 }
@@ -116,14 +119,12 @@ func PrintInJSON(out io.Writer, value interface{}) error {
 	}
 
 	indented := new(bytes.Buffer)
-	err = json.Indent(indented, data, "", "  ")
-	if err != nil {
+	if err := json.Indent(indented, data, "", "  "); err != nil {
 		return err
 	}
 	indented.WriteString("\n")
 
-	_, err = io.Copy(out, indented)
-	if err != nil {
+	if _, err := io.Copy(out, indented); err != nil {
 		return err
 	}
 

@@ -24,8 +24,7 @@ func (client *DockerClient) Info() (*Info, error) {
 	}
 
 	info := &Info{}
-	err = json.Unmarshal(data, info)
-	if err != nil {
+	if err := json.Unmarshal(data, info); err != nil {
 		return nil, err
 	}
 	return info, nil
@@ -39,8 +38,7 @@ func (client *DockerClient) Version() (*Version, error) {
 	}
 
 	version := &Version{}
-	err = json.Unmarshal(data, version)
-	if err != nil {
+	if err := json.Unmarshal(data, version); err != nil {
 		return nil, err
 	}
 	return version, nil

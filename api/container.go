@@ -38,8 +38,7 @@ func (client *DockerClient) ListContainers(all, size bool, limit int, since, bef
 	}
 
 	containers := []Container{}
-	err = json.Unmarshal(data, &containers)
-	if err != nil {
+	if err := json.Unmarshal(data, &containers); err != nil {
 		return nil, err
 	}
 	return containers, nil

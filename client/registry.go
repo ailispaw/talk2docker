@@ -14,7 +14,7 @@ func (config *Config) GetRegistry(url string) (*Registry, error) {
 	}
 	return &Registry{
 		URL: url,
-	}, errors.New(fmt.Sprintf("\"%s\" not found in the config", url))
+	}, fmt.Errorf("\"%s\" not found in the config", url)
 }
 
 func (config *Config) SetRegistry(newRegistry *Registry) {
@@ -51,8 +51,7 @@ func ParseRepositoryName(name string) (string, string, string, error) {
 		return "", "", "", errors.New("Invalid repository name with a schema")
 	}
 
-	n := strings.LastIndex(name, ":")
-	if n >= 0 {
+	if n := strings.LastIndex(name, ":"); n >= 0 {
 		if !strings.Contains(name[n+1:], "/") {
 			tag = name[n+1:]
 			name = name[:n]

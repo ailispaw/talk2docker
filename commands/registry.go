@@ -2,7 +2,6 @@ package commands
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"os"
 
@@ -153,8 +152,7 @@ func loginRegistry(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	err = docker.Auth(&authConfig)
-	if err != nil {
+	if err := docker.Auth(&authConfig); err != nil {
 		log.Fatal(err)
 	}
 
@@ -164,8 +162,7 @@ func loginRegistry(ctx *cobra.Command, args []string) {
 
 	config.SetRegistry(registry)
 
-	err = config.SaveConfig(configPath)
-	if err != nil {
+	if err := config.SaveConfig(configPath); err != nil {
 		log.Fatal(err)
 	}
 
@@ -185,13 +182,12 @@ func logoutRegistry(ctx *cobra.Command, args []string) {
 
 	registry, notFound := config.GetRegistry(url)
 	if (notFound != nil) || (registry.Auth == "") {
-		log.Fatal(fmt.Sprintf("Not logged in to a Docker registry at %s", url))
+		log.Fatalf("Not logged in to a Docker registry at %s", url)
 	}
 
 	config.LogoutRegistry(url)
 
-	err = config.SaveConfig(configPath)
-	if err != nil {
+	if err := config.SaveConfig(configPath); err != nil {
 		log.Fatal(err)
 	}
 

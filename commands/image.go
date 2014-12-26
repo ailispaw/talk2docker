@@ -320,8 +320,7 @@ func pullImage(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	err = docker.PullImage(repository, registryConfig.Auth)
-	if err != nil {
+	if err := docker.PullImage(repository, registryConfig.Auth); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -347,8 +346,7 @@ func tagImage(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	err = docker.TagImage(args[0], name, tag, boolForce)
-	if err != nil {
+	if err := docker.TagImage(args[0], name, tag, boolForce); err != nil {
 		log.Fatal(err)
 	}
 
@@ -451,7 +449,7 @@ func pushImage(ctx *cobra.Command, args []string) {
 	}
 
 	if len(strings.SplitN(name, "/", 2)) == 1 {
-		log.Fatal(fmt.Sprintf("You cannot push a \"root\" repository. Please rename your repository in <yourname>/%s", name))
+		log.Fatalf("You cannot push a \"root\" repository. Please rename your repository in <yourname>/%s", name)
 	}
 
 	if registry != "" {
@@ -478,8 +476,7 @@ func pushImage(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	err = docker.PushImage(name, tag, registryConfig.Auth)
-	if err != nil {
+	if err := docker.PushImage(name, tag, registryConfig.Auth); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -498,8 +495,7 @@ func removeImages(ctx *cobra.Command, args []string) {
 
 	var lastError error
 	for _, name := range args {
-		err = docker.RemoveImage(name, boolForce, boolNoPrune)
-		if err != nil {
+		if err := docker.RemoveImage(name, boolForce, boolNoPrune); err != nil {
 			lastError = err
 		}
 	}
