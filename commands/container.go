@@ -28,7 +28,6 @@ func init() {
 	cmdPs.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
 	cmdPs.Flags().BoolVarP(&boolSize, "size", "s", false, "Display sizes")
 	cmdPs.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
-	cmdPs.Flags().BoolVarP(&boolJSON, "json", "j", false, "Output in JSON format")
 
 	cmdPs.Run = listContainers
 }
@@ -110,12 +109,5 @@ func listContainers(ctx *cobra.Command, args []string) {
 		header = append(header, "Size(MB)")
 	}
 
-	table := tablewriter.NewWriter(ctx.Out())
-	if !boolNoHeader {
-		table.SetHeader(header)
-	} else {
-		table.SetBorder(false)
-	}
-	table.AppendBulk(items)
-	table.Render()
+	PrintInTable(ctx.Out(), header, items, 0, tablewriter.ALIGN_DEFAULT)
 }

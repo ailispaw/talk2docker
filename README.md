@@ -49,6 +49,7 @@ Available Commands:
       --config="$HOME/.talk2docker/config": Path to the configuration file
   -h, --help=false: help for talk2docker
       --host="": Hostname to use its config (runtime only)
+      --json=false: Output in JSON format instead of table
 
 Use "talk2docker help [command]" for more information about that command.
 

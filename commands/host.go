@@ -68,14 +68,11 @@ var cmdHosts = &cobra.Command{
 func init() {
 	cmdListHosts.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
 	cmdListHosts.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
-	cmdListHosts.Flags().BoolVarP(&boolJSON, "json", "j", false, "Output in JSON format")
 
 	cmdHosts.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display host names")
 	cmdHosts.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
-	cmdHosts.Flags().BoolVarP(&boolJSON, "json", "j", false, "Output in JSON format")
 
 	cmdGetHostInfo.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
-	cmdGetHostInfo.Flags().BoolVarP(&boolJSON, "json", "j", false, "Output in JSON format")
 
 	cmdHost.AddCommand(cmdListHosts)
 	cmdHost.AddCommand(cmdSwitchHost)
@@ -125,14 +122,7 @@ func listHosts(ctx *cobra.Command, args []string) {
 		"TLS",
 	}
 
-	table := tablewriter.NewWriter(ctx.Out())
-	if !boolNoHeader {
-		table.SetHeader(header)
-	} else {
-		table.SetBorder(false)
-	}
-	table.AppendBulk(items)
-	table.Render()
+	PrintInTable(ctx.Out(), header, items, 0, tablewriter.ALIGN_DEFAULT)
 }
 
 func switchHost(ctx *cobra.Command, args []string) {
@@ -308,13 +298,7 @@ func getHostInfo(ctx *cobra.Command, args []string) {
 		})
 	}
 
-	table := tablewriter.NewWriter(ctx.Out())
-	if boolNoHeader {
-		table.SetBorder(false)
-	}
-	table.SetAlignment(tablewriter.ALIGN_LEFT)
-	table.AppendBulk(items)
-	table.Render()
+	PrintInTable(ctx.Out(), nil, items, 0, tablewriter.ALIGN_LEFT)
 }
 
 func addHost(ctx *cobra.Command, args []string) {

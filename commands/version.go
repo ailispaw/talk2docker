@@ -21,7 +21,6 @@ var cmdVersion = &cobra.Command{
 
 func init() {
 	cmdVersion.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
-	cmdVersion.Flags().BoolVarP(&boolJSON, "json", "j", false, "Output in JSON format")
 }
 
 func showVersion(ctx *cobra.Command, args []string) {
@@ -94,15 +93,7 @@ Display:
 		"Arch",
 	}
 
-	table := tablewriter.NewWriter(ctx.Out())
-	if !boolNoHeader {
-		table.SetHeader(header)
-	} else {
-		table.SetBorder(false)
-	}
-	table.SetAlignment(tablewriter.ALIGN_LEFT)
-	table.AppendBulk(items)
-	table.Render()
+	PrintInTable(ctx.Out(), header, items, 0, tablewriter.ALIGN_LEFT)
 
 	if e != nil {
 		log.Fatal(e)

@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/yungsang/tablewriter"
 )
 
 func Truncate(s string, maxlen int) string {
@@ -71,6 +73,25 @@ func FormatInt(n int64) string {
 
 func FormatFloat(n float64) string {
 	return FormatNumber(n, 3)
+}
+
+func PrintInTable(out io.Writer, header []string, items [][]string, width, align int) {
+	table := tablewriter.NewWriter(out)
+	if !boolNoHeader {
+		if header != nil {
+			table.SetHeader(header)
+		}
+	} else {
+		table.SetBorder(false)
+	}
+	if width != 0 {
+		table.SetColWidth(width)
+	}
+	if align != tablewriter.ALIGN_DEFAULT {
+		table.SetAlignment(align)
+	}
+	table.AppendBulk(items)
+	table.Render()
 }
 
 func PrintInJSON(out io.Writer, value interface{}) error {

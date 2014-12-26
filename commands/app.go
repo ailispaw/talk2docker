@@ -26,6 +26,8 @@ var app = &cobra.Command{
 func init() {
 	app.PersistentFlags().StringVar(&configPath, "config", "$HOME/.talk2docker/config", "Path to the configuration file")
 	app.PersistentFlags().StringVar(&hostName, "host", "", "Hostname to use its config (runtime only)")
+
+	app.PersistentFlags().BoolVar(&boolJSON, "json", false, "Output in JSON format instead of table")
 }
 
 func Execute() {

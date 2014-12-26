@@ -50,7 +50,6 @@ var cmdLogoutRegistry = &cobra.Command{
 func init() {
 	cmdListRegistries.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
 	cmdListRegistries.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
-	cmdListRegistries.Flags().BoolVarP(&boolJSON, "json", "j", false, "Output in JSON format")
 
 	cmdRegistry.AddCommand(cmdListRegistries)
 	cmdRegistry.AddCommand(cmdLoginRegistry)
@@ -96,14 +95,7 @@ func listRegistries(ctx *cobra.Command, args []string) {
 		"Logged",
 	}
 
-	table := tablewriter.NewWriter(ctx.Out())
-	if !boolNoHeader {
-		table.SetHeader(header)
-	} else {
-		table.SetBorder(false)
-	}
-	table.AppendBulk(items)
-	table.Render()
+	PrintInTable(ctx.Out(), header, items, 0, tablewriter.ALIGN_DEFAULT)
 }
 
 func loginRegistry(ctx *cobra.Command, args []string) {

@@ -100,12 +100,10 @@ func init() {
 	cmdIs.Flags().BoolVarP(&boolAll, "all", "a", false, "Show all images. Only named/taged and leaf images are shown by default.")
 	cmdIs.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
 	cmdIs.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
-	cmdIs.Flags().BoolVarP(&boolJSON, "json", "j", false, "Output in JSON format")
 
 	cmdListImages.Flags().BoolVarP(&boolAll, "all", "a", false, "Show all images. Only named/taged and leaf images are shown by default.")
 	cmdListImages.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
 	cmdListImages.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
-	cmdListImages.Flags().BoolVarP(&boolJSON, "json", "j", false, "Output in JSON format")
 
 	cmdPullImage.Flags().BoolVarP(&boolAll, "all", "a", false, "Pull all tagged images in the repository. Only the \"latest\" tagged image is pulled by default.")
 
@@ -113,7 +111,6 @@ func init() {
 
 	cmdShowImageHistory.Flags().BoolVarP(&boolAll, "all", "a", false, "Show all build instructions")
 	cmdShowImageHistory.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
-	cmdShowImageHistory.Flags().BoolVarP(&boolJSON, "json", "j", false, "Output in JSON format")
 
 	cmdRemoveImages.Flags().BoolVarP(&boolForce, "force", "f", false, "Force removal of the images")
 	cmdRemoveImages.Flags().BoolVarP(&boolNoPrune, "no-prune", "n", false, "Do not delete untagged parents")
@@ -121,7 +118,6 @@ func init() {
 	cmdSearchImages.Flags().BoolVarP(&boolStar, "star", "s", false, "Sort by star")
 	cmdSearchImages.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display names")
 	cmdSearchImages.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
-	cmdSearchImages.Flags().BoolVarP(&boolJSON, "json", "j", false, "Output in JSON format")
 
 	cmdImage.AddCommand(cmdListImages)
 	cmdImage.AddCommand(cmdPullImage)
@@ -233,14 +229,7 @@ func listImages(ctx *cobra.Command, args []string) {
 		header = append(header, "Created at")
 	}
 
-	table := tablewriter.NewWriter(ctx.Out())
-	if !boolNoHeader {
-		table.SetHeader(header)
-	} else {
-		table.SetBorder(false)
-	}
-	table.AppendBulk(items)
-	table.Render()
+	PrintInTable(ctx.Out(), header, items, 0, tablewriter.ALIGN_DEFAULT)
 }
 
 func walkTree(images []api.Image, parents map[string][]api.Image, prefix string, items [][]string) [][]string {
@@ -425,15 +414,7 @@ func showImageHistory(ctx *cobra.Command, args []string) {
 		"Size(MB)",
 	}
 
-	table := tablewriter.NewWriter(ctx.Out())
-	table.SetColWidth(20)
-	if !boolNoHeader {
-		table.SetHeader(header)
-	} else {
-		table.SetBorder(false)
-	}
-	table.AppendBulk(items)
-	table.Render()
+	PrintInTable(ctx.Out(), header, items, 20, tablewriter.ALIGN_DEFAULT)
 }
 
 func inspectImage(ctx *cobra.Command, args []string) {
@@ -588,13 +569,5 @@ func searchImages(ctx *cobra.Command, args []string) {
 		"Automated",
 	}
 
-	table := tablewriter.NewWriter(ctx.Out())
-	table.SetColWidth(50)
-	if !boolNoHeader {
-		table.SetHeader(header)
-	} else {
-		table.SetBorder(false)
-	}
-	table.AppendBulk(items)
-	table.Render()
+	PrintInTable(ctx.Out(), header, items, 50, tablewriter.ALIGN_DEFAULT)
 }
