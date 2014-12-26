@@ -40,6 +40,20 @@ type ImageHistory struct {
 	Tags      []string
 }
 
+type ImageHistories []ImageHistory
+
+func (images ImageHistories) Len() int {
+	return len(images)
+}
+
+func (images ImageHistories) Swap(i, j int) {
+	images[i], images[j] = images[j], images[i]
+}
+
+func (images ImageHistories) Less(i, j int) bool {
+	return images[i].Created < images[j].Created
+}
+
 type ImageSearchResult struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
