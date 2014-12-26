@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"os"
+
 	"github.com/spf13/cobra"
 )
 
@@ -36,5 +38,6 @@ func Execute() {
 	app.AddCommand(cmdConfig)
 	app.AddCommand(cmdVersion)
 
+	app.SetOutput(os.Stdout)
 	app.Execute()
 }

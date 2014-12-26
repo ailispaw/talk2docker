@@ -125,9 +125,9 @@ func (client *DockerClient) RemoveImage(name string, force, noprune bool) error 
 	for _, message := range messages {
 		_, isDeleted := message["Deleted"]
 		if isDeleted {
-			fmt.Printf("Deleted: %s\n", message["Deleted"])
+			fmt.Fprintf(client.out, "Deleted: %s\n", message["Deleted"])
 		} else {
-			fmt.Printf("Untagged: %s\n", message["Untagged"])
+			fmt.Fprintf(client.out, "Untagged: %s\n", message["Untagged"])
 		}
 	}
 

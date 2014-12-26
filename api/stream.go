@@ -2,40 +2,32 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"os"
-	"os/exec"
-	"strconv"
 	"strings"
 	"time"
+
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 var (
 	terminalWidth, terminalHeight int
 )
 
-func init() {
-	terminalHeight, terminalWidth = getTerminalSize()
+func isTerminal(out io.Writer) bool {
+	if file, ok := out.(*os.File); ok {
+		return terminal.IsTerminal(int(file.Fd()))
+	}
+	return false
 }
 
-func getTerminalSize() (int, int) {
-	cmd := exec.Command("stty", "size")
-	cmd.Stdin = os.Stdin
-	out, err := cmd.Output()
-	if err != nil {
-		return 0, 0
+func getTerminalSize(out io.Writer) (int, int, error) {
+	if file, ok := out.(*os.File); ok {
+		return terminal.GetSize(int(file.Fd()))
 	}
-	arr := strings.Split(strings.TrimSpace(string(out)), " ")
-	height, err := strconv.Atoi(arr[0])
-	if err != nil {
-		height = 0
-	}
-	width, err := strconv.Atoi(arr[1])
-	if err != nil {
-		width = 0
-	}
-	return height, width
+	return 0, 0, errors.New("Error: getTerminalSize")
 }
 
 type JSONError struct {
@@ -48,10 +40,9 @@ func (e *JSONError) Error() string {
 }
 
 type JSONProgress struct {
-	terminalFd uintptr
-	Current    int   `json:"current,omitempty"`
-	Total      int   `json:"total,omitempty"`
-	Start      int64 `json:"start,omitempty"`
+	Current int   `json:"current,omitempty"`
+	Total   int   `json:"total,omitempty"`
+	Start   int64 `json:"start,omitempty"`
 }
 
 func (p *JSONProgress) String() string {
@@ -142,12 +133,16 @@ func (jm *JSONMessage) Display(out io.Writer, isTerminal bool) error {
 	return nil
 }
 
-func displayJSONMessagesStream(in io.Reader, out io.Writer, terminalFd uintptr, isTerminal bool) error {
+func displayJSONMessagesStream(in io.Reader, out io.Writer) error {
 	var (
-		dec  = json.NewDecoder(in)
-		ids  = map[string]int{}
-		diff = 0
+		dec        = json.NewDecoder(in)
+		ids        = map[string]int{}
+		diff       = 0
+		isTerminal = isTerminal(out)
 	)
+
+	terminalWidth, terminalHeight, _ = getTerminalSize(out)
+
 	for {
 		var jm JSONMessage
 		if err := dec.Decode(&jm); err != nil {
@@ -157,9 +152,6 @@ func displayJSONMessagesStream(in io.Reader, out io.Writer, terminalFd uintptr, 
 			return err
 		}
 
-		if jm.Progress != nil {
-			jm.Progress.terminalFd = terminalFd
-		}
 		if jm.ID != "" && (jm.Progress != nil || jm.ProgressMessage != "") {
 			line, ok := ids[jm.ID]
 			if !ok {

@@ -65,13 +65,13 @@ func listRegistries(ctx *cobra.Command, args []string) {
 
 	if boolQuiet {
 		for _, registry := range config.Registries {
-			fmt.Println(registry.URL)
+			ctx.Println(registry.URL)
 		}
 		return
 	}
 
 	if boolJSON {
-		err = PrintInJSON(config.Registries)
+		err = PrintInJSON(ctx.Out(), config.Registries)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -96,7 +96,7 @@ func listRegistries(ctx *cobra.Command, args []string) {
 		"Logged",
 	}
 
-	table := tablewriter.NewWriter(os.Stdout)
+	table := tablewriter.NewWriter(ctx.Out())
 	if !boolNoHeader {
 		table.SetHeader(header)
 	} else {
@@ -117,7 +117,7 @@ func loginRegistry(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Log in to a Docker registry at %s\n", url)
+	ctx.Printf("Log in to a Docker registry at %s\n", url)
 
 	registry, _ := config.GetRegistry(url)
 
@@ -127,9 +127,9 @@ func loginRegistry(ctx *cobra.Command, args []string) {
 
 	promptDefault := func(prompt string, configDefault string) {
 		if configDefault == "" {
-			fmt.Printf("%s: ", prompt)
+			ctx.Printf("%s: ", prompt)
 		} else {
-			fmt.Printf("%s (%s): ", prompt, configDefault)
+			ctx.Printf("%s (%s): ", prompt, configDefault)
 		}
 	}
 
@@ -156,7 +156,7 @@ func loginRegistry(ctx *cobra.Command, args []string) {
 		authConfig.Email = registry.Email
 	}
 
-	docker, err := client.NewDockerClient(configPath, hostName)
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -177,7 +177,7 @@ func loginRegistry(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Login Succeeded!")
+	ctx.Println("Login Succeeded!")
 }
 
 func logoutRegistry(ctx *cobra.Command, args []string) {
@@ -203,5 +203,5 @@ func logoutRegistry(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Removed login credentials for a Docker registry at %s\n", url)
+	ctx.Printf("Removed login credentials for a Docker registry at %s\n", url)
 }

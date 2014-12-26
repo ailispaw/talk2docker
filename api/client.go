@@ -10,9 +10,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
-	"syscall"
 	"time"
 )
 
@@ -25,6 +23,7 @@ type DockerClient struct {
 	HTTPClient    *http.Client
 	TLSConfig     *tls.Config
 	monitorEvents int32
+	out           io.Writer
 }
 
 type Error struct {
@@ -61,7 +60,7 @@ func newHTTPClient(u *url.URL, tlsConfig *tls.Config, timeout time.Duration) *ht
 	return &http.Client{Transport: httpTransport}
 }
 
-func NewDockerClient(daemonUrl string, tlsConfig *tls.Config, timeout time.Duration) (*DockerClient, error) {
+func NewDockerClient(daemonUrl string, tlsConfig *tls.Config, timeout time.Duration, out io.Writer) (*DockerClient, error) {
 	u, err := url.Parse(daemonUrl)
 	if err != nil {
 		return nil, err
@@ -74,7 +73,7 @@ func NewDockerClient(daemonUrl string, tlsConfig *tls.Config, timeout time.Durat
 		}
 	}
 	httpClient := newHTTPClient(u, tlsConfig, timeout)
-	return &DockerClient{u, httpClient, tlsConfig, 0}, nil
+	return &DockerClient{u, httpClient, tlsConfig, 0, out}, nil
 }
 
 func (client *DockerClient) doRequest(method string, path string, body []byte, headers map[string]string) ([]byte, error) {
@@ -142,9 +141,9 @@ func (client *DockerClient) doStreamRequest(method string, path string, body []b
 
 	mimetype, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
 	if err == nil && mimetype == "application/json" {
-		return displayJSONMessagesStream(resp.Body, os.Stdout, uintptr(syscall.Stdin), true)
+		return displayJSONMessagesStream(resp.Body, client.out)
 	}
 
-	_, err = io.Copy(os.Stdout, resp.Body)
+	_, err = io.Copy(client.out, resp.Body)
 	return err
 }

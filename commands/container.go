@@ -3,7 +3,6 @@ package commands
 import (
 	"fmt"
 	"log"
-	"os"
 	"strings"
 	"time"
 
@@ -35,7 +34,7 @@ func init() {
 }
 
 func listContainers(ctx *cobra.Command, args []string) {
-	docker, err := client.NewDockerClient(configPath, hostName)
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -52,13 +51,13 @@ func listContainers(ctx *cobra.Command, args []string) {
 
 	if boolQuiet {
 		for _, container := range containers {
-			fmt.Println(Truncate(container.Id, 12))
+			ctx.Println(Truncate(container.Id, 12))
 		}
 		return
 	}
 
 	if boolJSON {
-		err = PrintInJSON(containers)
+		err = PrintInJSON(ctx.Out(), containers)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -111,7 +110,7 @@ func listContainers(ctx *cobra.Command, args []string) {
 		header = append(header, "Size(MB)")
 	}
 
-	table := tablewriter.NewWriter(os.Stdout)
+	table := tablewriter.NewWriter(ctx.Out())
 	if !boolNoHeader {
 		table.SetHeader(header)
 	} else {

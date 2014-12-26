@@ -42,7 +42,7 @@ func catConfig(ctx *cobra.Command, args []string) {
 
 	cmd := exec.Command("cat", path)
 	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
+	cmd.Stdout = ctx.Out()
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
 	if err != nil {

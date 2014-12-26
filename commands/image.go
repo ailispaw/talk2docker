@@ -3,7 +3,6 @@ package commands
 import (
 	"fmt"
 	"log"
-	"os"
 	"regexp"
 	"sort"
 	"strings"
@@ -135,7 +134,7 @@ func init() {
 }
 
 func listImages(ctx *cobra.Command, args []string) {
-	docker, err := client.NewDockerClient(configPath, hostName)
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -168,7 +167,7 @@ func listImages(ctx *cobra.Command, args []string) {
 	if boolQuiet {
 		for _, image := range images {
 			if (matchName == "") || matchImageByName(image.RepoTags, matchName) {
-				fmt.Println(Truncate(image.Id, 12))
+				ctx.Println(Truncate(image.Id, 12))
 			}
 		}
 		return
@@ -181,7 +180,7 @@ func listImages(ctx *cobra.Command, args []string) {
 				items = append(items, image)
 			}
 		}
-		err = PrintInJSON(items)
+		err = PrintInJSON(ctx.Out(), items)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -234,7 +233,7 @@ func listImages(ctx *cobra.Command, args []string) {
 		header = append(header, "Created at")
 	}
 
-	table := tablewriter.NewWriter(os.Stdout)
+	table := tablewriter.NewWriter(ctx.Out())
 	if !boolNoHeader {
 		table.SetHeader(header)
 	} else {
@@ -293,7 +292,7 @@ func walkTree(images []api.Image, parents map[string][]api.Image, prefix string,
 
 func pullImage(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		fmt.Println("Needs an argument <NAME[:TAG]> to pull")
+		ctx.Println("Needs an argument <NAME[:TAG]> to pull")
 		ctx.Usage()
 		return
 	}
@@ -328,7 +327,7 @@ func pullImage(ctx *cobra.Command, args []string) {
 	//		log.Fatal("Please login prior to pulling an image.")
 	//	}
 
-	docker, err := client.NewDockerClient(configPath, hostName)
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -341,7 +340,7 @@ func pullImage(ctx *cobra.Command, args []string) {
 
 func tagImage(ctx *cobra.Command, args []string) {
 	if len(args) < 2 {
-		fmt.Println("Needs two arguments <IMAGE-NAME[:TAG] or IMAGE-ID> <NEW-NAME[:TAG]>")
+		ctx.Println("Needs two arguments <IMAGE-NAME[:TAG] or IMAGE-ID> <NEW-NAME[:TAG]>")
 		ctx.Usage()
 		return
 	}
@@ -355,7 +354,7 @@ func tagImage(ctx *cobra.Command, args []string) {
 		name = registry + "/" + name
 	}
 
-	docker, err := client.NewDockerClient(configPath, hostName)
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -365,17 +364,17 @@ func tagImage(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Tagged %s as %s:%s\n", args[0], name, tag)
+	ctx.Printf("Tagged %s as %s:%s\n", args[0], name, tag)
 }
 
 func showImageHistory(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		fmt.Println("Needs an argument <IMAGE-NAME[:TAG] or IMAGE-ID>")
+		ctx.Println("Needs an argument <IMAGE-NAME[:TAG] or IMAGE-ID>")
 		ctx.Usage()
 		return
 	}
 
-	docker, err := client.NewDockerClient(configPath, hostName)
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -386,7 +385,7 @@ func showImageHistory(ctx *cobra.Command, args []string) {
 	}
 
 	if boolJSON {
-		err = PrintInJSON(history)
+		err = PrintInJSON(ctx.Out(), history)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -426,7 +425,7 @@ func showImageHistory(ctx *cobra.Command, args []string) {
 		"Size(MB)",
 	}
 
-	table := tablewriter.NewWriter(os.Stdout)
+	table := tablewriter.NewWriter(ctx.Out())
 	table.SetColWidth(20)
 	if !boolNoHeader {
 		table.SetHeader(header)
@@ -439,12 +438,12 @@ func showImageHistory(ctx *cobra.Command, args []string) {
 
 func inspectImage(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		fmt.Println("Needs an argument <IMAGE-NAME[:TAG] or IMAGE-ID>")
+		ctx.Println("Needs an argument <IMAGE-NAME[:TAG] or IMAGE-ID>")
 		ctx.Usage()
 		return
 	}
 
-	docker, err := client.NewDockerClient(configPath, hostName)
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -454,7 +453,7 @@ func inspectImage(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	err = PrintInJSON(imageInfo)
+	err = PrintInJSON(ctx.Out(), imageInfo)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -462,7 +461,7 @@ func inspectImage(ctx *cobra.Command, args []string) {
 
 func pushImage(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		fmt.Println("Needs an argument <NAME[:TAG]> to push")
+		ctx.Println("Needs an argument <NAME[:TAG]> to push")
 		ctx.Usage()
 		return
 	}
@@ -495,7 +494,7 @@ func pushImage(ctx *cobra.Command, args []string) {
 	//		log.Fatal("Please login prior to pulling an image.")
 	//	}
 
-	docker, err := client.NewDockerClient(configPath, hostName)
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -508,12 +507,12 @@ func pushImage(ctx *cobra.Command, args []string) {
 
 func removeImages(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		fmt.Println("Needs an argument <NAME[:TAG]> at least to remove")
+		ctx.Println("Needs an argument <NAME[:TAG]> at least to remove")
 		ctx.Usage()
 		return
 	}
 
-	docker, err := client.NewDockerClient(configPath, hostName)
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -532,12 +531,12 @@ func removeImages(ctx *cobra.Command, args []string) {
 
 func searchImages(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		fmt.Println("Needs an argument <TERM> to search")
+		ctx.Println("Needs an argument <TERM> to search")
 		ctx.Usage()
 		return
 	}
 
-	docker, err := client.NewDockerClient(configPath, hostName)
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -555,13 +554,13 @@ func searchImages(ctx *cobra.Command, args []string) {
 
 	if boolQuiet {
 		for _, image := range images {
-			fmt.Println(image.Name)
+			ctx.Println(image.Name)
 		}
 		return
 	}
 
 	if boolJSON {
-		err = PrintInJSON(images)
+		err = PrintInJSON(ctx.Out(), images)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -589,7 +588,7 @@ func searchImages(ctx *cobra.Command, args []string) {
 		"Automated",
 	}
 
-	table := tablewriter.NewWriter(os.Stdout)
+	table := tablewriter.NewWriter(ctx.Out())
 	table.SetColWidth(50)
 	if !boolNoHeader {
 		table.SetHeader(header)

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"math"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -74,7 +73,7 @@ func FormatFloat(n float64) string {
 	return FormatNumber(n, 3)
 }
 
-func PrintInJSON(value interface{}) error {
+func PrintInJSON(out io.Writer, value interface{}) error {
 	data, err := json.Marshal(value)
 	if err != nil {
 		return err
@@ -87,7 +86,7 @@ func PrintInJSON(value interface{}) error {
 	}
 	indented.WriteString("\n")
 
-	_, err = io.Copy(os.Stdout, indented)
+	_, err = io.Copy(out, indented)
 	if err != nil {
 		return err
 	}

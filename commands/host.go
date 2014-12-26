@@ -3,7 +3,6 @@ package commands
 import (
 	"fmt"
 	"log"
-	"os"
 	"strconv"
 	"strings"
 
@@ -93,13 +92,13 @@ func listHosts(ctx *cobra.Command, args []string) {
 
 	if boolQuiet {
 		for _, host := range config.Hosts {
-			fmt.Println(host.Name)
+			ctx.Println(host.Name)
 		}
 		return
 	}
 
 	if boolJSON {
-		err = PrintInJSON(config.Hosts)
+		err = PrintInJSON(ctx.Out(), config.Hosts)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -126,7 +125,7 @@ func listHosts(ctx *cobra.Command, args []string) {
 		"TLS",
 	}
 
-	table := tablewriter.NewWriter(os.Stdout)
+	table := tablewriter.NewWriter(ctx.Out())
 	if !boolNoHeader {
 		table.SetHeader(header)
 	} else {
@@ -138,7 +137,7 @@ func listHosts(ctx *cobra.Command, args []string) {
 
 func switchHost(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		fmt.Println("Needs an argument <NAME> to switch")
+		ctx.Println("Needs an argument <NAME> to switch")
 		ctx.Usage()
 		return
 	}
@@ -180,7 +179,7 @@ func getHostInfo(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	docker, err := client.NewDockerClient(configPath, hostName)
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -194,7 +193,7 @@ func getHostInfo(ctx *cobra.Command, args []string) {
 		data := make([]interface{}, 2)
 		data[0] = host
 		data[1] = info
-		err = PrintInJSON(data)
+		err = PrintInJSON(ctx.Out(), data)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -309,7 +308,7 @@ func getHostInfo(ctx *cobra.Command, args []string) {
 		})
 	}
 
-	table := tablewriter.NewWriter(os.Stdout)
+	table := tablewriter.NewWriter(ctx.Out())
 	if boolNoHeader {
 		table.SetBorder(false)
 	}
@@ -320,7 +319,7 @@ func getHostInfo(ctx *cobra.Command, args []string) {
 
 func addHost(ctx *cobra.Command, args []string) {
 	if len(args) < 2 {
-		fmt.Println("Needs two arguments <NAME> and <URL> at least")
+		ctx.Println("Needs two arguments <NAME> and <URL> at least")
 		ctx.Usage()
 		return
 	}
@@ -364,7 +363,7 @@ func addHost(ctx *cobra.Command, args []string) {
 
 func removeHost(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		fmt.Println("Needs an argument <NAME> to remove")
+		ctx.Println("Needs an argument <NAME> to remove")
 		ctx.Usage()
 		return
 	}

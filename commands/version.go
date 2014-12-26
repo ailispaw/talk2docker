@@ -2,7 +2,6 @@ package commands
 
 import (
 	"log"
-	"os"
 	"runtime"
 
 	"github.com/spf13/cobra"
@@ -40,7 +39,7 @@ func showVersion(ctx *cobra.Command, args []string) {
 
 	var e error
 
-	docker, err := client.NewDockerClient(configPath, hostName)
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
 	if err != nil {
 		e = err
 		goto Display
@@ -58,7 +57,7 @@ func showVersion(ctx *cobra.Command, args []string) {
 
 Display:
 	if boolJSON {
-		err = PrintInJSON(data)
+		err = PrintInJSON(ctx.Out(), data)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -95,7 +94,7 @@ Display:
 		"Arch",
 	}
 
-	table := tablewriter.NewWriter(os.Stdout)
+	table := tablewriter.NewWriter(ctx.Out())
 	if !boolNoHeader {
 		table.SetHeader(header)
 	} else {
