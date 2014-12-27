@@ -36,6 +36,7 @@ Usage:
 
 Available Commands:
   ps                        List containers
+  build <PATH>              Build an image from a Dockerfile
   ls [NAME[:TAG]]           List images
   image [command]           Manage images
   host [command]            Manage hosts

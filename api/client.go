@@ -107,9 +107,12 @@ func (client *DockerClient) doRequest(method string, path string, body []byte, h
 	return data, nil
 }
 
-func (client *DockerClient) doStreamRequest(method string, path string, body []byte, headers map[string]string) error {
-	b := bytes.NewBuffer(body)
-	req, err := http.NewRequest(method, client.URL.String()+path, b)
+func (client *DockerClient) doStreamRequest(method string, path string, in io.Reader, headers map[string]string) error {
+	if (method == "POST" || method == "PUT") && in == nil {
+		in = bytes.NewReader([]byte{})
+	}
+
+	req, err := http.NewRequest(method, client.URL.String()+path, in)
 	if err != nil {
 		return err
 	}
