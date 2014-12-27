@@ -44,9 +44,11 @@ func Initialize() {
 	log.SetLevel(log.WarnLevel)
 
 	if boolVerbose {
+		log.SetFormatter(&LogFormatter{})
 		log.SetLevel(log.InfoLevel)
 	}
 	if boolDebug {
+		log.SetFormatter(&log.TextFormatter{})
 		log.SetLevel(log.DebugLevel)
 	}
 }
