@@ -31,18 +31,18 @@ var cmdListRegistries = &cobra.Command{
 }
 
 var cmdLoginRegistry = &cobra.Command{
-	Use:     "login [SERVER]",
+	Use:     "login [REGISTRY]",
 	Aliases: []string{"in"},
-	Short:   "Log in to a Docker registry server through the host",
-	Long:    APP_NAME + " registry login - Log in to a Docker registry server through the host",
+	Short:   "Log in to a Docker registry through the host",
+	Long:    APP_NAME + " registry login - Log in to a Docker registry through the host",
 	Run:     loginRegistry,
 }
 
 var cmdLogoutRegistry = &cobra.Command{
-	Use:     "logout [SERVER]",
+	Use:     "logout [REGISTRY]",
 	Aliases: []string{"out"},
-	Short:   "Log out from a Docker registry server through the host",
-	Long:    APP_NAME + " registry logout - Log out from a Docker registry server through the host",
+	Short:   "Log out from a Docker registry through the host",
+	Long:    APP_NAME + " registry logout - Log out from a Docker registry through the host",
 	Run:     logoutRegistry,
 }
 
@@ -63,7 +63,7 @@ func listRegistries(ctx *cobra.Command, args []string) {
 
 	if boolQuiet {
 		for _, registry := range config.Registries {
-			ctx.Println(registry.URL)
+			ctx.Println(registry.Registry)
 		}
 		return
 	}
@@ -78,7 +78,7 @@ func listRegistries(ctx *cobra.Command, args []string) {
 	var items [][]string
 	for _, registry := range config.Registries {
 		out := []string{
-			registry.URL,
+			registry.Registry,
 			registry.Username,
 			registry.Email,
 			FormatBool(registry.Credentials != "", "IN", ""),
@@ -87,7 +87,7 @@ func listRegistries(ctx *cobra.Command, args []string) {
 	}
 
 	header := []string{
-		"URL",
+		"Registry",
 		"Username",
 		"Email",
 		"Logged",
@@ -97,9 +97,9 @@ func listRegistries(ctx *cobra.Command, args []string) {
 }
 
 func loginRegistry(ctx *cobra.Command, args []string) {
-	url := client.INDEX_SERVER
+	reg := client.INDEX_SERVER
 	if len(args) > 0 {
-		url = args[0]
+		reg = args[0]
 	}
 
 	config, err := client.LoadConfig(configPath)
@@ -107,12 +107,12 @@ func loginRegistry(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	ctx.Printf("Log in to a Docker registry at %s\n", url)
+	ctx.Printf("Log in to a Docker registry at %s\n", reg)
 
-	registry, _ := config.GetRegistry(url)
+	registry, _ := config.GetRegistry(reg)
 
 	authConfig := api.AuthConfig{
-		ServerAddress: registry.URL,
+		ServerAddress: registry.Registry,
 	}
 
 	promptDefault := func(prompt string, configDefault string) {
@@ -167,13 +167,15 @@ func loginRegistry(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	ctx.Println("Login Succeeded!")
+	ctx.Println("Login Succeeded!\n")
+
+	listRegistries(ctx, args)
 }
 
 func logoutRegistry(ctx *cobra.Command, args []string) {
-	url := client.INDEX_SERVER
+	reg := client.INDEX_SERVER
 	if len(args) > 0 {
-		url = args[0]
+		reg = args[0]
 	}
 
 	config, err := client.LoadConfig(configPath)
@@ -181,16 +183,18 @@ func logoutRegistry(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	registry, notFound := config.GetRegistry(url)
+	registry, notFound := config.GetRegistry(reg)
 	if (notFound != nil) || (registry.Credentials == "") {
-		log.Fatalf("Not logged in to a Docker registry at %s", url)
+		log.Fatalf("Not logged in to a Docker registry at %s", reg)
 	}
 
-	config.LogoutRegistry(url)
+	config.LogoutRegistry(reg)
 
 	if err := config.SaveConfig(configPath); err != nil {
 		log.Fatal(err)
 	}
 
-	ctx.Printf("Removed login credentials for a Docker registry at %s\n", url)
+	ctx.Printf("Removed login credentials for a Docker registry at %s\n\n", reg)
+
+	listRegistries(ctx, args)
 }

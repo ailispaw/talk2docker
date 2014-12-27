@@ -6,20 +6,20 @@ import (
 	"strings"
 )
 
-func (config *Config) GetRegistry(url string) (*Registry, error) {
+func (config *Config) GetRegistry(reg string) (*Registry, error) {
 	for _, registry := range config.Registries {
-		if registry.URL == url {
+		if registry.Registry == reg {
 			return &registry, nil
 		}
 	}
 	return &Registry{
-		URL: url,
-	}, fmt.Errorf("\"%s\" not found in the config", url)
+		Registry: reg,
+	}, fmt.Errorf("\"%s\" not found in the config", reg)
 }
 
 func (config *Config) SetRegistry(newRegistry *Registry) {
 	for i, registry := range config.Registries {
-		if registry.URL == newRegistry.URL {
+		if registry.Registry == newRegistry.Registry {
 			config.Registries[i] = *newRegistry
 			return
 		}
@@ -28,12 +28,12 @@ func (config *Config) SetRegistry(newRegistry *Registry) {
 	return
 }
 
-func (config *Config) LogoutRegistry(url string) {
-	if url == "" {
+func (config *Config) LogoutRegistry(reg string) {
+	if reg == "" {
 		return
 	}
 	for i, registry := range config.Registries {
-		if registry.URL == url {
+		if registry.Registry == reg {
 			config.Registries[i].Credentials = ""
 			return
 		}
@@ -43,8 +43,8 @@ func (config *Config) LogoutRegistry(url string) {
 
 func ParseRepositoryName(name string) (string, string, string, error) {
 	var (
-		registry = ""
-		tag      = "latest"
+		reg = ""
+		tag = "latest"
 	)
 
 	if strings.Contains(name, "://") {
@@ -64,11 +64,11 @@ func ParseRepositoryName(name string) (string, string, string, error) {
 		return "", name, tag, nil
 	}
 
-	registry = names[0]
+	reg = names[0]
 	name = names[1]
-	if strings.Contains(registry, "index.docker.io") {
+	if strings.Contains(reg, "index.docker.io") {
 		return "", name, tag, nil
 	}
 
-	return registry, name, tag, nil
+	return reg, name, tag, nil
 }

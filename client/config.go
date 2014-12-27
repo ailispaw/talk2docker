@@ -27,7 +27,7 @@ type Host struct {
 }
 
 type Registry struct {
-	URL         string `yaml:"url"`
+	Registry    string `yaml:"registry"`
 	Username    string `yaml:"username"`
 	Email       string `yaml:"email"`
 	Credentials string `yaml:"credentials,omitempty"`

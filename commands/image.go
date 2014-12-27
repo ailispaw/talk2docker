@@ -323,7 +323,7 @@ func pullImage(ctx *cobra.Command, args []string) {
 		return
 	}
 
-	registry, name, tag, err := client.ParseRepositoryName(args[0])
+	reg, name, tag, err := client.ParseRepositoryName(args[0])
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -334,8 +334,8 @@ func pullImage(ctx *cobra.Command, args []string) {
 		repository = name
 	}
 
-	if registry != "" {
-		repository = registry + "/" + repository
+	if reg != "" {
+		repository = reg + "/" + repository
 	}
 
 	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
@@ -355,13 +355,13 @@ func tagImage(ctx *cobra.Command, args []string) {
 		return
 	}
 
-	registry, name, tag, err := client.ParseRepositoryName(args[1])
+	reg, name, tag, err := client.ParseRepositoryName(args[1])
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if registry != "" {
-		name = registry + "/" + name
+	if reg != "" {
+		name = reg + "/" + name
 	}
 
 	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
@@ -466,7 +466,7 @@ func pushImage(ctx *cobra.Command, args []string) {
 		return
 	}
 
-	registry, name, tag, err := client.ParseRepositoryName(args[0])
+	reg, name, tag, err := client.ParseRepositoryName(args[0])
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -475,8 +475,8 @@ func pushImage(ctx *cobra.Command, args []string) {
 		log.Fatalf("You cannot push a \"root\" repository. Please rename your repository in <yourname>/%s", name)
 	}
 
-	if registry != "" {
-		name = registry + "/" + name
+	if reg != "" {
+		name = reg + "/" + name
 	}
 
 	config, err := client.LoadConfig(configPath)
@@ -484,12 +484,12 @@ func pushImage(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	if registry == "" {
-		registry = client.INDEX_SERVER
+	if reg == "" {
+		reg = client.INDEX_SERVER
 	}
 
-	registryConfig, err := config.GetRegistry(registry)
-	if (err != nil) || (registryConfig.Credentials == "") {
+	registry, err := config.GetRegistry(reg)
+	if (err != nil) || (registry.Credentials == "") {
 		log.Fatal("Please login prior to pushing an image.")
 	}
 
@@ -498,7 +498,7 @@ func pushImage(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	if err := docker.PushImage(name, tag, registryConfig.Credentials); err != nil {
+	if err := docker.PushImage(name, tag, registry.Credentials); err != nil {
 		log.Fatal(err)
 	}
 }
