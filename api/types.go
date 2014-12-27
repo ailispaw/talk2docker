@@ -51,6 +51,9 @@ func (images ImageHistories) Swap(i, j int) {
 }
 
 func (images ImageHistories) Less(i, j int) bool {
+	if images[i].Created == images[j].Created {
+		return i > j
+	}
 	return images[i].Created < images[j].Created
 }
 
@@ -85,6 +88,9 @@ type SortImagesByStars struct {
 }
 
 func (by SortImagesByStars) Less(i, j int) bool {
+	if by.ImageSearchResults[i].Stars == by.ImageSearchResults[j].Stars {
+		return by.ImageSearchResults[i].Name > by.ImageSearchResults[j].Name
+	}
 	return by.ImageSearchResults[i].Stars < by.ImageSearchResults[j].Stars
 }
 
