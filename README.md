@@ -4,10 +4,11 @@ Talk2Docker is a simple Docker client to talk to Docker daemon.
 
 Contributions and suggestions would be appreciated, though it's aimed at my learning Go and Docker Remote API.
 
-## Requirements
+## Features
 
-- [go](http://golang.org/)
-- [godep](https://github.com/tools/godep)
+- Handle multiple Docker deamons
+- Output in JSON or YAML format as well
+- Organize commands by category
 
 ## References
 
@@ -16,17 +17,24 @@ Contributions and suggestions would be appreciated, though it's aimed at my lear
 - https://gopkg.in/yaml.v2
 - https://github.com/howeyc/gopass
 - https://github.com/sirupsen/logrus
-- https://github.com/YungSang/tablewriter/tree/talk2docker
+- https://github.com/yungsang/tablewriter/tree/talk2docker
 
-## How to Build
+## Building talk2docker
+
+### Requirements
+
+- [go](http://golang.org/)
+- [godep](https://github.com/tools/godep)
+
+### How to build
 
 ```
-$ git clone https://github.com/YungSang/talk2docker.git
+$ git clone https://github.com/yungsang/talk2docker.git
 $ cd talk2docker
 $ make
 ```
 
-## How to Use
+## Usage
 
 ```
 $ talk2docker
