@@ -15,8 +15,17 @@ import (
 )
 
 var (
+	imageTag string
+
 	boolForce, boolNoPrune, boolStar bool
 )
+
+var cmdBuild = &cobra.Command{
+	Use:   "build <PATH>",
+	Short: "Build an image from a Dockerfile",
+	Long:  APP_NAME + " build - Build an image from a Dockerfile",
+	Run:   buildImage,
+}
 
 var cmdIs = &cobra.Command{
 	Use:     "ls [NAME[:TAG]]",
@@ -34,6 +43,13 @@ var cmdImage = &cobra.Command{
 	Run: func(ctx *cobra.Command, args []string) {
 		ctx.Usage()
 	},
+}
+
+var cmdBuildImage = &cobra.Command{
+	Use:   "build <PATH>",
+	Short: "Build an image from a Dockerfile",
+	Long:  APP_NAME + " image build - Build an image from a Dockerfile",
+	Run:   buildImage,
 }
 
 var cmdListImages = &cobra.Command{
@@ -97,6 +113,10 @@ var cmdSearchImages = &cobra.Command{
 }
 
 func init() {
+	cmdBuild.Flags().StringVarP(&imageTag, "tag", "t", "", "<NAME[:TAG]> to be applied to the image")
+
+	cmdBuildImage.Flags().StringVarP(&imageTag, "tag", "t", "", "<NAME[:TAG]> to be applied to the image")
+
 	cmdIs.Flags().BoolVarP(&boolAll, "all", "a", false, "Show all images. Only named/taged and leaf images are shown by default.")
 	cmdIs.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
 	cmdIs.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
@@ -119,6 +139,7 @@ func init() {
 	cmdSearchImages.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display names")
 	cmdSearchImages.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 
+	cmdImage.AddCommand(cmdBuildImage)
 	cmdImage.AddCommand(cmdListImages)
 	cmdImage.AddCommand(cmdPullImage)
 	cmdImage.AddCommand(cmdTagImage)
@@ -127,6 +148,23 @@ func init() {
 	cmdImage.AddCommand(cmdPushImage)
 	cmdImage.AddCommand(cmdRemoveImages)
 	cmdImage.AddCommand(cmdSearchImages)
+}
+
+func buildImage(ctx *cobra.Command, args []string) {
+	if len(args) < 1 {
+		ctx.Println("Needs an argument <PATH> to Dockerfile")
+		ctx.Usage()
+		return
+	}
+
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := docker.BuildImage(args[0], imageTag); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func listImages(ctx *cobra.Command, args []string) {
