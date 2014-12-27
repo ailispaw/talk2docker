@@ -24,11 +24,12 @@ var cmdPs = &cobra.Command{
 }
 
 func init() {
-	cmdPs.Flags().BoolVarP(&boolAll, "all", "a", false, "Show all containers. Only running containers are shown by default.")
-	cmdPs.Flags().BoolVarP(&boolLatest, "latest", "l", false, "Show only the latest created container, include non-running ones.")
-	cmdPs.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
-	cmdPs.Flags().BoolVarP(&boolSize, "size", "s", false, "Display sizes")
-	cmdPs.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+	flags := cmdPs.Flags()
+	flags.BoolVarP(&boolAll, "all", "a", false, "Show all containers. Only running containers are shown by default.")
+	flags.BoolVarP(&boolLatest, "latest", "l", false, "Show only the latest created container, include non-running ones.")
+	flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
+	flags.BoolVarP(&boolSize, "size", "s", false, "Display sizes")
+	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 }
 
 func listContainers(ctx *cobra.Command, args []string) {

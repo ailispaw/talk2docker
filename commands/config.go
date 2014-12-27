@@ -36,6 +36,7 @@ var cmdEditConfig = &cobra.Command{
 
 func init() {
 	cmdConfig.AddCommand(cmdCatConfig)
+
 	cmdConfig.AddCommand(cmdEditConfig)
 }
 

@@ -11,6 +11,13 @@ import (
 	"github.com/yungsang/talk2docker/client"
 )
 
+var cmdHosts = &cobra.Command{
+	Use:   "hosts",
+	Short: "Shortcut to list hosts",
+	Long:  APP_NAME + " hosts - List hosts",
+	Run:   listHosts,
+}
+
 var cmdHost = &cobra.Command{
 	Use:   "host [command]",
 	Short: "Manage hosts",
@@ -58,26 +65,24 @@ var cmdRemoveHost = &cobra.Command{
 	Run:     removeHost,
 }
 
-var cmdHosts = &cobra.Command{
-	Use:   "hosts",
-	Short: "Shortcut to list hosts",
-	Long:  APP_NAME + " hosts - List hosts",
-	Run:   listHosts,
-}
-
 func init() {
-	cmdListHosts.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
-	cmdListHosts.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+	flags := cmdHosts.Flags()
+	flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display host names")
+	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 
-	cmdHosts.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display host names")
-	cmdHosts.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
-
-	cmdGetHostInfo.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
-
+	flags = cmdListHosts.Flags()
+	flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
+	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 	cmdHost.AddCommand(cmdListHosts)
+
 	cmdHost.AddCommand(cmdSwitchHost)
+
+	flags = cmdGetHostInfo.Flags()
+	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 	cmdHost.AddCommand(cmdGetHostInfo)
+
 	cmdHost.AddCommand(cmdAddHost)
+
 	cmdHost.AddCommand(cmdRemoveHost)
 }
 

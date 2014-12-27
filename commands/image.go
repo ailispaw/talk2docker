@@ -20,19 +20,19 @@ var (
 	boolForce, boolNoPrune, boolStar bool
 )
 
-var cmdBuild = &cobra.Command{
-	Use:   "build <PATH>",
-	Short: "Build an image from a Dockerfile",
-	Long:  APP_NAME + " build - Build an image from a Dockerfile",
-	Run:   buildImage,
-}
-
 var cmdIs = &cobra.Command{
 	Use:     "ls [NAME[:TAG]]",
 	Aliases: []string{"images"},
 	Short:   "List images",
 	Long:    APP_NAME + " ls - List images",
 	Run:     listImages,
+}
+
+var cmdBuild = &cobra.Command{
+	Use:   "build <PATH>",
+	Short: "Build an image from a Dockerfile",
+	Long:  APP_NAME + " build - Build an image from a Dockerfile",
+	Run:   buildImage,
 }
 
 var cmdImage = &cobra.Command{
@@ -45,19 +45,19 @@ var cmdImage = &cobra.Command{
 	},
 }
 
-var cmdBuildImage = &cobra.Command{
-	Use:   "build <PATH>",
-	Short: "Build an image from a Dockerfile",
-	Long:  APP_NAME + " image build - Build an image from a Dockerfile",
-	Run:   buildImage,
-}
-
 var cmdListImages = &cobra.Command{
 	Use:     "list [NAME[:TAG]]",
 	Aliases: []string{"ls"},
 	Short:   "List images",
 	Long:    APP_NAME + " image list - List images",
 	Run:     listImages,
+}
+
+var cmdBuildImage = &cobra.Command{
+	Use:   "build <PATH>",
+	Short: "Build an image from a Dockerfile",
+	Long:  APP_NAME + " image build - Build an image from a Dockerfile",
+	Run:   buildImage,
 }
 
 var cmdPullImage = &cobra.Command{
@@ -113,40 +113,50 @@ var cmdSearchImages = &cobra.Command{
 }
 
 func init() {
-	cmdBuild.Flags().StringVarP(&imageTag, "tag", "t", "", "<NAME[:TAG]> to be applied to the image")
+	flags := cmdIs.Flags()
+	flags.BoolVarP(&boolAll, "all", "a", false, "Show all images. Only named/taged and leaf images are shown by default.")
+	flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
+	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 
-	cmdBuildImage.Flags().StringVarP(&imageTag, "tag", "t", "", "<NAME[:TAG]> to be applied to the image")
+	flags = cmdBuild.Flags()
+	flags.StringVarP(&imageTag, "tag", "t", "", "<NAME[:TAG]> to be applied to the image")
 
-	cmdIs.Flags().BoolVarP(&boolAll, "all", "a", false, "Show all images. Only named/taged and leaf images are shown by default.")
-	cmdIs.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
-	cmdIs.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
-
-	cmdListImages.Flags().BoolVarP(&boolAll, "all", "a", false, "Show all images. Only named/taged and leaf images are shown by default.")
-	cmdListImages.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
-	cmdListImages.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
-
-	cmdPullImage.Flags().BoolVarP(&boolAll, "all", "a", false, "Pull all tagged images in the repository. Only the \"latest\" tagged image is pulled by default.")
-
-	cmdTagImage.Flags().BoolVarP(&boolForce, "force", "f", false, "Force to tag")
-
-	cmdShowImageHistory.Flags().BoolVarP(&boolAll, "all", "a", false, "Show all build instructions")
-	cmdShowImageHistory.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
-
-	cmdRemoveImages.Flags().BoolVarP(&boolForce, "force", "f", false, "Force removal of the images")
-	cmdRemoveImages.Flags().BoolVarP(&boolNoPrune, "no-prune", "n", false, "Do not delete untagged parents")
-
-	cmdSearchImages.Flags().BoolVarP(&boolStar, "star", "s", false, "Sort by star")
-	cmdSearchImages.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display names")
-	cmdSearchImages.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
-
-	cmdImage.AddCommand(cmdBuildImage)
+	flags = cmdListImages.Flags()
+	flags.BoolVarP(&boolAll, "all", "a", false, "Show all images. Only named/taged and leaf images are shown by default.")
+	flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
+	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 	cmdImage.AddCommand(cmdListImages)
+
+	flags = cmdBuildImage.Flags()
+	flags.StringVarP(&imageTag, "tag", "t", "", "<NAME[:TAG]> to be applied to the image")
+	cmdImage.AddCommand(cmdBuildImage)
+
+	flags = cmdPullImage.Flags()
+	flags.BoolVarP(&boolAll, "all", "a", false, "Pull all tagged images in the repository. Only the \"latest\" tagged image is pulled by default.")
 	cmdImage.AddCommand(cmdPullImage)
+
+	flags = cmdPullImage.Flags()
+	flags.BoolVarP(&boolForce, "force", "f", false, "Force to tag")
 	cmdImage.AddCommand(cmdTagImage)
+
+	flags = cmdShowImageHistory.Flags()
+	flags.BoolVarP(&boolAll, "all", "a", false, "Show all build instructions")
+	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 	cmdImage.AddCommand(cmdShowImageHistory)
+
 	cmdImage.AddCommand(cmdInspectImage)
+
 	cmdImage.AddCommand(cmdPushImage)
+
+	flags = cmdRemoveImages.Flags()
+	flags.BoolVarP(&boolForce, "force", "f", false, "Force removal of the images")
+	flags.BoolVarP(&boolNoPrune, "no-prune", "n", false, "Do not delete untagged parents")
 	cmdImage.AddCommand(cmdRemoveImages)
+
+	flags = cmdSearchImages.Flags()
+	flags.BoolVarP(&boolStar, "star", "s", false, "Sort by star")
+	flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display names")
+	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 	cmdImage.AddCommand(cmdSearchImages)
 }
 

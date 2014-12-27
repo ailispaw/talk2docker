@@ -47,11 +47,13 @@ var cmdLogoutRegistry = &cobra.Command{
 }
 
 func init() {
-	cmdListRegistries.Flags().BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
-	cmdListRegistries.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
-
+	flags := cmdListRegistries.Flags()
+	flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
+	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 	cmdRegistry.AddCommand(cmdListRegistries)
+
 	cmdRegistry.AddCommand(cmdLoginRegistry)
+
 	cmdRegistry.AddCommand(cmdLogoutRegistry)
 }
 

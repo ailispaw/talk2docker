@@ -20,7 +20,8 @@ var cmdVersion = &cobra.Command{
 }
 
 func init() {
-	cmdVersion.Flags().BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+	flags := cmdVersion.Flags()
+	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 }
 
 func showVersion(ctx *cobra.Command, args []string) {
