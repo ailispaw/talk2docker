@@ -3,6 +3,7 @@ package commands
 import (
 	"os"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -14,7 +15,7 @@ var (
 	configPath string
 	hostName   string
 
-	boolYAML, boolJSON bool
+	boolYAML, boolJSON, boolVerbose, boolDebug bool
 
 	boolAll, boolQuiet, boolNoHeader bool
 )
@@ -31,6 +32,23 @@ func init() {
 
 	app.PersistentFlags().BoolVar(&boolYAML, "yaml", false, "Output in YAML format")
 	app.PersistentFlags().BoolVar(&boolJSON, "json", false, "Output in JSON format")
+
+	app.PersistentFlags().BoolVarP(&boolVerbose, "verbose", "v", false, "Print verbose messages")
+	app.PersistentFlags().BoolVar(&boolDebug, "debug", false, "Print debug messages")
+
+	cobra.OnInitialize(Initialize)
+}
+
+func Initialize() {
+	log.SetOutput(os.Stderr)
+	log.SetLevel(log.WarnLevel)
+
+	if boolVerbose {
+		log.SetLevel(log.InfoLevel)
+	}
+	if boolDebug {
+		log.SetLevel(log.DebugLevel)
+	}
 }
 
 func Execute() {

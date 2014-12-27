@@ -12,6 +12,11 @@
 			"Rev": "63c378b851290989b19ca955468386485f118c65"
 		},
 		{
+			"ImportPath": "github.com/sirupsen/logrus",
+			"Comment": "v0.6.2-12-gfd90de6",
+			"Rev": "fd90de65707e7ce39b6b610de2ad3b1d000b60b5"
+		},
+		{
 			"ImportPath": "github.com/spf13/cobra",
 			"Rev": "e1e66f7b4e667751cf530ddb6e72b79d6eeb0235"
 		},
