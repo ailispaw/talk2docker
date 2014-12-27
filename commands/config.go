@@ -19,10 +19,11 @@ var cmdConfig = &cobra.Command{
 }
 
 var cmdCatConfig = &cobra.Command{
-	Use:   "cat",
-	Short: "Cat the configuration file",
-	Long:  APP_NAME + " config cat - Cat the configuration file",
-	Run:   catConfig,
+	Use:     "cat",
+	Aliases: []string{"ls"},
+	Short:   "Cat the configuration file",
+	Long:    APP_NAME + " config cat - Cat the configuration file",
+	Run:     catConfig,
 }
 
 var cmdEditConfig = &cobra.Command{
