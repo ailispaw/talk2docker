@@ -82,14 +82,14 @@ func (client *DockerClient) InspectImage(name string) (*ImageInfo, error) {
 	return imageInfo, nil
 }
 
-func (client *DockerClient) PushImage(name, tag, auth string) error {
+func (client *DockerClient) PushImage(name, tag, credentials string) error {
 	v := url.Values{}
 	v.Set("tag", tag)
 
 	uri := fmt.Sprintf("/v%s/images/%s/push?%s", API_VERSION, name, v.Encode())
 
 	headers := map[string]string{}
-	headers["X-Registry-Auth"] = auth
+	headers["X-Registry-Auth"] = credentials
 
 	return client.doStreamRequest("POST", uri, nil, headers)
 }

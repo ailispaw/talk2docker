@@ -5,15 +5,15 @@ import (
 	"fmt"
 )
 
-func (client *DockerClient) Auth(auth *AuthConfig) error {
+func (client *DockerClient) Auth(auth *AuthConfig) (string, error) {
 	data, err := json.Marshal(auth)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	uri := fmt.Sprintf("/v%s/auth", API_VERSION)
 	_, err = client.doRequest("POST", uri, data, nil)
-	return err
+	return auth.Encode(), err
 }
 
 func (client *DockerClient) Info() (*Info, error) {

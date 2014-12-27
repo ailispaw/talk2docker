@@ -27,10 +27,10 @@ type Host struct {
 }
 
 type Registry struct {
-	URL      string `yaml:"url"`
-	Username string `yaml:"username"`
-	Email    string `yaml:"email"`
-	Auth     string `yaml:"auth,omitempty"`
+	URL         string `yaml:"url"`
+	Username    string `yaml:"username"`
+	Email       string `yaml:"email"`
+	Credentials string `yaml:"credentials,omitempty"`
 }
 
 const (

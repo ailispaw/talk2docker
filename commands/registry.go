@@ -81,7 +81,7 @@ func listRegistries(ctx *cobra.Command, args []string) {
 			registry.URL,
 			registry.Username,
 			registry.Email,
-			FormatBool(registry.Auth != "", "IN", ""),
+			FormatBool(registry.Credentials != "", "IN", ""),
 		}
 		items = append(items, out)
 	}
@@ -152,13 +152,14 @@ func loginRegistry(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	if err := docker.Auth(&authConfig); err != nil {
+	credentials, err := docker.Auth(&authConfig)
+	if err != nil {
 		log.Fatal(err)
 	}
 
 	registry.Username = authConfig.Username
 	registry.Email = authConfig.Email
-	registry.Auth = authConfig.Encode()
+	registry.Credentials = credentials
 
 	config.SetRegistry(registry)
 
@@ -181,7 +182,7 @@ func logoutRegistry(ctx *cobra.Command, args []string) {
 	}
 
 	registry, notFound := config.GetRegistry(url)
-	if (notFound != nil) || (registry.Auth == "") {
+	if (notFound != nil) || (registry.Credentials == "") {
 		log.Fatalf("Not logged in to a Docker registry at %s", url)
 	}
 

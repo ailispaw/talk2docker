@@ -451,7 +451,7 @@ func pushImage(ctx *cobra.Command, args []string) {
 	}
 
 	registryConfig, err := config.GetRegistry(registry)
-	if (err != nil) || (registryConfig.Auth == "") {
+	if (err != nil) || (registryConfig.Credentials == "") {
 		log.Fatal("Please login prior to pushing an image.")
 	}
 
@@ -460,7 +460,7 @@ func pushImage(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	if err := docker.PushImage(name, tag, registryConfig.Auth); err != nil {
+	if err := docker.PushImage(name, tag, registryConfig.Credentials); err != nil {
 		log.Fatal(err)
 	}
 }

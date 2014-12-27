@@ -34,7 +34,7 @@ func (config *Config) LogoutRegistry(url string) {
 	}
 	for i, registry := range config.Registries {
 		if registry.URL == url {
-			config.Registries[i].Auth = ""
+			config.Registries[i].Credentials = ""
 			return
 		}
 	}
