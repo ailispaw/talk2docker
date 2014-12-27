@@ -13,8 +13,9 @@ Contributions and suggestions would be appreciated, though it's aimed at my lear
 
 - https://docs.docker.com/reference/api/docker_remote_api/
 - https://github.com/spf13/cobra
-- http://gopkg.in/yaml.v2
+- https://gopkg.in/yaml.v2
 - https://github.com/howeyc/gopass
+- https://github.com/sirupsen/logrus
 - https://github.com/YungSang/tablewriter/tree/talk2docker
 
 ## How to Build
