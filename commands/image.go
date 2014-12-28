@@ -41,7 +41,7 @@ var cmdImage = &cobra.Command{
 	Short:   "Manage images",
 	Long:    APP_NAME + " image - Manage images",
 	Run: func(ctx *cobra.Command, args []string) {
-		ctx.Usage()
+		ctx.Help()
 	},
 }
 

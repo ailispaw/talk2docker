@@ -18,7 +18,7 @@ var cmdRegistry = &cobra.Command{
 	Short:   "Manage registries",
 	Long:    APP_NAME + " registry - Manage registries",
 	Run: func(ctx *cobra.Command, args []string) {
-		ctx.Usage()
+		ctx.Help()
 	},
 }
 

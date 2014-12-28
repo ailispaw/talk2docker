@@ -23,7 +23,7 @@ var cmdHost = &cobra.Command{
 	Short: "Manage hosts",
 	Long:  APP_NAME + " host - Manage hosts",
 	Run: func(ctx *cobra.Command, args []string) {
-		ctx.Usage()
+		ctx.Help()
 	},
 }
 

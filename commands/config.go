@@ -14,7 +14,7 @@ var cmdConfig = &cobra.Command{
 	Short: "Manage the configuration file",
 	Long:  APP_NAME + " config - Manage the configuration file",
 	Run: func(ctx *cobra.Command, args []string) {
-		ctx.Usage()
+		ctx.Help()
 	},
 }
 
