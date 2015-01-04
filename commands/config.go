@@ -6,7 +6,8 @@ import (
 	"os/exec"
 
 	"github.com/spf13/cobra"
-	"github.com/yungsang/talk2docker/client"
+
+	"github.com/ailispaw/talk2docker/client"
 )
 
 var cmdConfig = &cobra.Command{

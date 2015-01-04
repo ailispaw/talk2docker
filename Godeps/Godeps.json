@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/yungsang/talk2docker",
+	"ImportPath": "github.com/ailispaw/talk2docker",
 	"GoVersion": "go1.4",
 	"Deps": [
 		{

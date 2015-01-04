@@ -6,9 +6,10 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/yungsang/tablewriter"
-	"github.com/yungsang/talk2docker/api"
-	"github.com/yungsang/talk2docker/client"
-	"github.com/yungsang/talk2docker/version"
+
+	"github.com/ailispaw/talk2docker/api"
+	"github.com/ailispaw/talk2docker/client"
+	"github.com/ailispaw/talk2docker/version"
 )
 
 var cmdVersion = &cobra.Command{

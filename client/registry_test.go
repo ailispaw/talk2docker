@@ -19,9 +19,9 @@ func TestParseRepositoryName(t *testing.T) {
 			registry, expectedRegistry, name, expectedName, tag, expectedTag)
 	}
 
-	registry, name, tag, err = ParseRepositoryName("yungsang/busybox")
+	registry, name, tag, err = ParseRepositoryName("ailispaw/busybox")
 	expectedRegistry = ""
-	expectedName = "yungsang/busybox"
+	expectedName = "ailispaw/busybox"
 	expectedTag = "latest"
 	if err != nil {
 		t.Errorf("%v", err)
@@ -31,9 +31,9 @@ func TestParseRepositoryName(t *testing.T) {
 			registry, expectedRegistry, name, expectedName, tag, expectedTag)
 	}
 
-	registry, name, tag, err = ParseRepositoryName("yungsang/busybox:latest")
+	registry, name, tag, err = ParseRepositoryName("ailispaw/busybox:latest")
 	expectedRegistry = ""
-	expectedName = "yungsang/busybox"
+	expectedName = "ailispaw/busybox"
 	expectedTag = "latest"
 	if err != nil {
 		t.Errorf("%v", err)
@@ -43,9 +43,9 @@ func TestParseRepositoryName(t *testing.T) {
 			registry, expectedRegistry, name, expectedName, tag, expectedTag)
 	}
 
-	registry, name, tag, err = ParseRepositoryName("localhost/yungsang/busybox:tagname")
+	registry, name, tag, err = ParseRepositoryName("localhost/ailispaw/busybox:tagname")
 	expectedRegistry = "localhost"
-	expectedName = "yungsang/busybox"
+	expectedName = "ailispaw/busybox"
 	expectedTag = "tagname"
 	if err != nil {
 		t.Errorf("%v", err)
@@ -55,9 +55,9 @@ func TestParseRepositoryName(t *testing.T) {
 			registry, expectedRegistry, name, expectedName, tag, expectedTag)
 	}
 
-	registry, name, tag, err = ParseRepositoryName("localhost:5000/yungsang/busybox")
+	registry, name, tag, err = ParseRepositoryName("localhost:5000/ailispaw/busybox")
 	expectedRegistry = "localhost:5000"
-	expectedName = "yungsang/busybox"
+	expectedName = "ailispaw/busybox"
 	expectedTag = "latest"
 	if err != nil {
 		t.Errorf("%v", err)
@@ -67,9 +67,9 @@ func TestParseRepositoryName(t *testing.T) {
 			registry, expectedRegistry, name, expectedName, tag, expectedTag)
 	}
 
-	registry, name, tag, err = ParseRepositoryName("localhost:5000/yungsang/busybox:tagname")
+	registry, name, tag, err = ParseRepositoryName("localhost:5000/ailispaw/busybox:tagname")
 	expectedRegistry = "localhost:5000"
-	expectedName = "yungsang/busybox"
+	expectedName = "ailispaw/busybox"
 	expectedTag = "tagname"
 	if err != nil {
 		t.Errorf("%v", err)
@@ -91,9 +91,9 @@ func TestParseRepositoryName(t *testing.T) {
 			registry, expectedRegistry, name, expectedName, tag, expectedTag)
 	}
 
-	registry, name, tag, err = ParseRepositoryName("192.168.33.201:5000/yungsang/flannel")
+	registry, name, tag, err = ParseRepositoryName("192.168.33.201:5000/ailispaw/flannel")
 	expectedRegistry = "192.168.33.201:5000"
-	expectedName = "yungsang/flannel"
+	expectedName = "ailispaw/flannel"
 	expectedTag = "latest"
 	if err != nil {
 		t.Errorf("%v", err)

@@ -1,4 +1,4 @@
-PROJECT := "github.com/yungsang/talk2docker"
+PROJECT := "github.com/ailispaw/talk2docker"
 
 WORKSPACE := `godep path`
 

@@ -4,7 +4,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/yungsang/talk2docker/api"
+	"github.com/ailispaw/talk2docker/api"
 )
 
 func NewDockerClient(configPath, hostName string, out io.Writer) (*api.DockerClient, error) {

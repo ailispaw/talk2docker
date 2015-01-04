@@ -29,7 +29,7 @@ Contributions and suggestions would be appreciated, though it's aimed at my lear
 ### How to build
 
 ```
-$ git clone https://github.com/yungsang/talk2docker.git
+$ git clone https://github.com/ailispaw/talk2docker.git
 $ cd talk2docker
 $ make
 ```
@@ -92,9 +92,9 @@ hosts:
   url: tcp://192.168.59.104:2376
   description: on boot2docker-vm managed by boot2docker
   tls: true
-  tls-ca-cert: /Users/yungsang/.boot2docker/certs/boot2docker-vm/ca.pem
-  tls-cert: /Users/yungsang/.boot2docker/certs/boot2docker-vm/cert.pem
-  tls-key: /Users/yungsang/.boot2docker/certs/boot2docker-vm/key.pem
+  tls-ca-cert: /Users/ailispaw/.boot2docker/certs/boot2docker-vm/ca.pem
+  tls-cert: /Users/ailispaw/.boot2docker/certs/boot2docker-vm/cert.pem
+  tls-key: /Users/ailispaw/.boot2docker/certs/boot2docker-vm/key.pem
   tls-verify: true
 ```
 
