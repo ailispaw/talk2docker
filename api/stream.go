@@ -1,3 +1,11 @@
+/*!
+ * Copyright 2014 Docker, Inc.
+ * Licensed under the Apache License, Version 2.0
+ * github.com/docker/docker/LICENSE
+ *
+ * github.com/docker/docker/utils/jsonmessage.go
+ */
+
 package api
 
 import (

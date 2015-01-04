@@ -1,3 +1,13 @@
+/*!
+ * Copyright 2014 Docker, Inc.
+ * Licensed under the Apache License, Version 2.0
+ * github.com/docker/docker/LICENSE
+ *
+ * github.com/docker/docker/api/client/commands.go
+ * github.com/docker/docker/pkg/archive/archive.go
+ * github.com/docker/docker/pkg/fileutils/fileutils.go
+ */
+
 package api
 
 import (

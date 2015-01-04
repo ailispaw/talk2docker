@@ -1,3 +1,11 @@
+/*!
+ * Copyright 2014 Sam Alba <sam.alba@gmail.com>
+ * Licensed under the Apache License, Version 2.0
+ * github.com/samalba/dockerclient/LICENSE
+ *
+ * github.com/samalba/dockerclient/dockerclient.go
+ */
+
 package api
 
 import (
