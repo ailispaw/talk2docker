@@ -8,14 +8,18 @@ import (
 	"io/ioutil"
 	"net/url"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
 )
 
-func (client *DockerClient) BuildImage(root, tag string) error {
+const (
+	DOCKERFILE   = "Dockerfile"
+	DOCKERIGNORE = ".dockerignore"
+)
+
+func (client *DockerClient) BuildImage(dockerfile, tag string) error {
 	v := url.Values{}
 	v.Set("rm", "1")
 	if tag != "" {
@@ -24,12 +28,25 @@ func (client *DockerClient) BuildImage(root, tag string) error {
 
 	uri := fmt.Sprintf("/v%s/build?%s", API_VERSION, v.Encode())
 
-	filename := path.Join(root, "Dockerfile")
-	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		return fmt.Errorf("No Dockerfile found in %s", root)
+	fi, err := os.Lstat(dockerfile)
+	if err != nil {
+		return err
 	}
 
-	ignore, err := ioutil.ReadFile(path.Join(root, ".dockerignore"))
+	fm := fi.Mode()
+	if fm.IsDir() {
+		dockerfile = filepath.Join(dockerfile, DOCKERFILE)
+		if _, err := os.Stat(dockerfile); os.IsNotExist(err) {
+			return fmt.Errorf("No Dockerfile found in %s", dockerfile)
+		}
+	}
+
+	var (
+		root     = filepath.Dir(dockerfile)
+		filename = filepath.Base(dockerfile)
+	)
+
+	ignore, err := ioutil.ReadFile(filepath.Join(root, DOCKERIGNORE))
 	if err != nil && !os.IsNotExist(err) {
 		return fmt.Errorf("Error reading .dockerignore: %s", err)
 	}
@@ -41,7 +58,7 @@ func (client *DockerClient) BuildImage(root, tag string) error {
 			continue
 		}
 		pattern = filepath.Clean(pattern)
-		ok, err := filepath.Match(pattern, "Dockerfile")
+		ok, err := filepath.Match(pattern, filename)
 		if err != nil {
 			return fmt.Errorf("Bad .dockerignore pattern: %s, error: %s", pattern, err)
 		}
@@ -49,6 +66,10 @@ func (client *DockerClient) BuildImage(root, tag string) error {
 			return fmt.Errorf("Dockerfile was excluded by .dockerignore pattern %s", pattern)
 		}
 		excludes = append(excludes, pattern)
+	}
+
+	if filename != DOCKERFILE {
+		excludes = append(excludes, DOCKERFILE)
 	}
 
 	fmt.Fprintf(client.out, "Sending build context to Docker daemon\n")
@@ -139,6 +160,10 @@ func (client *DockerClient) BuildImage(root, tag string) error {
 					name = name + "/"
 				}
 				hdr.Name = name
+
+				if name == filename {
+					hdr.Name = DOCKERFILE
+				}
 
 				if err := tarWriter.WriteHeader(hdr); err != nil {
 					log.Errorf("Can't write tar header, error: %s", err)

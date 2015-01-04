@@ -29,7 +29,7 @@ var cmdIs = &cobra.Command{
 }
 
 var cmdBuild = &cobra.Command{
-	Use:   "build <PATH>",
+	Use:   "build [PATH]",
 	Short: "Build an image from a Dockerfile",
 	Long:  APP_NAME + " build - Build an image from a Dockerfile",
 	Run:   buildImage,
@@ -54,7 +54,7 @@ var cmdListImages = &cobra.Command{
 }
 
 var cmdBuildImage = &cobra.Command{
-	Use:   "build <PATH>",
+	Use:   "build [PATH]",
 	Short: "Build an image from a Dockerfile",
 	Long:  APP_NAME + " image build - Build an image from a Dockerfile",
 	Run:   buildImage,
@@ -161,10 +161,9 @@ func init() {
 }
 
 func buildImage(ctx *cobra.Command, args []string) {
-	if len(args) < 1 {
-		ctx.Println("Needs an argument <PATH> to Dockerfile")
-		ctx.Usage()
-		return
+	path := "."
+	if len(args) > 0 {
+		path = args[0]
 	}
 
 	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
@@ -172,7 +171,7 @@ func buildImage(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	if err := docker.BuildImage(args[0], imageTag); err != nil {
+	if err := docker.BuildImage(path, imageTag); err != nil {
 		log.Fatal(err)
 	}
 }
