@@ -32,11 +32,12 @@ $ talk2docker
 Talk2Docker - A simple Docker client to talk to Docker daemon
 
 Usage:
+  talk2docker [flags]
   talk2docker [command]
 
 Available Commands:
   ps                        List containers
-  build <PATH>              Build an image from a Dockerfile
+  build [PATH]              Build an image from a Dockerfile
   ls [NAME[:TAG]]           List images
   image [command]           Manage images
   host [command]            Manage hosts
