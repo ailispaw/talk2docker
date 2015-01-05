@@ -10,15 +10,6 @@ Contributions and suggestions would be appreciated, though it's aimed at my lear
 - Output in JSON or YAML format as well
 - Organize commands by category
 
-## References
-
-- https://docs.docker.com/reference/api/docker_remote_api/
-- https://github.com/spf13/cobra
-- https://gopkg.in/yaml.v2
-- https://github.com/howeyc/gopass
-- https://github.com/sirupsen/logrus
-- https://github.com/yungsang/tablewriter/tree/talk2docker
-
 ## Building talk2docker
 
 ### Requirements
@@ -102,3 +93,14 @@ hosts:
 $ talk2docker version
 $ talk2docker --host=boot2docker version
 ```
+
+## References
+
+- https://github.com/docker/docker ([Apache License Version 2.0](https://github.com/docker/docker/blob/master/LICENSE))
+- https://docs.docker.com/reference/api/docker_remote_api/
+- https://github.com/samalba/dockerclient ([Apache License Version 2.0](https://github.com/samalba/dockerclient/blob/master/LICENSE))
+- https://github.com/spf13/cobra ([Apache License Version 2.0](https://github.com/spf13/cobra/blob/master/LICENSE.txt))
+- https://gopkg.in/yaml.v2 ([LGPLv3](https://github.com/go-yaml/yaml/blob/v2/LICENSE))
+- https://github.com/howeyc/gopass ([MIT License](https://github.com/howeyc/gopass/blob/master/LICENSE.txt))
+- https://github.com/sirupsen/logrus ([MIT License](https://github.com/Sirupsen/logrus/blob/master/LICENSE))
+- https://github.com/yungsang/tablewriter/tree/talk2docker ([MIT License](https://github.com/olekukonko/tablewriter/blob/master/LICENCE.md))
