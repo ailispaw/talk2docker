@@ -124,7 +124,7 @@ func (config *Config) SaveConfig(path string) error {
 	}
 
 	os.Remove(path + ".bak")
-	if err := os.Link(path, path+".bak"); err != nil {
+	if err := os.Link(path, path+".bak"); err != nil && !os.IsNotExist(err) {
 		return err
 	}
 
