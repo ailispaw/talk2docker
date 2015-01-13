@@ -70,18 +70,7 @@ func (client *DockerClient) BuildImage(path, tag string) error {
 			continue
 		}
 		pattern = filepath.Clean(pattern)
-		ok, err := filepath.Match(pattern, filename)
-		if err != nil {
-			return fmt.Errorf("Bad .dockerignore pattern: %s, error: %s", pattern, err)
-		}
-		if ok {
-			return fmt.Errorf("Dockerfile was excluded by .dockerignore pattern %s", pattern)
-		}
 		excludes = append(excludes, pattern)
-	}
-
-	if filename != DOCKERFILE {
-		excludes = append(excludes, DOCKERFILE)
 	}
 
 	fmt.Fprintf(client.out, "Sending build context to Docker daemon\n")
@@ -102,6 +91,8 @@ func (client *DockerClient) BuildImage(path, tag string) error {
 		tmpWriter := bufio.NewWriterSize(nil, 32*1024)
 		defer tmpWriter.Reset(nil)
 
+		seen := make(map[string]bool)
+
 		filepath.Walk(filepath.Join(root, "."), func(filePath string, f os.FileInfo, err error) error {
 			if err != nil {
 				log.Debugf("Can't stat file %s, error: %s", filePath, err)
@@ -113,27 +104,39 @@ func (client *DockerClient) BuildImage(path, tag string) error {
 				return nil
 			}
 
-			skip, err := func() (bool, error) { // Excluding
-				for _, exclude := range excludes {
-					matched, err := filepath.Match(exclude, relFilePath)
-					if err != nil {
-						log.Errorf("Error matching: %s, pattern: %s", relFilePath, exclude)
-						return false, err
-					}
-					if matched {
-						if filepath.Clean(relFilePath) == "." {
-							log.Errorf("Can't exclude whole path, excluding pattern: %s", exclude)
-							continue
+			skip := false
+
+			switch relFilePath {
+			default:
+				skip, err = func() (bool, error) { // Excluding
+					for _, exclude := range excludes {
+						matched, err := filepath.Match(exclude, relFilePath)
+						if err != nil {
+							log.Errorf("Error matching: %s, pattern: %s", relFilePath, exclude)
+							return false, err
 						}
-						return true, nil
+						if matched {
+							if filepath.Clean(relFilePath) == "." {
+								log.Errorf("Can't exclude whole path, excluding pattern: %s", exclude)
+								continue
+							}
+							return true, nil
+						}
 					}
+					return false, nil
+				}()
+				if err != nil {
+					log.Debugf("Error matching: %s, %s", relFilePath, err)
+					return err
 				}
-				return false, nil
-			}()
-			if err != nil {
-				log.Debugf("Error matching: %s, %s", relFilePath, err)
-				return err
+			case DOCKERFILE:
+				if filename != DOCKERFILE {
+					skip = true
+				}
+			case DOCKERIGNORE:
+			case filename:
 			}
+
 			if skip {
 				log.WithField("", " Skipped").Debugf("---> %s", relFilePath)
 				if f.IsDir() {
@@ -141,6 +144,11 @@ func (client *DockerClient) BuildImage(path, tag string) error {
 				}
 				return nil
 			}
+
+			if seen[relFilePath] {
+				return nil
+			}
+			seen[relFilePath] = true
 
 			var size int64
 
