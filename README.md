@@ -6,7 +6,7 @@ Contributions and suggestions would be appreciated, though it's aimed at my lear
 
 ## Features
 
-- Handle multiple Docker deamons
+- Handle multiple Docker daemons
 - Output in JSON or YAML format as well
 - Organize commands by category
 
