@@ -58,14 +58,16 @@ func Initialize() {
 
 func Execute() {
 	app.AddCommand(cmdPs)
-	app.AddCommand(cmdBuild)
 	app.AddCommand(cmdIs)
+	app.AddCommand(cmdHosts)
+
+	app.AddCommand(cmdBuild)
+	app.AddCommand(cmdVersion)
+
 	app.AddCommand(cmdImage)
 	app.AddCommand(cmdHost)
-	app.AddCommand(cmdHosts)
 	app.AddCommand(cmdRegistry)
 	app.AddCommand(cmdConfig)
-	app.AddCommand(cmdVersion)
 
 	app.SetOutput(os.Stdout)
 	app.Execute()

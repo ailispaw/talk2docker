@@ -14,7 +14,7 @@ import (
 
 var cmdHosts = &cobra.Command{
 	Use:   "hosts",
-	Short: "Shortcut to list hosts",
+	Short: "list hosts",
 	Long:  APP_NAME + " hosts - List hosts",
 	Run:   listHosts,
 }
