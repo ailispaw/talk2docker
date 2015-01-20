@@ -11,9 +11,10 @@ import (
 )
 
 var cmdConfig = &cobra.Command{
-	Use:   "config [command]",
-	Short: "Manage the configuration file",
-	Long:  APP_NAME + " config - Manage the configuration file",
+	Use:     "config [command]",
+	Aliases: []string{"cfg"},
+	Short:   "Manage the configuration file",
+	Long:    APP_NAME + " config - Manage the configuration file",
 	Run: func(ctx *cobra.Command, args []string) {
 		ctx.Help()
 	},

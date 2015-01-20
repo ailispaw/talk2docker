@@ -18,20 +18,29 @@ var (
 )
 
 var cmdPs = &cobra.Command{
-	Use:   "ps",
-	Short: "List containers",
-	Long:  APP_NAME + " ps - List containers",
-	Run:   listContainers,
+	Use:     "ps",
+	Aliases: []string{"containers"},
+	Short:   "List containers",
+	Long:    APP_NAME + " ps - List containers",
+	Run:     listContainers,
 }
 
 var cmdContainer = &cobra.Command{
 	Use:     "container [command]",
-	Aliases: []string{"c"},
+	Aliases: []string{"ctn"},
 	Short:   "Manage containers",
 	Long:    APP_NAME + " container - Manage containers",
 	Run: func(ctx *cobra.Command, args []string) {
 		ctx.Help()
 	},
+}
+
+var cmdListContainers = &cobra.Command{
+	Use:     "list",
+	Aliases: []string{"ls"},
+	Short:   "List containers",
+	Long:    APP_NAME + " container list - List containers",
+	Run:     listContainers,
 }
 
 var cmdRemoveContainer = &cobra.Command{
@@ -49,6 +58,14 @@ func init() {
 	flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
 	flags.BoolVarP(&boolSize, "size", "s", false, "Display sizes")
 	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+
+	flags = cmdListContainers.Flags()
+	flags.BoolVarP(&boolAll, "all", "a", false, "Show all containers. Only running containers are shown by default.")
+	flags.BoolVarP(&boolLatest, "latest", "l", false, "Show only the latest created container, include non-running ones.")
+	flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
+	flags.BoolVarP(&boolSize, "size", "s", false, "Display sizes")
+	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+	cmdContainer.AddCommand(cmdListContainers)
 
 	flags = cmdRemoveContainer.Flags()
 	flags.BoolVarP(&boolForce, "force", "f", false, "Force the removal of a running container")

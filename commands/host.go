@@ -20,9 +20,10 @@ var cmdHosts = &cobra.Command{
 }
 
 var cmdHost = &cobra.Command{
-	Use:   "host [command]",
-	Short: "Manage hosts",
-	Long:  APP_NAME + " host - Manage hosts",
+	Use:     "host [command]",
+	Aliases: []string{"hst"},
+	Short:   "Manage hosts",
+	Long:    APP_NAME + " host - Manage hosts",
 	Run: func(ctx *cobra.Command, args []string) {
 		ctx.Help()
 	},
