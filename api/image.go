@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"os"
 )
 
 func (client *DockerClient) ListImages(all bool, filters map[string][]string) ([]Image, error) {
@@ -106,8 +105,7 @@ func (client *DockerClient) RemoveImage(name string, force, noprune bool) error 
 	uri := fmt.Sprintf("/v%s/images/%s?%s", API_VERSION, name, v.Encode())
 	data, err := client.doRequest("DELETE", uri, nil, nil)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
-		return fmt.Errorf("Error: failed to remove one or more images")
+		return err
 	}
 
 	messages := []map[string]string{}

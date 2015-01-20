@@ -525,14 +525,15 @@ func removeImages(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	var lastError error
+	var gotError = false
 	for _, name := range args {
 		if err := docker.RemoveImage(name, boolForce, boolNoPrune); err != nil {
-			lastError = err
+			log.Println(err)
+			gotError = true
 		}
 	}
-	if lastError != nil {
-		log.Fatal(lastError)
+	if gotError {
+		log.Fatal("Error: failed to remove one or more images")
 	}
 }
 
