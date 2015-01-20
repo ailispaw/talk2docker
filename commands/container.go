@@ -24,6 +24,24 @@ var cmdPs = &cobra.Command{
 	Run:   listContainers,
 }
 
+var cmdContainer = &cobra.Command{
+	Use:     "container [command]",
+	Aliases: []string{"c"},
+	Short:   "Manage containers",
+	Long:    APP_NAME + " container - Manage containers",
+	Run: func(ctx *cobra.Command, args []string) {
+		ctx.Help()
+	},
+}
+
+var cmdRemoveContainer = &cobra.Command{
+	Use:     "remove <NAME|ID>...",
+	Aliases: []string{"rm"},
+	Short:   "Remove containers",
+	Long:    APP_NAME + " remove - Remove containers",
+	Run:     removeContainers,
+}
+
 func init() {
 	flags := cmdPs.Flags()
 	flags.BoolVarP(&boolAll, "all", "a", false, "Show all containers. Only running containers are shown by default.")
@@ -31,6 +49,10 @@ func init() {
 	flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
 	flags.BoolVarP(&boolSize, "size", "s", false, "Display sizes")
 	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+
+	flags = cmdRemoveContainer.Flags()
+	flags.BoolVarP(&boolForce, "force", "f", false, "Force the removal of a running container")
+	cmdContainer.AddCommand(cmdRemoveContainer)
 }
 
 func listContainers(ctx *cobra.Command, args []string) {
@@ -110,4 +132,30 @@ func listContainers(ctx *cobra.Command, args []string) {
 	}
 
 	PrintInTable(ctx.Out(), header, items, 0, tablewriter.ALIGN_DEFAULT)
+}
+
+func removeContainers(ctx *cobra.Command, args []string) {
+	if len(args) < 1 {
+		ctx.Println("Needs an argument <NAME|ID> at least to remove")
+		ctx.Usage()
+		return
+	}
+
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var gotError = false
+	for _, name := range args {
+		if err := docker.RemoveContainer(name, boolForce); err != nil {
+			log.Println(err)
+			gotError = true
+		} else {
+			ctx.Println(name)
+		}
+	}
+	if gotError {
+		log.Fatal("Error: failed to remove one or more containers")
+	}
 }

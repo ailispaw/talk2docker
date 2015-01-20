@@ -43,3 +43,18 @@ func (client *DockerClient) ListContainers(all, size bool, limit int, since, bef
 	}
 	return containers, nil
 }
+
+func (client *DockerClient) RemoveContainer(name string, force bool) error {
+	v := url.Values{}
+	if force {
+		v.Set("force", "1")
+	}
+
+	uri := fmt.Sprintf("/v%s/containers/%s?%s", API_VERSION, name, v.Encode())
+	_, err := client.doRequest("DELETE", uri, nil, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
