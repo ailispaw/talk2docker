@@ -44,6 +44,109 @@ func (client *DockerClient) ListContainers(all, size bool, limit int, since, bef
 	return containers, nil
 }
 
+func (client *DockerClient) InspectContainer(name string) (*ContainerInfo, error) {
+	uri := fmt.Sprintf("/v%s/containers/%s/json", API_VERSION, name)
+	data, err := client.doRequest("GET", uri, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	containerInfo := &ContainerInfo{}
+	if err := json.Unmarshal(data, containerInfo); err != nil {
+		return nil, err
+	}
+	return containerInfo, nil
+}
+
+func (client *DockerClient) StartContainer(name string) error {
+	uri := fmt.Sprintf("/v%s/containers/%s/start", API_VERSION, name)
+	_, err := client.doRequest("POST", uri, nil, nil)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (client *DockerClient) StopContainer(name string, timeToWait int) error {
+	v := url.Values{}
+	if timeToWait > 0 {
+		v.Set("t", strconv.Itoa(timeToWait))
+	}
+
+	uri := fmt.Sprintf("/v%s/containers/%s/stop?%s", API_VERSION, name, v.Encode())
+	_, err := client.doRequest("POST", uri, nil, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (client *DockerClient) RestartContainer(name string, timeToWait int) error {
+	v := url.Values{}
+	if timeToWait > 0 {
+		v.Set("t", strconv.Itoa(timeToWait))
+	}
+
+	uri := fmt.Sprintf("/v%s/containers/%s/restart?%s", API_VERSION, name, v.Encode())
+	_, err := client.doRequest("POST", uri, nil, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (client *DockerClient) KillContainer(name, signal string) error {
+	v := url.Values{}
+	if signal != "" {
+		v.Set("signal", signal)
+	}
+
+	uri := fmt.Sprintf("/v%s/containers/%s/kill?%s", API_VERSION, name, v.Encode())
+	_, err := client.doRequest("POST", uri, nil, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (client *DockerClient) PauseContainer(name string) error {
+	uri := fmt.Sprintf("/v%s/containers/%s/pause", API_VERSION, name)
+	_, err := client.doRequest("POST", uri, nil, nil)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (client *DockerClient) UnpauseContainer(name string) error {
+	uri := fmt.Sprintf("/v%s/containers/%s/unpause", API_VERSION, name)
+	_, err := client.doRequest("POST", uri, nil, nil)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (client *DockerClient) WaitContainer(name string) (int, error) {
+	uri := fmt.Sprintf("/v%s/containers/%s/wait", API_VERSION, name)
+	data, err := client.doRequest("POST", uri, nil, nil)
+	if err != nil {
+		return 0, err
+	}
+
+	var result struct {
+		StatusCode int
+	}
+	if err := json.Unmarshal(data, &result); err != nil {
+		return 0, err
+	}
+
+	return result.StatusCode, nil
+}
+
 func (client *DockerClient) RemoveContainer(name string, force bool) error {
 	v := url.Values{}
 	if force {

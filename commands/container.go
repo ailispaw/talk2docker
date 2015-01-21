@@ -15,6 +15,9 @@ import (
 
 var (
 	boolLatest, boolSize bool
+
+	timeToWait int
+	signal     string
 )
 
 var cmdPs = &cobra.Command{
@@ -43,11 +46,72 @@ var cmdListContainers = &cobra.Command{
 	Run:     listContainers,
 }
 
-var cmdRemoveContainer = &cobra.Command{
+var cmdInspectContainers = &cobra.Command{
+	Use:     "inspect <NAME|ID>...",
+	Aliases: []string{"ins", "info"},
+	Short:   "Inspect containers",
+	Long:    APP_NAME + " container inspect - Inspect containers",
+	Run:     inspectContainers,
+}
+
+var cmdStartContainers = &cobra.Command{
+	Use:     "start <NAME|ID>...",
+	Aliases: []string{"up"},
+	Short:   "Start containers",
+	Long:    APP_NAME + " container start - Start containers",
+	Run:     startContainers,
+}
+
+var cmdStopContainers = &cobra.Command{
+	Use:     "stop <NAME|ID>...",
+	Aliases: []string{"down"},
+	Short:   "Stop containers",
+	Long:    APP_NAME + " container stop - Stop containers",
+	Run:     stopContainers,
+}
+
+var cmdRestartContainers = &cobra.Command{
+	Use:   "restart <NAME|ID>...",
+	Short: "Restart containers",
+	Long:  APP_NAME + " container restart - Restart containers",
+	Run:   restartContainers,
+}
+
+var cmdKillContainers = &cobra.Command{
+	Use:   "kill <NAME|ID>...",
+	Short: "Kill containers",
+	Long:  APP_NAME + " container kill - Kill containers",
+	Run:   killContainers,
+}
+
+var cmdPauseContainers = &cobra.Command{
+	Use:     "pause <NAME|ID>...",
+	Aliases: []string{"suspend"},
+	Short:   "Pause containers",
+	Long:    APP_NAME + " container pause - Pause containers",
+	Run:     pauseContainers,
+}
+
+var cmdUnpauseContainers = &cobra.Command{
+	Use:     "unpause <NAME|ID>...",
+	Aliases: []string{"resume"},
+	Short:   "Unpause containers",
+	Long:    APP_NAME + " container unpause - Unpause containers",
+	Run:     unpauseContainers,
+}
+
+var cmdWaitContainers = &cobra.Command{
+	Use:   "wait <NAME|ID>...",
+	Short: "Wait containers",
+	Long:  APP_NAME + " container wait - Wait containers",
+	Run:   waitContainers,
+}
+
+var cmdRemoveContainers = &cobra.Command{
 	Use:     "remove <NAME|ID>...",
 	Aliases: []string{"rm"},
 	Short:   "Remove containers",
-	Long:    APP_NAME + " remove - Remove containers",
+	Long:    APP_NAME + " container remove - Remove containers",
 	Run:     removeContainers,
 }
 
@@ -67,9 +131,31 @@ func init() {
 	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 	cmdContainer.AddCommand(cmdListContainers)
 
-	flags = cmdRemoveContainer.Flags()
+	cmdContainer.AddCommand(cmdInspectContainers)
+
+	cmdContainer.AddCommand(cmdStartContainers)
+
+	flags = cmdStopContainers.Flags()
+	flags.IntVarP(&timeToWait, "time", "t", 10, "Number of seconds to wait for the container to stop before killing it. Default is 10 seconds.")
+	cmdContainer.AddCommand(cmdStopContainers)
+
+	flags = cmdRestartContainers.Flags()
+	flags.IntVarP(&timeToWait, "time", "t", 10, "Number of seconds to wait for the container to stop before killing it. Default is 10 seconds.")
+	cmdContainer.AddCommand(cmdRestartContainers)
+
+	flags = cmdKillContainers.Flags()
+	flags.StringVarP(&signal, "signal", "s", "SIGKILL", "Signal to send to the container")
+	cmdContainer.AddCommand(cmdKillContainers)
+
+	cmdContainer.AddCommand(cmdPauseContainers)
+
+	cmdContainer.AddCommand(cmdUnpauseContainers)
+
+	cmdContainer.AddCommand(cmdWaitContainers)
+
+	flags = cmdRemoveContainers.Flags()
 	flags.BoolVarP(&boolForce, "force", "f", false, "Force the removal of a running container")
-	cmdContainer.AddCommand(cmdRemoveContainer)
+	cmdContainer.AddCommand(cmdRemoveContainers)
 }
 
 func listContainers(ctx *cobra.Command, args []string) {
@@ -149,6 +235,223 @@ func listContainers(ctx *cobra.Command, args []string) {
 	}
 
 	PrintInTable(ctx.Out(), header, items, 0, tablewriter.ALIGN_DEFAULT)
+}
+
+func inspectContainers(ctx *cobra.Command, args []string) {
+	if len(args) < 1 {
+		ctx.Println("Needs an argument <NAME|ID> at least to inspect")
+		ctx.Usage()
+		return
+	}
+
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var containers []api.ContainerInfo
+	var gotError = false
+
+	for _, name := range args {
+		if containerInfo, err := docker.InspectContainer(name); err != nil {
+			log.Println(err)
+			gotError = true
+		} else {
+			containers = append(containers, *containerInfo)
+		}
+	}
+
+	if len(containers) > 0 {
+		if err := FormatPrint(ctx.Out(), containers); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	if gotError {
+		log.Fatal("Error: failed to inspect one or more containers")
+	}
+}
+
+func startContainers(ctx *cobra.Command, args []string) {
+	if len(args) < 1 {
+		ctx.Println("Needs an argument <NAME|ID> at least to start")
+		ctx.Usage()
+		return
+	}
+
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var gotError = false
+	for _, name := range args {
+		if err := docker.StartContainer(name); err != nil {
+			log.Println(err)
+			gotError = true
+		} else {
+			ctx.Println(name)
+		}
+	}
+	if gotError {
+		log.Fatal("Error: failed to start one or more containers")
+	}
+}
+
+func stopContainers(ctx *cobra.Command, args []string) {
+	if len(args) < 1 {
+		ctx.Println("Needs an argument <NAME|ID> at least to stop")
+		ctx.Usage()
+		return
+	}
+
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var gotError = false
+	for _, name := range args {
+		if err := docker.StopContainer(name, timeToWait); err != nil {
+			log.Println(err)
+			gotError = true
+		} else {
+			ctx.Println(name)
+		}
+	}
+	if gotError {
+		log.Fatal("Error: failed to stop one or more containers")
+	}
+}
+
+func restartContainers(ctx *cobra.Command, args []string) {
+	if len(args) < 1 {
+		ctx.Println("Needs an argument <NAME|ID> at least to restart")
+		ctx.Usage()
+		return
+	}
+
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var gotError = false
+	for _, name := range args {
+		if err := docker.RestartContainer(name, timeToWait); err != nil {
+			log.Println(err)
+			gotError = true
+		} else {
+			ctx.Println(name)
+		}
+	}
+	if gotError {
+		log.Fatal("Error: failed to restart one or more containers")
+	}
+}
+
+func killContainers(ctx *cobra.Command, args []string) {
+	if len(args) < 1 {
+		ctx.Println("Needs an argument <NAME|ID> at least to kill")
+		ctx.Usage()
+		return
+	}
+
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var gotError = false
+	for _, name := range args {
+		if err := docker.KillContainer(name, signal); err != nil {
+			log.Println(err)
+			gotError = true
+		} else {
+			ctx.Println(name)
+		}
+	}
+	if gotError {
+		log.Fatal("Error: failed to kill one or more containers")
+	}
+}
+
+func pauseContainers(ctx *cobra.Command, args []string) {
+	if len(args) < 1 {
+		ctx.Println("Needs an argument <NAME|ID> at least to pause")
+		ctx.Usage()
+		return
+	}
+
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var gotError = false
+	for _, name := range args {
+		if err := docker.PauseContainer(name); err != nil {
+			log.Println(err)
+			gotError = true
+		} else {
+			ctx.Println(name)
+		}
+	}
+	if gotError {
+		log.Fatal("Error: failed to pause one or more containers")
+	}
+}
+
+func unpauseContainers(ctx *cobra.Command, args []string) {
+	if len(args) < 1 {
+		ctx.Println("Needs an argument <NAME|ID> at least to unpause")
+		ctx.Usage()
+		return
+	}
+
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var gotError = false
+	for _, name := range args {
+		if err := docker.UnpauseContainer(name); err != nil {
+			log.Println(err)
+			gotError = true
+		} else {
+			ctx.Println(name)
+		}
+	}
+	if gotError {
+		log.Fatal("Error: failed to unpause one or more containers")
+	}
+}
+
+func waitContainers(ctx *cobra.Command, args []string) {
+	if len(args) < 1 {
+		ctx.Println("Needs an argument <NAME|ID> at least to wait")
+		ctx.Usage()
+		return
+	}
+
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var gotError = false
+	for _, name := range args {
+		if status, err := docker.WaitContainer(name); err != nil {
+			log.Println(err)
+			gotError = true
+		} else {
+			fmt.Fprintf(ctx.Out(), "%s: %d\n", name, status)
+		}
+	}
+	if gotError {
+		log.Fatal("Error: failed to wait one or more containers")
+	}
 }
 
 func removeContainers(ctx *cobra.Command, args []string) {
