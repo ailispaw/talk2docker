@@ -83,12 +83,12 @@ var cmdShowImageHistory = &cobra.Command{
 	Run:     showImageHistory,
 }
 
-var cmdInspectImage = &cobra.Command{
-	Use:     "inspect <NAME[:TAG]|ID>",
+var cmdInspectImages = &cobra.Command{
+	Use:     "inspect <NAME[:TAG]|ID>...",
 	Aliases: []string{"ins", "info"},
-	Short:   "Inspect an image",
-	Long:    APP_NAME + " image inspect - Inspect an image",
-	Run:     inspectImage,
+	Short:   "Inspect images",
+	Long:    APP_NAME + " image inspect - Inspect images",
+	Run:     inspectImages,
 }
 
 var cmdPushImage = &cobra.Command{
@@ -145,7 +145,7 @@ func init() {
 	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 	cmdImage.AddCommand(cmdShowImageHistory)
 
-	cmdImage.AddCommand(cmdInspectImage)
+	cmdImage.AddCommand(cmdInspectImages)
 
 	cmdImage.AddCommand(cmdPushImage)
 
@@ -447,9 +447,9 @@ func showImageHistory(ctx *cobra.Command, args []string) {
 	PrintInTable(ctx.Out(), header, items, 20, tablewriter.ALIGN_DEFAULT)
 }
 
-func inspectImage(ctx *cobra.Command, args []string) {
+func inspectImages(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <IMAGE-NAME[:TAG] or IMAGE-ID>")
+		ctx.Println("Needs an argument <IMAGE-NAME[:TAG] or IMAGE-ID> at least to inspect")
 		ctx.Usage()
 		return
 	}
@@ -459,13 +459,26 @@ func inspectImage(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	imageInfo, err := docker.InspectImage(args[0])
-	if err != nil {
-		log.Fatal(err)
+	var images []api.ImageInfo
+	var gotError = false
+
+	for _, name := range args {
+		if imageInfo, err := docker.InspectImage(name); err != nil {
+			log.Println(err)
+			gotError = true
+		} else {
+			images = append(images, *imageInfo)
+		}
 	}
 
-	if err := FormatPrint(ctx.Out(), imageInfo); err != nil {
-		log.Fatal(err)
+	if len(images) > 0 {
+		if err := FormatPrint(ctx.Out(), images); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	if gotError {
+		log.Fatal("Error: failed to inspect one or more images")
 	}
 }
 
