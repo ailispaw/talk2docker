@@ -69,7 +69,7 @@ var cmdPullImage = &cobra.Command{
 }
 
 var cmdTagImage = &cobra.Command{
-	Use:   "tag <NAME[:TAG]|ID> <NAME[:TAG]>",
+	Use:   "tag <NAME[:TAG]|ID> <NEW-NAME[:TAG]>",
 	Short: "Tag an image",
 	Long:  APP_NAME + " image tag - Tag an image",
 	Run:   tagImage,
@@ -360,7 +360,7 @@ func pullImage(ctx *cobra.Command, args []string) {
 
 func tagImage(ctx *cobra.Command, args []string) {
 	if len(args) < 2 {
-		ctx.Println("Needs two arguments <IMAGE-NAME[:TAG] or IMAGE-ID> <NEW-NAME[:TAG]>")
+		ctx.Println("Needs two arguments <NAME[:TAG]|ID> <NEW-NAME[:TAG]>")
 		ctx.Usage()
 		return
 	}
@@ -388,7 +388,7 @@ func tagImage(ctx *cobra.Command, args []string) {
 
 func showImageHistory(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <IMAGE-NAME[:TAG] or IMAGE-ID>")
+		ctx.Println("Needs an argument <NAME[:TAG]|ID>")
 		ctx.Usage()
 		return
 	}
@@ -449,7 +449,7 @@ func showImageHistory(ctx *cobra.Command, args []string) {
 
 func inspectImages(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <IMAGE-NAME[:TAG] or IMAGE-ID> at least to inspect")
+		ctx.Println("Needs an argument <NAME[:TAG]|ID> at least to inspect")
 		ctx.Usage()
 		return
 	}
