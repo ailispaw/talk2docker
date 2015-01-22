@@ -31,7 +31,7 @@ func (client *DockerClient) ListImages(all bool, filters map[string][]string) ([
 	return images, nil
 }
 
-func (client *DockerClient) PullImage(name string) error {
+func (client *DockerClient) PullImage(name string) (string, error) {
 	v := url.Values{}
 	v.Set("fromImage", name)
 
@@ -81,7 +81,7 @@ func (client *DockerClient) InspectImage(name string) (*ImageInfo, error) {
 	return imageInfo, nil
 }
 
-func (client *DockerClient) PushImage(name, tag, credentials string) error {
+func (client *DockerClient) PushImage(name, tag, credentials string) (string, error) {
 	v := url.Values{}
 	v.Set("tag", tag)
 

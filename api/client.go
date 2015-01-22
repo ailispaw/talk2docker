@@ -115,14 +115,14 @@ func (client *DockerClient) doRequest(method string, path string, body []byte, h
 	return data, nil
 }
 
-func (client *DockerClient) doStreamRequest(method string, path string, in io.Reader, headers map[string]string) error {
+func (client *DockerClient) doStreamRequest(method string, path string, in io.Reader, headers map[string]string) (string, error) {
 	if (method == "POST" || method == "PUT") && in == nil {
 		in = bytes.NewReader([]byte{})
 	}
 
 	req, err := http.NewRequest(method, client.URL.String()+path, in)
 	if err != nil {
-		return err
+		return "", err
 	}
 	req.Header.Add("Content-Type", "application/json")
 	if headers != nil {
@@ -133,21 +133,21 @@ func (client *DockerClient) doStreamRequest(method string, path string, in io.Re
 	resp, err := client.HTTPClient.Do(req)
 	if err != nil {
 		if !strings.Contains(err.Error(), "connection refused") && client.TLSConfig == nil {
-			return fmt.Errorf("%v. Are you trying to connect to a TLS-enabled daemon without TLS?", err)
+			return "", fmt.Errorf("%v. Are you trying to connect to a TLS-enabled daemon without TLS?", err)
 		}
-		return err
+		return "", err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			return err
+			return "", err
 		}
 		if len(body) == 0 {
-			return fmt.Errorf("Error :%s", http.StatusText(resp.StatusCode))
+			return "", fmt.Errorf("Error :%s", http.StatusText(resp.StatusCode))
 		}
-		return fmt.Errorf("Error: %s", bytes.TrimSpace(body))
+		return "", fmt.Errorf("Error: %s", bytes.TrimSpace(body))
 	}
 
 	mimetype, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
@@ -156,5 +156,5 @@ func (client *DockerClient) doStreamRequest(method string, path string, in io.Re
 	}
 
 	_, err = io.Copy(client.out, resp.Body)
-	return err
+	return "", err
 }

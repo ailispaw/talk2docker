@@ -29,7 +29,7 @@ const (
 	DOCKERIGNORE = ".dockerignore"
 )
 
-func (client *DockerClient) BuildImage(path, tag string) error {
+func (client *DockerClient) BuildImage(path, tag string) (string, error) {
 	v := url.Values{}
 	v.Set("rm", "1")
 	if tag != "" {
@@ -42,14 +42,14 @@ func (client *DockerClient) BuildImage(path, tag string) error {
 
 	fi, err := os.Lstat(dockerfile)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	fm := fi.Mode()
 	if fm.IsDir() {
 		dockerfile = filepath.Join(dockerfile, DOCKERFILE)
 		if _, err := os.Stat(dockerfile); os.IsNotExist(err) {
-			return fmt.Errorf("No Dockerfile found in %s", path)
+			return "", fmt.Errorf("No Dockerfile found in %s", path)
 		}
 	}
 
@@ -60,7 +60,7 @@ func (client *DockerClient) BuildImage(path, tag string) error {
 
 	ignore, err := ioutil.ReadFile(filepath.Join(root, DOCKERIGNORE))
 	if err != nil && !os.IsNotExist(err) {
-		return fmt.Errorf("Error reading .dockerignore: %s", err)
+		return "", fmt.Errorf("Error reading .dockerignore: %s", err)
 	}
 
 	var excludes []string

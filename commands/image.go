@@ -172,7 +172,7 @@ func buildImage(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	if err := docker.BuildImage(path, imageTag); err != nil {
+	if _, err := docker.BuildImage(path, imageTag); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -353,7 +353,7 @@ func pullImage(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	if err := docker.PullImage(repository); err != nil {
+	if _, err := docker.PullImage(repository); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -521,7 +521,7 @@ func pushImage(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	if err := docker.PushImage(name, tag, registry.Credentials); err != nil {
+	if _, err := docker.PushImage(name, tag, registry.Credentials); err != nil {
 		log.Fatal(err)
 	}
 }

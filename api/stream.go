@@ -101,20 +101,23 @@ type JSONMessage struct {
 	ErrorMessage    string        `json:"error,omitempty"` //deprecated
 }
 
-func (jm *JSONMessage) Display(out io.Writer, isTerminal bool) error {
+func (jm *JSONMessage) Display(out io.Writer, isTerminal bool) (string, error) {
 	if jm.Error != nil {
 		if jm.Error.Code == 401 {
-			return fmt.Errorf("Authentication is required.")
+			return "", fmt.Errorf("Authentication is required.")
 		}
-		return jm.Error
+		return "", jm.Error
 	}
-	var endl string
+	var (
+		message = ""
+		endl    string
+	)
 	if isTerminal && jm.Stream == "" && jm.Progress != nil {
 		// <ESC>[2K = erase entire current line
 		fmt.Fprintf(out, "%c[2K\r", 27)
 		endl = "\r"
 	} else if jm.Progress != nil { //disable progressbar in non-terminal
-		return nil
+		return "", nil
 	}
 	if jm.Time != 0 {
 		fmt.Fprintf(out, "%s ", time.Unix(jm.Time, 0).Format("2006-01-02T15:04:05.000000000Z07:00"))
@@ -126,24 +129,29 @@ func (jm *JSONMessage) Display(out io.Writer, isTerminal bool) error {
 		fmt.Fprintf(out, "(from %s) ", jm.From)
 	}
 	if jm.Progress != nil {
+		message = fmt.Sprintf("%s %s", jm.Status, jm.Progress.String())
 		fmt.Fprintf(out, "%s %s%s", jm.Status, jm.Progress.String(), endl)
 	} else if jm.ProgressMessage != "" { //deprecated
+		message = fmt.Sprintf("%s %s", jm.Status, jm.ProgressMessage)
 		fmt.Fprintf(out, "%s %s%s", jm.Status, jm.ProgressMessage, endl)
 	} else if jm.Stream != "" {
+		message = jm.Stream
 		fmt.Fprintf(out, "%s%s", jm.Stream, endl)
 	} else {
+		message = jm.Status
 		fmt.Fprintf(out, "%s%s\n", jm.Status, endl)
 	}
-	return nil
+	return message, nil
 }
 
-func displayJSONMessagesStream(in io.Reader, out io.Writer) error {
+func displayJSONMessagesStream(in io.Reader, out io.Writer) (string, error) {
 	var (
 		dec        = json.NewDecoder(in)
 		ids        = map[string]int{}
 		diff       = 0
 		fd         = getFd(out)
 		isTerminal = terminal.IsTerminal(fd)
+		message    = ""
 	)
 
 	//oldState, err := terminal.MakeRaw(fd)
@@ -158,7 +166,7 @@ func displayJSONMessagesStream(in io.Reader, out io.Writer) error {
 			if err == io.EOF {
 				break
 			}
-			return err
+			return "", err
 		}
 
 		if jm.ID != "" && (jm.Progress != nil || jm.ProgressMessage != "") {
@@ -178,14 +186,15 @@ func displayJSONMessagesStream(in io.Reader, out io.Writer) error {
 				fmt.Fprintf(out, "%c[%dA", 27, diff)
 			}
 		}
-		err := jm.Display(out, isTerminal)
+		var err error
+		message, err = jm.Display(out, isTerminal)
 		if jm.ID != "" && isTerminal {
 			// <ESC>[{diff}B = move cursor down diff rows
 			fmt.Fprintf(out, "%c[%dB", 27, diff)
 		}
 		if err != nil {
-			return err
+			return "", err
 		}
 	}
-	return nil
+	return message, nil
 }
