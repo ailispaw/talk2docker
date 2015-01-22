@@ -44,6 +44,41 @@ func (client *DockerClient) ListContainers(all, size bool, limit int, since, bef
 	return containers, nil
 }
 
+func (client *DockerClient) CreateContainer(name string, config Config, hostConfig HostConfig) (string, error) {
+	v := url.Values{}
+	if name != "" {
+		v.Set("name", name)
+	}
+
+	buf, err := json.Marshal(ConfigAndHostConfig{
+		config,
+		hostConfig,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	uri := fmt.Sprintf("/v%s/containers/create?%s", API_VERSION, v.Encode())
+	data, err := client.doRequest("POST", uri, buf, nil)
+	if err != nil {
+		return "", err
+	}
+
+	var result struct {
+		Id       string
+		Warnings []string
+	}
+	if err := json.Unmarshal(data, &result); err != nil {
+		return "", err
+	}
+
+	for _, warning := range result.Warnings {
+		fmt.Fprintf(client.out, "WARNING: %s\n", warning)
+	}
+
+	return result.Id, nil
+}
+
 func (client *DockerClient) InspectContainer(name string) (*ContainerInfo, error) {
 	uri := fmt.Sprintf("/v%s/containers/%s/json", API_VERSION, name)
 	data, err := client.doRequest("GET", uri, nil, nil)
