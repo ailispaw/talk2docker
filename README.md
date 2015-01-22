@@ -7,6 +7,10 @@ Contributions and suggestions would be appreciated, though it's aimed at my lear
 ## Features
 
 - Handle multiple Docker daemons
+- Support multiple Dockerfiles to build in the top folder of your project
+- Display a tree of all images, which Docker deprecates
+- Display a history of an image, modeled on Dockerfile
+- Show uploaded files to build in verbose mode and debug mode
 - Output in JSON or YAML format as well
 - Organize commands by category
 
@@ -36,16 +40,17 @@ Usage:
   talk2docker [command]
 
 Available Commands:
-  ps                        List containers
-  build [PATH]              Build an image from a Dockerfile
-  ls [NAME[:TAG]]           List images
-  image [command]           Manage images
-  host [command]            Manage hosts
-  hosts                     Shortcut to list hosts
-  registry [command]        Manage registries
-  config [command]          Manage the configuration file
-  version                   Show the version information
-  help [command]            Help about any command
+  ps                         List containers
+  ls [NAME[:TAG]]            List images
+  hosts                      list hosts
+  build [PATH/TO/DOCKERFILE] Build an image from a Dockerfile
+  version                    Show the version information
+  container [command]        Manage containers
+  image [command]            Manage images
+  host [command]             Manage hosts
+  registry [command]         Manage registries
+  config [command]           Manage the configuration file
+  help [command]             Help about any command
 
  Available Flags:
       --config="$HOME/.talk2docker/config": Path to the configuration file

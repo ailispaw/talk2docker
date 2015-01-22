@@ -30,7 +30,7 @@ var cmdIs = &cobra.Command{
 }
 
 var cmdBuild = &cobra.Command{
-	Use:   "build [PATH]",
+	Use:   "build [PATH/TO/DOCKERFILE]",
 	Short: "Build an image from a Dockerfile",
 	Long:  APP_NAME + " build - Build an image from a Dockerfile",
 	Run:   buildImage,
@@ -55,7 +55,7 @@ var cmdListImages = &cobra.Command{
 }
 
 var cmdBuildImage = &cobra.Command{
-	Use:   "build [PATH]",
+	Use:   "build [PATH/TO/DOCKERFILE]",
 	Short: "Build an image from a Dockerfile",
 	Long:  APP_NAME + " image build - Build an image from a Dockerfile",
 	Run:   buildImage,
