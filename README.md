@@ -41,17 +41,18 @@ Usage:
   talk2docker [command]
 
 Available Commands:
-  ps                         List containers
-  ls [NAME[:TAG]]            List images
-  hosts                      list hosts
-  build [PATH/TO/DOCKERFILE] Build an image from a Dockerfile
-  version                    Show the version information
-  container [command]        Manage containers
-  image [command]            Manage images
-  host [command]             Manage hosts
-  registry [command]         Manage registries
-  config [command]           Manage the configuration file
-  help [command]             Help about any command
+  ps                               List containers
+  ls [NAME[:TAG]]                  List images
+  hosts                            list hosts
+  build [PATH/TO/DOCKERFILE]       Build an image from a Dockerfile
+  compose <PATH/TO/YAML> [NAME...] Compose containers
+  version                          Show the version information
+  container [command]              Manage containers
+  image [command]                  Manage images
+  host [command]                   Manage hosts
+  registry [command]               Manage registries
+  config [command]                 Manage the configuration file
+  help [command]                   Help about any command
 
  Available Flags:
       --config="$HOME/.talk2docker/config": Path to the configuration file
@@ -79,20 +80,22 @@ hosts:
   url: unix:///var/run/docker.sock
 ```
 
-You can edit/add multiple hosts where Docker daemon runs.  
+You can edit/add multiple hosts where Docker daemon runs, as below.
 
 ```yaml
-default: default
+default: vagrant
 hosts:
 - name: default
+  url: unix:///var/run/docker.sock
+- name: vagrant
   url: tcp://localhost:2375
 - name: boot2docker
-  url: tcp://192.168.59.104:2376
+  url: tcp://192.168.59.103:2376
   description: on boot2docker-vm managed by boot2docker
   tls: true
-  tls-ca-cert: /Users/ailispaw/.boot2docker/certs/boot2docker-vm/ca.pem
-  tls-cert: /Users/ailispaw/.boot2docker/certs/boot2docker-vm/cert.pem
-  tls-key: /Users/ailispaw/.boot2docker/certs/boot2docker-vm/key.pem
+  tls-ca-cert: /Users/ailis/.boot2docker/certs/boot2docker-vm/ca.pem
+  tls-cert: /Users/ailis/.boot2docker/certs/boot2docker-vm/cert.pem
+  tls-key: /Users/ailis/.boot2docker/certs/boot2docker-vm/key.pem
   tls-verify: true
 ```
 
