@@ -75,7 +75,7 @@ If it does't exist, it will be created automatically as below.
 default: default
 hosts:
 - name: default
-  host: unix:///var/run/docker.sock
+  url: unix:///var/run/docker.sock
 ```
 
 You can edit/add multiple hosts where Docker daemon runs.  
