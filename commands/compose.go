@@ -64,6 +64,7 @@ type Composer struct {
 	CapDrop         []string `yaml:"cap_drop"`
 	RestartPolicy   string   `yaml:"restart"`
 	SecurityOpt     []string `yaml:"security_opt"`
+	ReadonlyRootfs  bool     `yaml:"read_only"`
 }
 
 func composeContainers(ctx *cobra.Command, args []string) {
@@ -270,6 +271,7 @@ func composeContainer(ctx *cobra.Command, name string, composer Composer) (strin
 	hostConfig.CapDrop = composer.CapDrop
 	hostConfig.RestartPolicy = restartPolicy
 	hostConfig.SecurityOpt = composer.SecurityOpt
+	hostConfig.ReadonlyRootfs = composer.ReadonlyRootfs
 
 	cid, err := docker.CreateContainer(name, config, hostConfig)
 	if err != nil {
