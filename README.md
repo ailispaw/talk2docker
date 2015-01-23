@@ -8,6 +8,7 @@ Contributions and suggestions would be appreciated, though it's aimed at my lear
 
 - Handle multiple Docker daemons
 - Support multiple Dockerfiles to build in the top folder of your project
+- Compose containers like Docker Compose (formerly fig)
 - Display a tree of all images, which Docker deprecates
 - Display a history of an image, modeled on Dockerfile
 - Show uploaded files to build in verbose mode and debug mode
