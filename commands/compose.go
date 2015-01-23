@@ -23,6 +23,18 @@ var cmdCompose = &cobra.Command{
 	Run:     composeContainers,
 }
 
+var cmdComposeContainers = &cobra.Command{
+	Use:     "compose <PATH/TO/YAML> [NAME...]",
+	Aliases: []string{"fig", "create"},
+	Short:   "Compose containers",
+	Long:    APP_NAME + " container compose - Compose containers",
+	Run:     composeContainers,
+}
+
+func init() {
+	cmdContainer.AddCommand(cmdComposeContainers)
+}
+
 type Composer struct {
 	Build string `yaml:"build"`
 
