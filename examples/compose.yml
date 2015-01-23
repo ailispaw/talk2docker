@@ -1,0 +1,9 @@
+hello_world:
+  image: busybox 
+  ports:
+    - 8080:8080
+  command: ["nc", "-p", "8080", "-l", "-l", "-e", "echo", "hello world!"]
+
+build2_with_compose:
+  build: Dockerfile2
+  image: build2

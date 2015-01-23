@@ -1,0 +1,14 @@
+default: vagrant
+hosts:
+- name: default
+  url: unix:///var/run/docker.sock
+- name: vagrant
+  url: tcp://localhost:2375
+- name: boot2docker
+  url: tcp://192.168.59.103:2376
+  description: on boot2docker-vm managed by boot2docker
+  tls: true
+  tls-ca-cert: /Users/ailis/.boot2docker/certs/boot2docker-vm/ca.pem
+  tls-cert: /Users/ailis/.boot2docker/certs/boot2docker-vm/cert.pem
+  tls-key: /Users/ailis/.boot2docker/certs/boot2docker-vm/key.pem
+  tls-verify: true

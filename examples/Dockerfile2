@@ -1,0 +1,7 @@
+FROM debian:wheezy
+
+MAINTAINER A.I. <ailis@paw.zone>
+
+COPY config.yml /config.yml
+
+CMD ["bash"]
