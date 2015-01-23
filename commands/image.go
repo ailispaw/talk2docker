@@ -121,6 +121,7 @@ func init() {
 
 	flags = cmdBuild.Flags()
 	flags.StringVarP(&imageTag, "tag", "t", "", "<NAME[:TAG]> to be applied to the image")
+	flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Suppress the verbose output")
 
 	flags = cmdListImages.Flags()
 	flags.BoolVarP(&boolAll, "all", "a", false, "Show all images. Only named/taged and leaf images are shown by default.")
@@ -130,6 +131,7 @@ func init() {
 
 	flags = cmdBuildImage.Flags()
 	flags.StringVarP(&imageTag, "tag", "t", "", "<NAME[:TAG]> to be applied to the image")
+	flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Suppress the verbose output")
 	cmdImage.AddCommand(cmdBuildImage)
 
 	flags = cmdPullImage.Flags()
@@ -172,7 +174,7 @@ func buildImage(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	if _, err := docker.BuildImage(path, imageTag); err != nil {
+	if _, err := docker.BuildImage(path, imageTag, boolQuiet); err != nil {
 		log.Fatal(err)
 	}
 }

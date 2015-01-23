@@ -29,11 +29,14 @@ const (
 	DOCKERIGNORE = ".dockerignore"
 )
 
-func (client *DockerClient) BuildImage(path, tag string) (string, error) {
+func (client *DockerClient) BuildImage(path, tag string, quiet bool) (string, error) {
 	v := url.Values{}
 	v.Set("rm", "1")
 	if tag != "" {
 		v.Set("t", tag)
+	}
+	if quiet {
+		v.Set("q", "1")
 	}
 
 	uri := fmt.Sprintf("/v%s/build?%s", API_VERSION, v.Encode())
@@ -74,7 +77,7 @@ func (client *DockerClient) BuildImage(path, tag string) (string, error) {
 	}
 
 	fmt.Fprintf(client.out, "Sending build context to Docker daemon\n")
-	if log.GetLevel() < log.InfoLevel {
+	if !quiet && (log.GetLevel() < log.InfoLevel) {
 		fmt.Fprintf(client.out, "---> ")
 	}
 
@@ -220,7 +223,7 @@ func (client *DockerClient) BuildImage(path, tag string) (string, error) {
 			files++
 			total += size
 
-			if log.GetLevel() < log.InfoLevel {
+			if !quiet && (log.GetLevel() < log.InfoLevel) {
 				fmt.Fprintf(client.out, ".")
 			}
 			log.WithFields(log.Fields{
@@ -239,7 +242,7 @@ func (client *DockerClient) BuildImage(path, tag string) (string, error) {
 			log.Debugf("Can't close pipe writer: %s", err)
 		}
 
-		if log.GetLevel() < log.InfoLevel {
+		if !quiet && (log.GetLevel() < log.InfoLevel) {
 			fmt.Fprintf(client.out, "\n")
 		}
 		fmt.Fprintf(client.out, "---> Sent %d file(s), %.2f KB\n", files, float64(total)/1000)
@@ -248,5 +251,5 @@ func (client *DockerClient) BuildImage(path, tag string) (string, error) {
 	headers := map[string]string{}
 	headers["Content-type"] = "application/tar"
 
-	return client.doStreamRequest("POST", uri, pipeReader, headers)
+	return client.doStreamRequest("POST", uri, pipeReader, headers, quiet)
 }

@@ -146,7 +146,7 @@ func composeContainer(ctx *cobra.Command, name string, composer Composer) (strin
 	}
 
 	if composer.Build != "" {
-		message, err := docker.BuildImage(composer.Build, composer.Image)
+		message, err := docker.BuildImage(composer.Build, composer.Image, true)
 		if err != nil {
 			return "", err
 		}

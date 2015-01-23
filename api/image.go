@@ -37,7 +37,7 @@ func (client *DockerClient) PullImage(name string) (string, error) {
 
 	uri := fmt.Sprintf("/v%s/images/create?%s", API_VERSION, v.Encode())
 
-	return client.doStreamRequest("POST", uri, nil, nil)
+	return client.doStreamRequest("POST", uri, nil, nil, false)
 }
 
 func (client *DockerClient) GetImageHistory(name string) (ImageHistories, error) {
@@ -90,7 +90,7 @@ func (client *DockerClient) PushImage(name, tag, credentials string) (string, er
 	headers := map[string]string{}
 	headers["X-Registry-Auth"] = credentials
 
-	return client.doStreamRequest("POST", uri, nil, headers)
+	return client.doStreamRequest("POST", uri, nil, headers, false)
 }
 
 func (client *DockerClient) RemoveImage(name string, force, noprune bool) error {

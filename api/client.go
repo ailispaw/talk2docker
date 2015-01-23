@@ -18,6 +18,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 )
@@ -115,7 +116,7 @@ func (client *DockerClient) doRequest(method string, path string, body []byte, h
 	return data, nil
 }
 
-func (client *DockerClient) doStreamRequest(method string, path string, in io.Reader, headers map[string]string) (string, error) {
+func (client *DockerClient) doStreamRequest(method string, path string, in io.Reader, headers map[string]string, quiet bool) (string, error) {
 	if (method == "POST" || method == "PUT") && in == nil {
 		in = bytes.NewReader([]byte{})
 	}
@@ -152,7 +153,20 @@ func (client *DockerClient) doStreamRequest(method string, path string, in io.Re
 
 	mimetype, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
 	if err == nil && mimetype == "application/json" {
-		return displayJSONMessagesStream(resp.Body, client.out)
+		out := client.out
+		if quiet {
+			f, err := os.Open(os.DevNull)
+			if err == nil {
+				out = f
+			} else {
+				quiet = false
+			}
+		}
+		message, err := displayJSONMessagesStream(resp.Body, out)
+		if quiet && (message != "") {
+			fmt.Fprintf(client.out, "%s", message)
+		}
+		return message, err
 	}
 
 	_, err = io.Copy(client.out, resp.Body)
