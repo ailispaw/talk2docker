@@ -67,6 +67,8 @@ Use "talk2docker help [command]" for more information about that command.
 
 ```
 
+You can find more examples of usage in [examples.sh](https://github.com/ailispaw/talk2docker/blob/master/examples/examples.sh).
+
 ### Configuration
 
 Talk2Docker uses a YAML file to configure a connection to Docker daemon.  
