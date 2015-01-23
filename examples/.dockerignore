@@ -1,4 +1,7 @@
+.dockerignore
+Dockerfile*
+
 .git/
 .vagrant/
-Dockerfile*
+
 *.bak
