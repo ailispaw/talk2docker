@@ -201,8 +201,9 @@ func composeContainer(ctx *cobra.Command, name string, composer Composer) (strin
 			bindVolumes = append(bindVolumes, volume)
 		} else if volume == "/" {
 			log.Fatal("Invalid volume: path can't be '/'")
+		} else {
+			localVolumes[volume] = struct{}{}
 		}
-		localVolumes[volume] = struct{}{}
 	}
 
 	for _, device := range composer.Devices {

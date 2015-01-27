@@ -2,6 +2,8 @@ hello_world:
   image: busybox 
   ports:
     - 8080:8080
+  volumes:
+    - /home/docker:/tmp/docker
   command: ["nc", "-p", "8080", "-l", "-l", "-e", "echo", "hello world!"]
 
 build2_with_compose:
