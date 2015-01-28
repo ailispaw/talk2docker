@@ -74,6 +74,7 @@ func NewDockerClient(daemonUrl string, tlsConfig *tls.Config, timeout time.Durat
 	if err != nil {
 		return nil, err
 	}
+
 	if u.Scheme == "tcp" {
 		if tlsConfig == nil {
 			u.Scheme = "http"
@@ -81,22 +82,27 @@ func NewDockerClient(daemonUrl string, tlsConfig *tls.Config, timeout time.Durat
 			u.Scheme = "https"
 		}
 	}
+
 	httpClient := newHTTPClient(u, tlsConfig, timeout)
+
 	return &DockerClient{u, httpClient, tlsConfig, 0, out}, nil
 }
 
 func (client *DockerClient) doRequest(method string, path string, body []byte, headers map[string]string) ([]byte, error) {
 	b := bytes.NewBuffer(body)
+
 	req, err := http.NewRequest(method, client.URL.String()+path, b)
 	if err != nil {
 		return nil, err
 	}
+
 	req.Header.Add("Content-Type", "application/json")
 	if headers != nil {
 		for header, value := range headers {
 			req.Header.Add(header, value)
 		}
 	}
+
 	resp, err := client.HTTPClient.Do(req)
 	if err != nil {
 		if !strings.Contains(err.Error(), "connection refused") && client.TLSConfig == nil {
@@ -110,9 +116,11 @@ func (client *DockerClient) doRequest(method string, path string, body []byte, h
 	if err != nil {
 		return nil, err
 	}
+
 	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
 		return nil, Error{StatusCode: resp.StatusCode, Status: resp.Status, msg: string(data)}
 	}
+
 	return data, nil
 }
 
@@ -125,12 +133,14 @@ func (client *DockerClient) doStreamRequest(method string, path string, in io.Re
 	if err != nil {
 		return "", err
 	}
+
 	req.Header.Add("Content-Type", "application/json")
 	if headers != nil {
 		for header, value := range headers {
 			req.Header.Add(header, value)
 		}
 	}
+
 	resp, err := client.HTTPClient.Do(req)
 	if err != nil {
 		if !strings.Contains(err.Error(), "connection refused") && client.TLSConfig == nil {
@@ -145,9 +155,11 @@ func (client *DockerClient) doStreamRequest(method string, path string, in io.Re
 		if err != nil {
 			return "", err
 		}
+
 		if len(body) == 0 {
 			return "", fmt.Errorf("Error :%s", http.StatusText(resp.StatusCode))
 		}
+
 		return "", fmt.Errorf("Error: %s", bytes.TrimSpace(body))
 	}
 
@@ -162,10 +174,12 @@ func (client *DockerClient) doStreamRequest(method string, path string, in io.Re
 				quiet = false
 			}
 		}
+
 		message, err := displayJSONMessagesStream(resp.Body, out)
 		if quiet && (message != "") {
 			fmt.Fprintf(client.out, "%s", message)
 		}
+
 		return message, err
 	}
 
