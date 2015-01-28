@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"log"
+	"os"
 	"strings"
 	"time"
 
@@ -14,10 +15,10 @@ import (
 )
 
 var (
-	boolLatest, boolSize bool
+	boolLatest, boolSize, boolTimestamps bool
 
-	timeToWait int
-	signal     string
+	timeToWait, tail int
+	signal           string
 )
 
 var cmdPs = &cobra.Command{
@@ -115,6 +116,13 @@ var cmdRemoveContainers = &cobra.Command{
 	Run:     removeContainers,
 }
 
+var cmdGetContainerLogs = &cobra.Command{
+	Use:   "logs <NAME|ID>",
+	Short: "Get container logs",
+	Long:  APP_NAME + " container logs - Get container logs",
+	Run:   getContainerLogs,
+}
+
 func init() {
 	flags := cmdPs.Flags()
 	flags.BoolVarP(&boolAll, "all", "a", false, "Show all containers. Only running containers are shown by default.")
@@ -156,6 +164,11 @@ func init() {
 	flags = cmdRemoveContainers.Flags()
 	flags.BoolVarP(&boolForce, "force", "f", false, "Force the removal of a running container")
 	cmdContainer.AddCommand(cmdRemoveContainers)
+
+	flags = cmdGetContainerLogs.Flags()
+	flags.BoolVarP(&boolTimestamps, "timestamps", "t", false, "Show timestamps")
+	flags.IntVar(&tail, "tail", 0, "Output the specified number of lines at the end of logs (0 for all)")
+	cmdContainer.AddCommand(cmdGetContainerLogs)
 }
 
 func listContainers(ctx *cobra.Command, args []string) {
@@ -477,5 +490,30 @@ func removeContainers(ctx *cobra.Command, args []string) {
 	}
 	if gotError {
 		log.Fatal("Error: failed to remove one or more containers")
+	}
+}
+
+func getContainerLogs(ctx *cobra.Command, args []string) {
+	if len(args) < 1 {
+		ctx.Println("Needs an argument <NAME|ID> to get logs")
+		ctx.Usage()
+		return
+	}
+
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	logs, err := docker.GetContainerLogs(args[0], false, true, true, boolTimestamps, tail)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if logs[0] != "" {
+		fmt.Fprint(os.Stdout, logs[0])
+	}
+	if logs[1] != "" {
+		fmt.Fprint(os.Stderr, logs[1])
 	}
 }

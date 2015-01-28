@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -195,4 +196,76 @@ func (client *DockerClient) RemoveContainer(name string, force bool) error {
 	}
 
 	return nil
+}
+
+func (client *DockerClient) GetContainerLogs(name string, follow, stdout, stderr, timestamps bool, tail int) ([]string, error) {
+	containerInfo, err := client.InspectContainer(name)
+	if err != nil {
+		return nil, err
+	}
+
+	v := url.Values{}
+	if stdout {
+		v.Set("stdout", "1")
+	}
+	if stderr {
+		v.Set("stderr", "1")
+	}
+	if timestamps {
+		v.Set("timestamps", "1")
+	}
+	if tail > 0 {
+		v.Set("tail", strconv.Itoa(tail))
+	}
+
+	uri := fmt.Sprintf("/v%s/containers/%s/logs?%s", API_VERSION, name, v.Encode())
+	data, err := client.doRequest("GET", uri, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var logs []string
+	if containerInfo.Config.Tty {
+		logs = append(logs, string(data))
+		logs = append(logs, "")
+	} else {
+		logs = getStreams(data)
+	}
+	return logs, nil
+}
+
+const (
+	STREAM_HEADER_LENGTH = 8
+	STREAM_TYPE_INDEX    = 0
+	STREAM_SIZE_INDEX    = 4
+
+	STREAM_TYPE_STDIN  = 0
+	STREAM_TYPE_STDOUT = 1
+	STREAM_TYPE_STDERR = 2
+)
+
+func getStreams(src []byte) []string {
+	var (
+		streams = make([]string, 2)
+		size    = 0
+	)
+
+	for i := 0; len(src[i:]) > STREAM_HEADER_LENGTH; i += (STREAM_HEADER_LENGTH + size) {
+		size = int(binary.BigEndian.Uint32(src[(i + STREAM_SIZE_INDEX):(i + STREAM_SIZE_INDEX + 4)]))
+
+		buf := src[(i + STREAM_HEADER_LENGTH):(i + STREAM_HEADER_LENGTH + size)]
+
+		switch src[i+STREAM_TYPE_INDEX] {
+		case STREAM_TYPE_STDIN:
+			fallthrough
+		case STREAM_TYPE_STDOUT:
+			streams[0] += string(buf)
+		case STREAM_TYPE_STDERR:
+			streams[1] += string(buf)
+		default:
+			continue
+		}
+	}
+
+	return streams
 }
