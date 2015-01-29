@@ -48,6 +48,19 @@ func (volumes Volumes) Less(i, j int) bool {
 	return volumes[i].Path < volumes[j].Path
 }
 
+func (volumes Volumes) Find(id string) *Volume {
+	l := len(id)
+	for _, volume := range volumes {
+		if len(volume.ID) < l {
+			continue
+		}
+		if id == volume.ID[:l] {
+			return volume
+		}
+	}
+	return nil
+}
+
 var cmdVs = &cobra.Command{
 	Use:     "vs",
 	Aliases: []string{"volumes"},
@@ -74,6 +87,14 @@ var cmdListVolumes = &cobra.Command{
 	Run:     listVolumes,
 }
 
+var cmdInspectVolumes = &cobra.Command{
+	Use:     "inspect <ID>...",
+	Aliases: []string{"ins", "info"},
+	Short:   "Inspect volumes",
+	Long:    APP_NAME + " volume inspect - Inspect volumes",
+	Run:     inspectVolumes,
+}
+
 func init() {
 	flags := cmdVs.Flags()
 	flags.BoolVarP(&boolAll, "all", "a", false, "Show all volumes. Only active volumes are shown by default.")
@@ -85,6 +106,8 @@ func init() {
 	flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
 	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 	cmdVolume.AddCommand(cmdListVolumes)
+
+	cmdVolume.AddCommand(cmdInspectVolumes)
 }
 
 func listVolumes(ctx *cobra.Command, args []string) {
@@ -95,18 +118,8 @@ func listVolumes(ctx *cobra.Command, args []string) {
 
 	sort.Sort(volumes)
 
-	mounts, err := getMounts(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	var _volumes Volumes
 	for _, volume := range volumes {
-		for _, mount := range mounts {
-			if mount.hostPath == volume.Path {
-				volume.MountedOn = append(volume.MountedOn, mount)
-			}
-		}
 		if boolAll || (len(volume.MountedOn) > 0) {
 			_volumes = append(_volumes, volume)
 		}
@@ -158,6 +171,41 @@ func listVolumes(ctx *cobra.Command, args []string) {
 	}
 
 	PrintInTable(ctx.Out(), header, items, 0, tablewriter.ALIGN_DEFAULT)
+}
+
+func inspectVolumes(ctx *cobra.Command, args []string) {
+	if len(args) < 1 {
+		ctx.Println("Needs an argument <ID> at least to inspect")
+		ctx.Usage()
+		return
+	}
+
+	volumes, err := getVolumes(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var _volumes Volumes
+	var gotError = false
+
+	for _, id := range args {
+		if volume := volumes.Find(id); volume == nil {
+			log.Printf("No such volume: %s\n", id)
+			gotError = true
+		} else {
+			_volumes = append(_volumes, volume)
+		}
+	}
+
+	if len(_volumes) > 0 {
+		if err := FormatPrint(ctx.Out(), _volumes); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	if gotError {
+		log.Fatal("Error: failed to inspect one or more volumes")
+	}
 }
 
 func getVolumes(ctx *cobra.Command) (Volumes, error) {
@@ -223,6 +271,23 @@ func getVolumes(ctx *cobra.Command) (Volumes, error) {
 			return nil, err
 		}
 		volumes = append(volumes, volume)
+	}
+
+	if err := docker.RemoveContainer(cid, true); err != nil {
+		return nil, err
+	}
+
+	mounts, err := getMounts(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, volume := range volumes {
+		for _, mount := range mounts {
+			if mount.hostPath == volume.Path {
+				volume.MountedOn = append(volume.MountedOn, mount)
+			}
+		}
 	}
 
 	return volumes, nil
