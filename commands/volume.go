@@ -32,6 +32,8 @@ type Volume struct {
 	Writable    bool
 
 	MountedOn []*Mount
+
+	configPath string
 }
 
 type Volumes []*Volume
@@ -95,6 +97,14 @@ var cmdInspectVolumes = &cobra.Command{
 	Run:     inspectVolumes,
 }
 
+var cmdRemoveVolumes = &cobra.Command{
+	Use:     "remove <ID>...",
+	Aliases: []string{"rm"},
+	Short:   "Remove volumes",
+	Long:    APP_NAME + " volume remove - Remove volumes",
+	Run:     removeVolumes,
+}
+
 func init() {
 	flags := cmdVs.Flags()
 	flags.BoolVarP(&boolAll, "all", "a", false, "Show all volumes. Only active volumes are shown by default.")
@@ -108,6 +118,8 @@ func init() {
 	cmdVolume.AddCommand(cmdListVolumes)
 
 	cmdVolume.AddCommand(cmdInspectVolumes)
+
+	cmdVolume.AddCommand(cmdRemoveVolumes)
 }
 
 func listVolumes(ctx *cobra.Command, args []string) {
@@ -208,6 +220,47 @@ func inspectVolumes(ctx *cobra.Command, args []string) {
 	}
 }
 
+func removeVolumes(ctx *cobra.Command, args []string) {
+	if len(args) < 1 {
+		ctx.Println("Needs an argument <ID> at least to inspect")
+		ctx.Usage()
+		return
+	}
+
+	volumes, err := getVolumes(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var gotError = false
+
+	for _, id := range args {
+		volume := volumes.Find(id)
+		if volume == nil {
+			log.Printf("No such volume: %s\n", id)
+			gotError = true
+			continue
+		}
+
+		if len(volume.MountedOn) > 0 {
+			log.Printf("The volume is in use, cannot remove: %s\n", volume.ID)
+			gotError = true
+			continue
+		}
+
+		if err := removeVolume(ctx, volume); err != nil {
+			log.Println(err)
+			gotError = true
+		} else {
+			ctx.Println(volume.ID)
+		}
+	}
+
+	if gotError {
+		log.Fatal("Error: failed to remove one or more volumes")
+	}
+}
+
 func getVolumes(ctx *cobra.Command) (Volumes, error) {
 	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
 	if err != nil {
@@ -270,6 +323,7 @@ func getVolumes(ctx *cobra.Command) (Volumes, error) {
 		if err := json.Unmarshal([]byte(v), volume); err != nil {
 			return nil, err
 		}
+		volume.configPath = filepath.Join(path, "/"+volume.ID)
 		volumes = append(volumes, volume)
 	}
 
@@ -369,4 +423,43 @@ func getMounts(ctx *cobra.Command) ([]*Mount, error) {
 	}
 
 	return mounts, nil
+}
+
+func removeVolume(ctx *cobra.Command, volume *Volume) error {
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
+	if err != nil {
+		return err
+	}
+
+	var (
+		config     api.Config
+		hostConfig api.HostConfig
+	)
+
+	config.Cmd = []string{"/bin/sh", "-c", "rm -rf /.docker_volume_config/" + volume.ID}
+	config.Image = "busybox:latest"
+
+	hostConfig.Binds = []string{filepath.Dir(volume.configPath) + ":/.docker_volume_config"}
+
+	if !volume.IsBindMount {
+		config.Cmd[2] = config.Cmd[2] + (" && rm -rf /.docker_volume/" + volume.ID)
+
+		hostConfig.Binds = append(hostConfig.Binds, filepath.Dir(volume.Path)+":/.docker_volume")
+	}
+
+	cid, err := docker.CreateContainer("", config, hostConfig)
+	if err != nil {
+		return err
+	}
+	defer docker.RemoveContainer(cid, true)
+
+	if err := docker.StartContainer(cid); err != nil {
+		return err
+	}
+
+	if _, err := docker.WaitContainer(cid); err != nil {
+		return err
+	}
+
+	return nil
 }
