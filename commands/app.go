@@ -59,6 +59,7 @@ func Initialize() {
 func Execute() {
 	app.AddCommand(cmdPs)
 	app.AddCommand(cmdIs)
+	app.AddCommand(cmdVs)
 	app.AddCommand(cmdHosts)
 
 	app.AddCommand(cmdBuild)
@@ -67,6 +68,7 @@ func Execute() {
 
 	app.AddCommand(cmdContainer)
 	app.AddCommand(cmdImage)
+	app.AddCommand(cmdVolume)
 	app.AddCommand(cmdHost)
 	app.AddCommand(cmdRegistry)
 	app.AddCommand(cmdConfig)

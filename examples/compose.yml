@@ -3,7 +3,8 @@ hello_world:
   ports:
     - 8080:8080
   volumes:
-    - /home/docker:/tmp/docker
+    - /home/docker:/tmp/docker:ro
+    - /tmp/test
   command: ["nc", "-p", "8080", "-l", "-l", "-e", "echo", "hello world!"]
 
 build2_with_compose:

@@ -72,3 +72,5 @@ if command -v jq > /dev/null; then
 else
   execute container inspect build2_with_compose
 fi
+
+execute volume list -all
