@@ -12,6 +12,7 @@ Contributions and suggestions would be appreciated, though it's aimed at my lear
 - Display a tree of all images, which Docker deprecates
 - Display a history of an image, modeled on Dockerfile
 - Show uploaded files to build in verbose mode and debug mode
+- Handle volumes, inspired by [cpuguy83/docker-volumes](https://github.com/cpuguy83/docker-volumes)
 - Output in JSON or YAML format as well
 - Organize commands by category
 
@@ -43,12 +44,14 @@ Usage:
 Available Commands:
   ps                               List containers
   ls [NAME[:TAG]]                  List images
+  vs                               List volumes
   hosts                            list hosts
   build [PATH/TO/DOCKERFILE]       Build an image from a Dockerfile
   compose <PATH/TO/YAML> [NAME...] Compose containers
   version                          Show the version information
   container [command]              Manage containers
   image [command]                  Manage images
+  volume [command]                 Manage volumes
   host [command]                   Manage hosts
   registry [command]               Manage registries
   config [command]                 Manage the configuration file
@@ -116,3 +119,4 @@ $ talk2docker --host=boot2docker version
 - https://github.com/howeyc/gopass ([MIT License](https://github.com/howeyc/gopass/blob/master/LICENSE.txt))
 - https://github.com/sirupsen/logrus ([MIT License](https://github.com/Sirupsen/logrus/blob/master/LICENSE))
 - https://github.com/yungsang/tablewriter/tree/talk2docker ([MIT License](https://github.com/olekukonko/tablewriter/blob/master/LICENCE.md))
+- https://github.com/cpuguy83/docker-volumes
