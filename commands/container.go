@@ -131,7 +131,7 @@ var cmdGetContainerChanges = &cobra.Command{
 }
 
 var cmdExportContainer = &cobra.Command{
-	Use:   "export <NAME|ID>",
+	Use:   "export <NAME|ID> [PATH]",
 	Short: "Stream the contents of a container as a tar archive",
 	Long:  APP_NAME + " container export - Stream the contents of a container as a tar archive",
 	Run:   exportContainer,
@@ -555,7 +555,13 @@ func exportContainer(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	if err := docker.ExportContainer(args[0]); err != nil {
-		log.Fatal(err)
+	if len(args) > 1 {
+		if err := docker.CopyContainer(args[0], args[1]); err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		if err := docker.ExportContainer(args[0]); err != nil {
+			log.Fatal(err)
+		}
 	}
 }
