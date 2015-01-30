@@ -55,16 +55,31 @@ func (volumes Volumes) Less(i, j int) bool {
 	return volumes[i].Created.Before(volumes[j].Created)
 }
 
-func (volumes Volumes) Find(id string) *Volume {
+func (volumes Volumes) Find(vol string) *Volume {
+	if volume := volumes.FindById(vol); volume != nil {
+		return volume
+	}
+
+	if volume := volumes.FindByName(vol); volume != nil {
+		return volume
+	}
+
+	return nil
+}
+
+func (volumes Volumes) FindById(id string) *Volume {
 	l := len(id)
+
 	for _, volume := range volumes {
 		if len(volume.ID) < l {
 			continue
 		}
+
 		if id == volume.ID[:l] {
 			return volume
 		}
 	}
+
 	return nil
 }
 
@@ -239,18 +254,12 @@ func inspectVolumes(ctx *cobra.Command, args []string) {
 	var gotError = false
 
 	for _, arg := range args {
-		if volume := volumes.Find(arg); volume != nil {
+		if volume := volumes.Find(arg); volume == nil {
+			log.Errorf("No such volume: %s", arg)
+			gotError = true
+		} else {
 			_volumes = append(_volumes, volume)
-			continue
 		}
-
-		if volume := volumes.FindByName(arg); volume != nil {
-			_volumes = append(_volumes, volume)
-			continue
-		}
-
-		log.Errorf("No such volume: %s", arg)
-		gotError = true
 	}
 
 	if len(_volumes) > 0 {
@@ -554,9 +563,7 @@ func exportVolume(ctx *cobra.Command, args []string) {
 
 	volume := volumes.Find(args[0])
 	if volume == nil {
-		if volume = volumes.FindByName(args[0]); volume == nil {
-			log.Fatalf("No such volume: %s", args[0])
-		}
+		log.Fatalf("No such volume: %s", args[0])
 	}
 
 	var (
