@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
@@ -266,6 +267,25 @@ func getStreams(src []byte) []string {
 func (client *DockerClient) ExportContainer(name string) error {
 	uri := fmt.Sprintf("/v%s/containers/%s/export", API_VERSION, name)
 	if _, err := client.doStreamRequest("GET", uri, nil, nil, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (client *DockerClient) CopyContainer(name, path string) error {
+	req := struct {
+		Resource string
+	}{
+		Resource: path,
+	}
+
+	buf, err := json.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	uri := fmt.Sprintf("/v%s/containers/%s/copy", API_VERSION, name)
+	if _, err := client.doStreamRequest("POST", uri, bytes.NewReader(buf), nil, true); err != nil {
 		return err
 	}
 	return nil

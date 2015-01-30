@@ -105,6 +105,13 @@ var cmdRemoveVolumes = &cobra.Command{
 	Run:     removeVolumes,
 }
 
+var cmdExportVolume = &cobra.Command{
+	Use:   "export <ID>",
+	Short: "Stream the contents of a volume as a tar archive",
+	Long:  APP_NAME + " volume export - Stream the contents of a volume as a tar archive",
+	Run:   exportVolume,
+}
+
 func init() {
 	flags := cmdVs.Flags()
 	flags.BoolVarP(&boolAll, "all", "a", false, "Show all volumes. Only active volumes are shown by default.")
@@ -120,6 +127,8 @@ func init() {
 	cmdVolume.AddCommand(cmdInspectVolumes)
 
 	cmdVolume.AddCommand(cmdRemoveVolumes)
+
+	cmdVolume.AddCommand(cmdExportVolume)
 }
 
 func listVolumes(ctx *cobra.Command, args []string) {
@@ -486,4 +495,58 @@ func removeVolume(ctx *cobra.Command, volume *Volume) error {
 	}
 
 	return nil
+}
+
+func exportVolume(ctx *cobra.Command, args []string) {
+	if len(args) < 1 {
+		ctx.Println("Needs an argument <ID> to export")
+		ctx.Usage()
+		return
+	}
+
+	volumes, err := getVolumes(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	volume := volumes.Find(args[0])
+	if volume == nil {
+		log.Fatalf("No such volume: %s\n", args[0])
+	}
+
+	var (
+		config     api.Config
+		hostConfig api.HostConfig
+	)
+
+	config.Image = "busybox:latest"
+
+	hostConfig.Binds = []string{volume.Path + ":/" + volume.ID}
+
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var cid string
+	cid, err = docker.CreateContainer("", config, hostConfig)
+	if err != nil {
+		if apiErr, ok := err.(api.Error); ok && (apiErr.StatusCode == 404) {
+			if err := pullImageInSilence(ctx, config.Image); err != nil {
+				log.Fatal(err)
+			}
+
+			cid, err = docker.CreateContainer("", config, hostConfig)
+			if err != nil {
+				log.Fatal(err)
+			}
+		} else {
+			log.Fatal(err)
+		}
+	}
+	defer docker.RemoveContainer(cid, true)
+
+	if err := docker.CopyContainer(cid, "/"+volume.ID); err != nil {
+		log.Fatal(err)
+	}
 }
