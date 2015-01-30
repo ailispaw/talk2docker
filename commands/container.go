@@ -123,6 +123,13 @@ var cmdGetContainerLogs = &cobra.Command{
 	Run:   getContainerLogs,
 }
 
+var cmdGetContainerChanges = &cobra.Command{
+	Use:   "diff <NAME|ID>",
+	Short: "Inspect changes on a container's filesystem",
+	Long:  APP_NAME + " container diff - Inspect changes on a container's filesystem",
+	Run:   getContainerChanges,
+}
+
 var cmdExportContainer = &cobra.Command{
 	Use:   "export <NAME|ID>",
 	Short: "Stream the contents of a container as a tar archive",
@@ -176,6 +183,8 @@ func init() {
 	flags.BoolVarP(&boolTimestamps, "timestamps", "t", false, "Show timestamps")
 	flags.IntVar(&tail, "tail", 0, "Output the specified number of lines at the end of logs (0 for all)")
 	cmdContainer.AddCommand(cmdGetContainerLogs)
+
+	cmdContainer.AddCommand(cmdGetContainerChanges)
 
 	cmdContainer.AddCommand(cmdExportContainer)
 }
@@ -504,6 +513,35 @@ func getContainerLogs(ctx *cobra.Command, args []string) {
 	}
 	if logs[1] != "" {
 		fmt.Fprint(os.Stderr, logs[1])
+	}
+}
+
+func getContainerChanges(ctx *cobra.Command, args []string) {
+	if len(args) < 1 {
+		ErrorExit(ctx, "Needs an argument <NAME|ID> to get changes")
+	}
+
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	changes, err := docker.GetContainerChanges(args[0])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, change := range changes {
+		var kind string
+		switch change.Kind {
+		case api.CHANGE_TYPE_MODIFY:
+			kind = "C"
+		case api.CHANGE_TYPE_ADD:
+			kind = "A"
+		case api.CHANGE_TYPE_DELETE:
+			kind = "D"
+		}
+		fmt.Printf("%s %s\n", kind, change.Path)
 	}
 }
 

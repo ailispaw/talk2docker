@@ -264,6 +264,26 @@ func getStreams(src []byte) []string {
 	return streams
 }
 
+const (
+	CHANGE_TYPE_MODIFY = iota
+	CHANGE_TYPE_ADD
+	CHANGE_TYPE_DELETE
+)
+
+func (client *DockerClient) GetContainerChanges(name string) ([]Change, error) {
+	uri := fmt.Sprintf("/v%s/containers/%s/changes", API_VERSION, name)
+	data, err := client.doRequest("GET", uri, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	changes := []Change{}
+	if err := json.Unmarshal(data, &changes); err != nil {
+		return nil, err
+	}
+	return changes, nil
+}
+
 func (client *DockerClient) ExportContainer(name string) error {
 	uri := fmt.Sprintf("/v%s/containers/%s/export", API_VERSION, name)
 	if _, err := client.doStreamRequest("GET", uri, nil, nil, true); err != nil {

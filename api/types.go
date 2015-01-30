@@ -293,3 +293,9 @@ type RestartPolicy struct {
 	Name              string
 	MaximumRetryCount int
 }
+
+// https://github.com/docker/docker/blob/master/pkg%2Farchive%2Fchanges.go#L28
+type Change struct {
+	Path string
+	Kind int
+}
