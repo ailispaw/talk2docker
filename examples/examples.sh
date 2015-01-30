@@ -87,6 +87,10 @@ execute container export hello_world /tmp/docker | tar tv
 
 execute volume list --all
 
-execute volume inspect hello_world:/tmp/docker
+if command -v jq > /dev/null; then
+  execute volume inspect hello_world:/tmp/test --json | jq '.[0].Path'
+else
+  execute volume inspect hello_world:/tmp/test
+fi
 
 execute volume export hello_world:/tmp/docker | tar tv
