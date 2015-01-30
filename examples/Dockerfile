@@ -1,5 +1,5 @@
-FROM debian:wheezy
+FROM busybox
 
 MAINTAINER A.I. <ailis@paw.zone>
 
-CMD ["bash"]
+CMD ["sh"]

@@ -1,7 +1,7 @@
-FROM debian:wheezy
+FROM busybox
 
 MAINTAINER A.I. <ailis@paw.zone>
 
 COPY config.yml /config.yml
 
-CMD ["bash"]
+CMD ["sh"]
