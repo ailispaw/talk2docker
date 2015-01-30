@@ -140,6 +140,15 @@ func composeContainer(ctx *cobra.Command, name string, composer Composer) (strin
 		deviceMappings []api.DeviceMapping
 	)
 
+	r, n, t, err := client.ParseRepositoryName(composer.Image)
+	if err != nil {
+		return "", err
+	}
+	composer.Image = n + ":" + t
+	if r != "" {
+		composer.Image = r + "/" + composer.Image
+	}
+
 	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
 	if err != nil {
 		return "", err
@@ -196,11 +205,11 @@ func composeContainer(ctx *cobra.Command, name string, composer Composer) (strin
 	for _, volume := range composer.Volumes {
 		if arr := strings.Split(volume, ":"); len(arr) > 1 {
 			if arr[1] == "/" {
-				log.Fatal("Invalid bind mount: destination can't be '/'")
+				return "", fmt.Errorf("Invalid bind mount: destination can't be '/'")
 			}
 			bindVolumes = append(bindVolumes, volume)
 		} else if volume == "/" {
-			log.Fatal("Invalid volume: path can't be '/'")
+			return "", fmt.Errorf("Invalid volume: path can't be '/'")
 		} else {
 			localVolumes[volume] = struct{}{}
 		}
@@ -221,7 +230,7 @@ func composeContainer(ctx *cobra.Command, name string, composer Composer) (strin
 		case 1:
 			src = arr[0]
 		default:
-			log.Fatalf("Invalid device specification: %s", device)
+			return "", fmt.Errorf("Invalid device specification: %s", device)
 		}
 
 		if dst == "" {
@@ -242,7 +251,7 @@ func composeContainer(ctx *cobra.Command, name string, composer Composer) (strin
 	if (restartPolicy.Name == "on-failure") && (len(parts) == 2) {
 		count, err := strconv.Atoi(parts[1])
 		if err != nil {
-			log.Fatal(err)
+			return "", err
 		}
 		restartPolicy.MaximumRetryCount = count
 	}
