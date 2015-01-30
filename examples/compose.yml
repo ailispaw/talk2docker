@@ -10,3 +10,5 @@ hello_world:
 build2_with_compose:
   build: Dockerfile2
   image: build2
+  volumes_from:
+    - hello_world:ro

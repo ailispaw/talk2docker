@@ -182,7 +182,11 @@ func listVolumes(ctx *cobra.Command, args []string) {
 		out := []string{
 			Truncate(volume.ID, 12),
 			formatNames(volume.MountedOn),
-			volume.Path,
+		}
+		if volume.IsBindMount {
+			out = append(out, volume.Path)
+		} else {
+			out = append(out, filepath.Dir(volume.Path)+"/<ID>")
 		}
 		items = append(items, out)
 	}
