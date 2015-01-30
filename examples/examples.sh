@@ -73,4 +73,4 @@ else
   execute container inspect build2_with_compose
 fi
 
-execute volume list -all
+execute volume list --all
