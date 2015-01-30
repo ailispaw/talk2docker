@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"log"
+	"os"
 	"regexp"
 	"sort"
 	"strings"
@@ -611,4 +612,31 @@ func searchImages(ctx *cobra.Command, args []string) {
 	}
 
 	PrintInTable(ctx.Out(), header, items, 50, tablewriter.ALIGN_DEFAULT)
+}
+
+func pullImageInSilence(ctx *cobra.Command, name string) error {
+	r, n, t, err := client.ParseRepositoryName(name)
+	if err != nil {
+		return err
+	}
+	name = n + ":" + t
+	if r != "" {
+		name = r + "/" + name
+	}
+
+	f, err := os.Open(os.DevNull)
+	if err != nil {
+		return err
+	}
+
+	docker, err := client.NewDockerClient(configPath, hostName, f)
+	if err != nil {
+		return err
+	}
+
+	if _, err := docker.PullImage(name); err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -296,9 +296,21 @@ func getVolumes(ctx *cobra.Command) (Volumes, error) {
 
 	hostConfig.Binds = []string{path + ":/.docker_volumes:ro"}
 
-	cid, err := docker.CreateContainer("", config, hostConfig)
+	var cid string
+	cid, err = docker.CreateContainer("", config, hostConfig)
 	if err != nil {
-		return nil, err
+		if apiErr, ok := err.(api.Error); ok && (apiErr.StatusCode == 404) {
+			if err := pullImageInSilence(ctx, config.Image); err != nil {
+				return nil, err
+			}
+
+			cid, err = docker.CreateContainer("", config, hostConfig)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			return nil, err
+		}
 	}
 	defer docker.RemoveContainer(cid, true)
 
@@ -426,11 +438,6 @@ func getMounts(ctx *cobra.Command) ([]*Mount, error) {
 }
 
 func removeVolume(ctx *cobra.Command, volume *Volume) error {
-	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
-	if err != nil {
-		return err
-	}
-
 	var (
 		config     api.Config
 		hostConfig api.HostConfig
@@ -447,9 +454,26 @@ func removeVolume(ctx *cobra.Command, volume *Volume) error {
 		hostConfig.Binds = append(hostConfig.Binds, filepath.Dir(volume.Path)+":/.docker_volume")
 	}
 
-	cid, err := docker.CreateContainer("", config, hostConfig)
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
 	if err != nil {
 		return err
+	}
+
+	var cid string
+	cid, err = docker.CreateContainer("", config, hostConfig)
+	if err != nil {
+		if apiErr, ok := err.(api.Error); ok && (apiErr.StatusCode == 404) {
+			if err := pullImageInSilence(ctx, config.Image); err != nil {
+				return err
+			}
+
+			cid, err = docker.CreateContainer("", config, hostConfig)
+			if err != nil {
+				return err
+			}
+		} else {
+			return err
+		}
 	}
 	defer docker.RemoveContainer(cid, true)
 
