@@ -68,6 +68,24 @@ func (volumes Volumes) Find(id string) *Volume {
 	return nil
 }
 
+func (volumes Volumes) FindByName(name string) *Volume {
+	arr := strings.Split(name, ":")
+
+	if len(arr) < 2 {
+		return nil
+	}
+
+	for _, volume := range volumes {
+		for _, mount := range volume.MountedOn {
+			if (mount.ContainerName == arr[0]) && (mount.MountToPath == arr[1]) {
+				return volume
+			}
+		}
+	}
+
+	return nil
+}
+
 var cmdVs = &cobra.Command{
 	Use:     "vs",
 	Aliases: []string{"volumes"},
@@ -95,7 +113,7 @@ var cmdListVolumes = &cobra.Command{
 }
 
 var cmdInspectVolumes = &cobra.Command{
-	Use:     "inspect <ID>...",
+	Use:     "inspect <ID|CONTAINER-NAME:PATH>...",
 	Aliases: []string{"ins", "info"},
 	Short:   "Inspect volumes",
 	Long:    APP_NAME + " volume inspect - Inspect volumes",
@@ -111,7 +129,7 @@ var cmdRemoveVolumes = &cobra.Command{
 }
 
 var cmdExportVolume = &cobra.Command{
-	Use:   "export <ID>",
+	Use:   "export <ID|CONTAINER-NAME:PATH>",
 	Short: "Stream the contents of a volume as a tar archive",
 	Long:  APP_NAME + " volume export - Stream the contents of a volume as a tar archive",
 	Run:   exportVolume,
@@ -209,7 +227,7 @@ func listVolumes(ctx *cobra.Command, args []string) {
 
 func inspectVolumes(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ErrorExit(ctx, "Needs an argument <ID> at least to inspect")
+		ErrorExit(ctx, "Needs an argument <ID|CONTAINER-NAME:PATH> at least to inspect")
 	}
 
 	volumes, err := getVolumes(ctx)
@@ -220,13 +238,19 @@ func inspectVolumes(ctx *cobra.Command, args []string) {
 	var _volumes Volumes
 	var gotError = false
 
-	for _, id := range args {
-		if volume := volumes.Find(id); volume == nil {
-			log.Printf("No such volume: %s\n", id)
-			gotError = true
-		} else {
+	for _, arg := range args {
+		if volume := volumes.Find(arg); volume != nil {
 			_volumes = append(_volumes, volume)
+			continue
 		}
+
+		if volume := volumes.FindByName(arg); volume != nil {
+			_volumes = append(_volumes, volume)
+			continue
+		}
+
+		log.Errorf("No such volume: %s\n", arg)
+		gotError = true
 	}
 
 	if len(_volumes) > 0 {
@@ -520,7 +544,7 @@ func removeVolume(ctx *cobra.Command, volume *Volume) error {
 
 func exportVolume(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ErrorExit(ctx, "Needs an argument <ID> to export")
+		ErrorExit(ctx, "Needs an argument <ID|CONTAINER-NAME:PATH> to export")
 	}
 
 	volumes, err := getVolumes(ctx)
@@ -530,7 +554,9 @@ func exportVolume(ctx *cobra.Command, args []string) {
 
 	volume := volumes.Find(args[0])
 	if volume == nil {
-		log.Fatalf("No such volume: %s\n", args[0])
+		if volume = volumes.FindByName(args[0]); volume == nil {
+			log.Fatalf("No such volume: %s", args[0])
+		}
 	}
 
 	var (
