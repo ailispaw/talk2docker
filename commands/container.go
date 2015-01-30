@@ -137,6 +137,14 @@ var cmdExportContainer = &cobra.Command{
 	Run:   exportContainer,
 }
 
+var cmdGetContainerProcesses = &cobra.Command{
+	Use:     "top <NAME|ID> [PS-ARGS]",
+	Aliases: []string{"ps"},
+	Short:   "Display the running processes of a container",
+	Long:    APP_NAME + " container top - Display the running processes of a container",
+	Run:     getContainerProcesses,
+}
+
 func init() {
 	flags := cmdPs.Flags()
 	flags.BoolVarP(&boolAll, "all", "a", false, "Show all containers. Only running containers are shown by default.")
@@ -187,6 +195,8 @@ func init() {
 	cmdContainer.AddCommand(cmdGetContainerChanges)
 
 	cmdContainer.AddCommand(cmdExportContainer)
+
+	cmdContainer.AddCommand(cmdGetContainerProcesses)
 }
 
 func listContainers(ctx *cobra.Command, args []string) {
@@ -564,4 +574,34 @@ func exportContainer(ctx *cobra.Command, args []string) {
 			log.Fatal(err)
 		}
 	}
+}
+
+func getContainerProcesses(ctx *cobra.Command, args []string) {
+	if len(args) < 1 {
+		ErrorExit(ctx, "Needs an argument <NAME|ID> to execute ps")
+	}
+
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	ps_args := ""
+	if len(args) > 1 {
+		ps_args = strings.Join(args[1:], " ")
+	}
+
+	ps, err := docker.GetContainerProcesses(args[0], ps_args)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if boolYAML || boolJSON {
+		if err := FormatPrint(ctx.Out(), ps); err != nil {
+			log.Fatal(err)
+		}
+		return
+	}
+
+	PrintInTable(ctx.Out(), ps.Titles, ps.Processes, 100, tablewriter.ALIGN_DEFAULT)
 }

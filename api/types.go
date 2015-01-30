@@ -299,3 +299,8 @@ type Change struct {
 	Path string
 	Kind int
 }
+
+type Processes struct {
+	Titles    []string
+	Processes [][]string
+}

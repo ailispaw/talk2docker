@@ -310,3 +310,22 @@ func (client *DockerClient) CopyContainer(name, path string) error {
 	}
 	return nil
 }
+
+func (client *DockerClient) GetContainerProcesses(name, ps_args string) (*Processes, error) {
+	v := url.Values{}
+	if ps_args != "" {
+		v.Set("ps_args", ps_args)
+	}
+
+	uri := fmt.Sprintf("/v%s/containers/%s/top?%s", API_VERSION, name, v.Encode())
+	data, err := client.doRequest("GET", uri, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	processes := &Processes{}
+	if err := json.Unmarshal(data, &processes); err != nil {
+		return nil, err
+	}
+	return processes, nil
+}
