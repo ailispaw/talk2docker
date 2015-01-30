@@ -3,11 +3,11 @@ package commands
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"strconv"
 	"strings"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
 
@@ -81,9 +81,7 @@ type Composer struct {
 
 func composeContainers(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <PATH/TO/YAML> to compose containers")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs an argument <PATH/TO/YAML> to compose containers")
 	}
 
 	path := os.ExpandEnv(args[0])
@@ -116,7 +114,7 @@ func composeContainers(ctx *cobra.Command, args []string) {
 	for name, composer := range composers {
 		if (len(names) == 0) || inArray(name, names) {
 			if cid, err := composeContainer(ctx, name, composer); err != nil {
-				log.Println(err)
+				log.Error(err)
 				gotError = true
 			} else {
 				ctx.Println(cid)

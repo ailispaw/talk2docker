@@ -76,3 +76,9 @@ func Execute() {
 	app.SetOutput(os.Stdout)
 	app.Execute()
 }
+
+func ErrorExit(ctx *cobra.Command, message string) {
+	log.Error(message)
+	ctx.Usage()
+	os.Exit(1)
+}

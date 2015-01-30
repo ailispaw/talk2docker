@@ -11,6 +11,10 @@ import (
 type LogFormatter struct{}
 
 func (f *LogFormatter) Format(entry *log.Entry) ([]byte, error) {
+	if entry.Level < log.InfoLevel {
+		return (new(log.TextFormatter)).Format(entry)
+	}
+
 	var keys []string
 	for k := range entry.Data {
 		keys = append(keys, k)

@@ -2,11 +2,11 @@ package commands
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strings"
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/yungsang/tablewriter"
 
@@ -261,9 +261,7 @@ func listContainers(ctx *cobra.Command, args []string) {
 
 func inspectContainers(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <NAME|ID> at least to inspect")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs an argument <NAME|ID> at least to inspect")
 	}
 
 	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
@@ -276,7 +274,7 @@ func inspectContainers(ctx *cobra.Command, args []string) {
 
 	for _, name := range args {
 		if containerInfo, err := docker.InspectContainer(name); err != nil {
-			log.Println(err)
+			log.Error(err)
 			gotError = true
 		} else {
 			containers = append(containers, *containerInfo)
@@ -296,9 +294,7 @@ func inspectContainers(ctx *cobra.Command, args []string) {
 
 func startContainers(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <NAME|ID> at least to start")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs an argument <NAME|ID> at least to start")
 	}
 
 	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
@@ -309,7 +305,7 @@ func startContainers(ctx *cobra.Command, args []string) {
 	var gotError = false
 	for _, name := range args {
 		if err := docker.StartContainer(name); err != nil {
-			log.Println(err)
+			log.Error(err)
 			gotError = true
 		} else {
 			ctx.Println(name)
@@ -322,9 +318,7 @@ func startContainers(ctx *cobra.Command, args []string) {
 
 func stopContainers(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <NAME|ID> at least to stop")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs an argument <NAME|ID> at least to stop")
 	}
 
 	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
@@ -335,7 +329,7 @@ func stopContainers(ctx *cobra.Command, args []string) {
 	var gotError = false
 	for _, name := range args {
 		if err := docker.StopContainer(name, timeToWait); err != nil {
-			log.Println(err)
+			log.Error(err)
 			gotError = true
 		} else {
 			ctx.Println(name)
@@ -348,9 +342,7 @@ func stopContainers(ctx *cobra.Command, args []string) {
 
 func restartContainers(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <NAME|ID> at least to restart")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs an argument <NAME|ID> at least to restart")
 	}
 
 	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
@@ -361,7 +353,7 @@ func restartContainers(ctx *cobra.Command, args []string) {
 	var gotError = false
 	for _, name := range args {
 		if err := docker.RestartContainer(name, timeToWait); err != nil {
-			log.Println(err)
+			log.Error(err)
 			gotError = true
 		} else {
 			ctx.Println(name)
@@ -374,9 +366,7 @@ func restartContainers(ctx *cobra.Command, args []string) {
 
 func killContainers(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <NAME|ID> at least to kill")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs an argument <NAME|ID> at least to kill")
 	}
 
 	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
@@ -387,7 +377,7 @@ func killContainers(ctx *cobra.Command, args []string) {
 	var gotError = false
 	for _, name := range args {
 		if err := docker.KillContainer(name, signal); err != nil {
-			log.Println(err)
+			log.Error(err)
 			gotError = true
 		} else {
 			ctx.Println(name)
@@ -400,9 +390,7 @@ func killContainers(ctx *cobra.Command, args []string) {
 
 func pauseContainers(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <NAME|ID> at least to pause")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs an argument <NAME|ID> at least to pause")
 	}
 
 	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
@@ -413,7 +401,7 @@ func pauseContainers(ctx *cobra.Command, args []string) {
 	var gotError = false
 	for _, name := range args {
 		if err := docker.PauseContainer(name); err != nil {
-			log.Println(err)
+			log.Error(err)
 			gotError = true
 		} else {
 			ctx.Println(name)
@@ -426,9 +414,7 @@ func pauseContainers(ctx *cobra.Command, args []string) {
 
 func unpauseContainers(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <NAME|ID> at least to unpause")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs an argument <NAME|ID> at least to unpause")
 	}
 
 	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
@@ -439,7 +425,7 @@ func unpauseContainers(ctx *cobra.Command, args []string) {
 	var gotError = false
 	for _, name := range args {
 		if err := docker.UnpauseContainer(name); err != nil {
-			log.Println(err)
+			log.Error(err)
 			gotError = true
 		} else {
 			ctx.Println(name)
@@ -452,9 +438,7 @@ func unpauseContainers(ctx *cobra.Command, args []string) {
 
 func waitContainers(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <NAME|ID> at least to wait")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs an argument <NAME|ID> at least to wait")
 	}
 
 	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
@@ -465,7 +449,7 @@ func waitContainers(ctx *cobra.Command, args []string) {
 	var gotError = false
 	for _, name := range args {
 		if status, err := docker.WaitContainer(name); err != nil {
-			log.Println(err)
+			log.Error(err)
 			gotError = true
 		} else {
 			fmt.Fprintf(ctx.Out(), "%s: %d\n", name, status)
@@ -478,9 +462,7 @@ func waitContainers(ctx *cobra.Command, args []string) {
 
 func removeContainers(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <NAME|ID> at least to remove")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs an argument <NAME|ID> at least to remove")
 	}
 
 	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
@@ -491,7 +473,7 @@ func removeContainers(ctx *cobra.Command, args []string) {
 	var gotError = false
 	for _, name := range args {
 		if err := docker.RemoveContainer(name, boolForce); err != nil {
-			log.Println(err)
+			log.Error(err)
 			gotError = true
 		} else {
 			ctx.Println(name)
@@ -504,9 +486,7 @@ func removeContainers(ctx *cobra.Command, args []string) {
 
 func getContainerLogs(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <NAME|ID> to get logs")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs an argument <NAME|ID> to get logs")
 	}
 
 	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
@@ -529,9 +509,7 @@ func getContainerLogs(ctx *cobra.Command, args []string) {
 
 func exportContainer(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <NAME|ID> to export")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs an argument <NAME|ID> to export")
 	}
 
 	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())

@@ -3,12 +3,12 @@ package commands
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"path/filepath"
 	"sort"
 	"strings"
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/yungsang/tablewriter"
 
@@ -209,9 +209,7 @@ func listVolumes(ctx *cobra.Command, args []string) {
 
 func inspectVolumes(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <ID> at least to inspect")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs an argument <ID> at least to inspect")
 	}
 
 	volumes, err := getVolumes(ctx)
@@ -244,9 +242,7 @@ func inspectVolumes(ctx *cobra.Command, args []string) {
 
 func removeVolumes(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <ID> at least to inspect")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs an argument <ID> at least to inspect")
 	}
 
 	volumes, err := getVolumes(ctx)
@@ -277,7 +273,7 @@ func removeVolumes(ctx *cobra.Command, args []string) {
 		}
 
 		if err := removeVolume(ctx, volume); err != nil {
-			log.Println(err)
+			log.Error(err)
 			gotError = true
 		} else {
 			ctx.Println(volume.ID)
@@ -411,7 +407,7 @@ func getMounts(ctx *cobra.Command) ([]*Mount, error) {
 
 		containerInfo, err := docker.InspectContainer(container.Id)
 		if err != nil {
-			log.Println(err)
+			log.Error(err)
 			continue
 		}
 
@@ -524,9 +520,7 @@ func removeVolume(ctx *cobra.Command, volume *Volume) error {
 
 func exportVolume(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <ID> to export")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs an argument <ID> to export")
 	}
 
 	volumes, err := getVolumes(ctx)

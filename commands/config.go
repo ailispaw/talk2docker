@@ -1,10 +1,10 @@
 package commands
 
 import (
-	"log"
 	"os"
 	"os/exec"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
 	"github.com/ailispaw/talk2docker/client"

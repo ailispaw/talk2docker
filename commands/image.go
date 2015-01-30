@@ -2,13 +2,13 @@ package commands
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"regexp"
 	"sort"
 	"strings"
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/yungsang/tablewriter"
 
@@ -331,9 +331,7 @@ func walkTree(images []api.Image, parents map[string][]api.Image, prefix string,
 
 func pullImage(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <NAME[:TAG]> to pull")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs an argument <NAME[:TAG]> to pull")
 	}
 
 	reg, name, tag, err := client.ParseRepositoryName(args[0])
@@ -363,9 +361,7 @@ func pullImage(ctx *cobra.Command, args []string) {
 
 func tagImage(ctx *cobra.Command, args []string) {
 	if len(args) < 2 {
-		ctx.Println("Needs two arguments <NAME[:TAG]|ID> <NEW-NAME[:TAG]>")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs two arguments <NAME[:TAG]|ID> <NEW-NAME[:TAG]>")
 	}
 
 	reg, name, tag, err := client.ParseRepositoryName(args[1])
@@ -391,9 +387,7 @@ func tagImage(ctx *cobra.Command, args []string) {
 
 func showImageHistory(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <NAME[:TAG]|ID>")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs an argument <NAME[:TAG]|ID>")
 	}
 
 	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
@@ -452,9 +446,7 @@ func showImageHistory(ctx *cobra.Command, args []string) {
 
 func inspectImages(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <NAME[:TAG]|ID> at least to inspect")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs an argument <NAME[:TAG]|ID> at least to inspect")
 	}
 
 	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
@@ -467,7 +459,7 @@ func inspectImages(ctx *cobra.Command, args []string) {
 
 	for _, name := range args {
 		if imageInfo, err := docker.InspectImage(name); err != nil {
-			log.Println(err)
+			log.Error(err)
 			gotError = true
 		} else {
 			images = append(images, *imageInfo)
@@ -487,9 +479,7 @@ func inspectImages(ctx *cobra.Command, args []string) {
 
 func pushImage(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <NAME[:TAG]> to push")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs an argument <NAME[:TAG]> to push")
 	}
 
 	reg, name, tag, err := client.ParseRepositoryName(args[0])
@@ -531,9 +521,7 @@ func pushImage(ctx *cobra.Command, args []string) {
 
 func removeImages(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <NAME[:TAG]> at least to remove")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs an argument <NAME[:TAG]> at least to remove")
 	}
 
 	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
@@ -544,7 +532,7 @@ func removeImages(ctx *cobra.Command, args []string) {
 	var gotError = false
 	for _, name := range args {
 		if err := docker.RemoveImage(name, boolForce, boolNoPrune); err != nil {
-			log.Println(err)
+			log.Error(err)
 			gotError = true
 		}
 	}
@@ -555,9 +543,7 @@ func removeImages(ctx *cobra.Command, args []string) {
 
 func searchImages(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <TERM> to search")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs an argument <TERM> to search")
 	}
 
 	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())

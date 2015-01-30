@@ -2,10 +2,10 @@ package commands
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/yungsang/tablewriter"
 
@@ -133,9 +133,7 @@ func listHosts(ctx *cobra.Command, args []string) {
 
 func switchHost(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <NAME> to switch")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs an argument <NAME> to switch")
 	}
 
 	name := args[0]
@@ -307,9 +305,7 @@ func getHostInfo(ctx *cobra.Command, args []string) {
 
 func addHost(ctx *cobra.Command, args []string) {
 	if len(args) < 2 {
-		ctx.Println("Needs two arguments <NAME> and <URL> at least")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs two arguments <NAME> and <URL> at least")
 	}
 
 	var (
@@ -349,9 +345,7 @@ func addHost(ctx *cobra.Command, args []string) {
 
 func removeHost(ctx *cobra.Command, args []string) {
 	if len(args) < 1 {
-		ctx.Println("Needs an argument <NAME> to remove")
-		ctx.Usage()
-		return
+		ErrorExit(ctx, "Needs an argument <NAME> to remove")
 	}
 
 	name := args[0]

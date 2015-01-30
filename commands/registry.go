@@ -2,10 +2,10 @@ package commands
 
 import (
 	"bufio"
-	"log"
 	"os"
 
 	"github.com/howeyc/gopass"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/yungsang/tablewriter"
 

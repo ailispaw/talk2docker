@@ -1,9 +1,9 @@
 package commands
 
 import (
-	"log"
 	"runtime"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/yungsang/tablewriter"
 
