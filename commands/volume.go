@@ -342,6 +342,10 @@ func getVolumes(ctx *cobra.Command) (Volumes, error) {
 		return nil, err
 	}
 
+	if logs[0] == "" {
+		return nil, nil
+	}
+
 	jsonVolumes := strings.Split(strings.TrimSpace(logs[0]), "\n")
 
 	var volumes Volumes
