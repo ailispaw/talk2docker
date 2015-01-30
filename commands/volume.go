@@ -257,6 +257,12 @@ func removeVolumes(ctx *cobra.Command, args []string) {
 			continue
 		}
 
+		if volume.IsBindMount {
+			log.Printf("The volume is bound, cannot remove: %s\n", volume.ID)
+			gotError = true
+			continue
+		}
+
 		if err := removeVolume(ctx, volume); err != nil {
 			log.Println(err)
 			gotError = true
