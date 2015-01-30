@@ -286,9 +286,21 @@ func composeContainer(ctx *cobra.Command, name string, composer Composer) (strin
 	hostConfig.SecurityOpt = composer.SecurityOpt
 	hostConfig.ReadonlyRootfs = composer.ReadonlyRootfs
 
-	cid, err := docker.CreateContainer(name, config, hostConfig)
+	var cid string
+	cid, err = docker.CreateContainer(name, config, hostConfig)
 	if err != nil {
-		return "", err
+		if apiErr, ok := err.(api.Error); ok && (apiErr.StatusCode == 404) {
+			if _, err := docker.PullImage(config.Image); err != nil {
+				return "", err
+			}
+
+			cid, err = docker.CreateContainer(name, config, hostConfig)
+			if err != nil {
+				return "", err
+			}
+		} else {
+			return "", err
+		}
 	}
 
 	return cid, nil
