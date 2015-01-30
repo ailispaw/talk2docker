@@ -141,7 +141,9 @@ func listVolumes(ctx *cobra.Command, args []string) {
 
 	var _volumes Volumes
 	for _, volume := range volumes {
-		if boolAll || (len(volume.MountedOn) > 0) {
+		if len(volume.MountedOn) > 0 {
+			_volumes = append(_volumes, volume)
+		} else if boolAll && !volume.IsBindMount {
 			_volumes = append(_volumes, volume)
 		}
 	}
