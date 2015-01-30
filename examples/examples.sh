@@ -84,3 +84,12 @@ else
 fi
 
 execute volume list --all
+
+execute container export hello_world /tmp/docker | tar tv
+
+if command -v jq > /dev/null; then
+  VOLUME="$(${talk2docker} vs --json | jq 'map(select(.Path == "/home/docker"))[0].ID')"
+  if [ -n "${VOLUME}" ]; then
+    execute volume export "${VOLUME}" | tar tv
+  fi
+fi
