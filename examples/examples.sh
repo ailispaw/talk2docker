@@ -20,11 +20,13 @@ execute() {
   command="${talk2docker} ${*}"
   echo "\n\$ ${command}" >&2
   eval "${command}"
-  if [ $? -eq 0 ]; then
+  status=$?
+  if [ $status -eq 0 ]; then
     echo "\033[38;5;2m===> ${*}: OK\033[39m" >&2
   else
     echo "\033[38;5;9m===> ${*}: NG\033[39m" >&2
   fi
+  return $status
 }
 
 execute config cat
