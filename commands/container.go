@@ -123,6 +123,13 @@ var cmdGetContainerLogs = &cobra.Command{
 	Run:   getContainerLogs,
 }
 
+var cmdExportContainer = &cobra.Command{
+	Use:   "export <NAME|ID>",
+	Short: "Stream the contents of a container as a tar archive",
+	Long:  APP_NAME + " container export - Stream the contents of a container as a tar archive",
+	Run:   exportContainer,
+}
+
 func init() {
 	flags := cmdPs.Flags()
 	flags.BoolVarP(&boolAll, "all", "a", false, "Show all containers. Only running containers are shown by default.")
@@ -169,6 +176,8 @@ func init() {
 	flags.BoolVarP(&boolTimestamps, "timestamps", "t", false, "Show timestamps")
 	flags.IntVar(&tail, "tail", 0, "Output the specified number of lines at the end of logs (0 for all)")
 	cmdContainer.AddCommand(cmdGetContainerLogs)
+
+	cmdContainer.AddCommand(cmdExportContainer)
 }
 
 func listContainers(ctx *cobra.Command, args []string) {
@@ -515,5 +524,22 @@ func getContainerLogs(ctx *cobra.Command, args []string) {
 	}
 	if logs[1] != "" {
 		fmt.Fprint(os.Stderr, logs[1])
+	}
+}
+
+func exportContainer(ctx *cobra.Command, args []string) {
+	if len(args) < 1 {
+		ctx.Println("Needs an argument <NAME|ID> to export")
+		ctx.Usage()
+		return
+	}
+
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := docker.ExportContainer(args[0]); err != nil {
+		log.Fatal(err)
 	}
 }

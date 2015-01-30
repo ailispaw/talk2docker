@@ -269,3 +269,12 @@ func getStreams(src []byte) []string {
 
 	return streams
 }
+
+func (client *DockerClient) ExportContainer(name string) error {
+	uri := fmt.Sprintf("/v%s/containers/%s/export", API_VERSION, name)
+	_, err := client.doStreamRequest("GET", uri, nil, nil, true)
+	if err != nil {
+		return err
+	}
+	return nil
+}
