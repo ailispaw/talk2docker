@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/yungsang/tablewriter"
@@ -30,6 +31,7 @@ type Volume struct {
 	Path        string
 	IsBindMount bool
 	Writable    bool
+	Created     time.Time
 
 	MountedOn []*Mount
 
@@ -47,7 +49,10 @@ func (volumes Volumes) Swap(i, j int) {
 }
 
 func (volumes Volumes) Less(i, j int) bool {
-	return volumes[i].Path < volumes[j].Path
+	if volumes[i].Created.Equal(volumes[j].Created) {
+		return volumes[i].Path > volumes[i].Path
+	}
+	return volumes[i].Created.Before(volumes[j].Created)
 }
 
 func (volumes Volumes) Find(id string) *Volume {
@@ -137,7 +142,7 @@ func listVolumes(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	sort.Sort(volumes)
+	sort.Sort(sort.Reverse(volumes))
 
 	var _volumes Volumes
 	for _, volume := range volumes {
@@ -182,6 +187,7 @@ func listVolumes(ctx *cobra.Command, args []string) {
 		out := []string{
 			Truncate(volume.ID, 12),
 			formatNames(volume.MountedOn),
+			FormatDateTime(volume.Created),
 		}
 		if volume.IsBindMount {
 			out = append(out, volume.Path)
@@ -194,6 +200,7 @@ func listVolumes(ctx *cobra.Command, args []string) {
 	header := []string{
 		"ID",
 		"Mounted On",
+		"Created At",
 		"Path",
 	}
 
@@ -312,7 +319,7 @@ func getVolumes(ctx *cobra.Command) (Volumes, error) {
 		hostConfig api.HostConfig
 	)
 
-	config.Cmd = []string{"/bin/sh", "-c", "awk '{print $0}' /.docker_volumes/*/config.json"}
+	config.Cmd = []string{"/bin/sh", "-c", "awk '{cmd=\"ls -e \" FILENAME; cmd | getline line; close(cmd); split(line,a,\" \"); print $0,a[6],a[7],a[8],a[9],a[10]}' /.docker_volumes/*/config.json"}
 	config.Image = "busybox:latest"
 
 	hostConfig.Binds = []string{path + ":/.docker_volumes:ro"}
@@ -352,14 +359,16 @@ func getVolumes(ctx *cobra.Command) (Volumes, error) {
 		return nil, nil
 	}
 
-	jsonVolumes := strings.Split(strings.TrimSpace(logs[0]), "\n")
+	vols := strings.Split(strings.TrimSpace(logs[0]), "\n")
 
 	var volumes Volumes
-	for _, v := range jsonVolumes {
+	for _, vol := range vols {
+		arr := strings.SplitN(vol, " ", 2)
 		volume := &Volume{}
-		if err := json.Unmarshal([]byte(v), volume); err != nil {
+		if err := json.Unmarshal([]byte(arr[0]), volume); err != nil {
 			return nil, err
 		}
+		volume.Created, _ = time.Parse(time.ANSIC, arr[1])
 		volume.configPath = filepath.Join(path, "/"+volume.ID)
 		volumes = append(volumes, volume)
 	}
