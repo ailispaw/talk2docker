@@ -39,7 +39,15 @@ CONTAINERS=$(echo ${CONTAINERS})
 if [ -n "${CONTAINERS}" ]; then
   execute container remove "${CONTAINERS}" --force
 fi
-execute ps
+execute ps --all
+
+# Cleanup volumes
+VOLUMES="$(${talk2docker} volume list -aq)"
+VOLUMES=$(echo ${VOLUMES})
+if [ -n "${VOLUMES}" ]; then
+  execute volume remove "${VOLUMES}"
+fi
+execute vs --all
 
 # Cleanup images
 IMAGES="$(${talk2docker} image list -q)"
