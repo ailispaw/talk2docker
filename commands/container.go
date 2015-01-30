@@ -551,7 +551,7 @@ func getContainerChanges(ctx *cobra.Command, args []string) {
 		case api.CHANGE_TYPE_DELETE:
 			kind = "D"
 		}
-		fmt.Printf("%s %s\n", kind, change.Path)
+		ctx.Printf("%s %s\n", kind, change.Path)
 	}
 }
 

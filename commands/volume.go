@@ -249,7 +249,7 @@ func inspectVolumes(ctx *cobra.Command, args []string) {
 			continue
 		}
 
-		log.Errorf("No such volume: %s\n", arg)
+		log.Errorf("No such volume: %s", arg)
 		gotError = true
 	}
 
@@ -279,19 +279,19 @@ func removeVolumes(ctx *cobra.Command, args []string) {
 	for _, id := range args {
 		volume := volumes.Find(id)
 		if volume == nil {
-			log.Printf("No such volume: %s\n", id)
+			log.Errorf("No such volume: %s", id)
 			gotError = true
 			continue
 		}
 
 		if len(volume.MountedOn) > 0 {
-			log.Printf("The volume is in use, cannot remove: %s\n", volume.ID)
+			log.Errorf("The volume is in use, cannot remove: %s", volume.ID)
 			gotError = true
 			continue
 		}
 
 		if volume.IsBindMount {
-			log.Printf("The volume is bound, cannot remove: %s\n", volume.ID)
+			log.Errorf("The volume is bound, cannot remove: %s", volume.ID)
 			gotError = true
 			continue
 		}
