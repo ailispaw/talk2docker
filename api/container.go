@@ -96,8 +96,7 @@ func (client *DockerClient) InspectContainer(name string) (*ContainerInfo, error
 
 func (client *DockerClient) StartContainer(name string) error {
 	uri := fmt.Sprintf("/v%s/containers/%s/start", API_VERSION, name)
-	_, err := client.doRequest("POST", uri, nil, nil)
-	if err != nil {
+	if _, err := client.doRequest("POST", uri, nil, nil); err != nil {
 		return err
 	}
 	return nil
@@ -110,8 +109,7 @@ func (client *DockerClient) StopContainer(name string, timeToWait int) error {
 	}
 
 	uri := fmt.Sprintf("/v%s/containers/%s/stop?%s", API_VERSION, name, v.Encode())
-	_, err := client.doRequest("POST", uri, nil, nil)
-	if err != nil {
+	if _, err := client.doRequest("POST", uri, nil, nil); err != nil {
 		return err
 	}
 
@@ -125,8 +123,7 @@ func (client *DockerClient) RestartContainer(name string, timeToWait int) error 
 	}
 
 	uri := fmt.Sprintf("/v%s/containers/%s/restart?%s", API_VERSION, name, v.Encode())
-	_, err := client.doRequest("POST", uri, nil, nil)
-	if err != nil {
+	if _, err := client.doRequest("POST", uri, nil, nil); err != nil {
 		return err
 	}
 
@@ -140,8 +137,7 @@ func (client *DockerClient) KillContainer(name, signal string) error {
 	}
 
 	uri := fmt.Sprintf("/v%s/containers/%s/kill?%s", API_VERSION, name, v.Encode())
-	_, err := client.doRequest("POST", uri, nil, nil)
-	if err != nil {
+	if _, err := client.doRequest("POST", uri, nil, nil); err != nil {
 		return err
 	}
 
@@ -150,8 +146,7 @@ func (client *DockerClient) KillContainer(name, signal string) error {
 
 func (client *DockerClient) PauseContainer(name string) error {
 	uri := fmt.Sprintf("/v%s/containers/%s/pause", API_VERSION, name)
-	_, err := client.doRequest("POST", uri, nil, nil)
-	if err != nil {
+	if _, err := client.doRequest("POST", uri, nil, nil); err != nil {
 		return err
 	}
 	return nil
@@ -159,8 +154,7 @@ func (client *DockerClient) PauseContainer(name string) error {
 
 func (client *DockerClient) UnpauseContainer(name string) error {
 	uri := fmt.Sprintf("/v%s/containers/%s/unpause", API_VERSION, name)
-	_, err := client.doRequest("POST", uri, nil, nil)
-	if err != nil {
+	if _, err := client.doRequest("POST", uri, nil, nil); err != nil {
 		return err
 	}
 	return nil
@@ -190,8 +184,7 @@ func (client *DockerClient) RemoveContainer(name string, force bool) error {
 	}
 
 	uri := fmt.Sprintf("/v%s/containers/%s?%s", API_VERSION, name, v.Encode())
-	_, err := client.doRequest("DELETE", uri, nil, nil)
-	if err != nil {
+	if _, err := client.doRequest("DELETE", uri, nil, nil); err != nil {
 		return err
 	}
 
@@ -272,8 +265,7 @@ func getStreams(src []byte) []string {
 
 func (client *DockerClient) ExportContainer(name string) error {
 	uri := fmt.Sprintf("/v%s/containers/%s/export", API_VERSION, name)
-	_, err := client.doStreamRequest("GET", uri, nil, nil, true)
-	if err != nil {
+	if _, err := client.doStreamRequest("GET", uri, nil, nil, true); err != nil {
 		return err
 	}
 	return nil
