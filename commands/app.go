@@ -64,6 +64,7 @@ func Execute() {
 
 	app.AddCommand(cmdBuild)
 	app.AddCommand(cmdCompose)
+	app.AddCommand(cmdCommit)
 	app.AddCommand(cmdVersion)
 
 	app.AddCommand(cmdContainer)

@@ -94,3 +94,9 @@ else
 fi
 
 execute volume export hello_world:/tmp/docker | tar tv
+
+execute commit hello_world ailis/busybox:hello_world
+
+execute image list --all
+
+execute image history ailis/busybox:hello_world

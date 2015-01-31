@@ -15,10 +15,10 @@ import (
 )
 
 var (
-	boolLatest, boolSize, boolTimestamps bool
+	boolLatest, boolSize, boolTimestamps, boolPause bool
 
-	timeToWait, tail int
-	signal           string
+	timeToWait, tail        int
+	signal, message, author string
 )
 
 var cmdPs = &cobra.Command{
@@ -27,6 +27,13 @@ var cmdPs = &cobra.Command{
 	Short:   "List containers",
 	Long:    APP_NAME + " ps - List containers",
 	Run:     listContainers,
+}
+
+var cmdCommit = &cobra.Command{
+	Use:   "commit <NAME|ID> <NAME[:TAG]>",
+	Short: "Create a new image from a container",
+	Long:  APP_NAME + " commit - Create a new image from a container",
+	Run:   commitContainer,
 }
 
 var cmdContainer = &cobra.Command{
@@ -145,6 +152,13 @@ var cmdGetContainerProcesses = &cobra.Command{
 	Run:     getContainerProcesses,
 }
 
+var cmdCommitContainer = &cobra.Command{
+	Use:   "commit <NAME|ID> <IMAGE-NAME[:TAG]>",
+	Short: "Create a new image from a container",
+	Long:  APP_NAME + " container commit - Create a new image from a container",
+	Run:   commitContainer,
+}
+
 func init() {
 	flags := cmdPs.Flags()
 	flags.BoolVarP(&boolAll, "all", "a", false, "Show all containers. Only running containers are shown by default.")
@@ -152,6 +166,11 @@ func init() {
 	flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
 	flags.BoolVarP(&boolSize, "size", "s", false, "Display sizes")
 	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+
+	flags = cmdCommit.Flags()
+	flags.StringVarP(&message, "message", "m", "", "Commit message")
+	flags.StringVarP(&author, "author", "a", "", "Author (e.g., \"A.I. <ailis@paw.zone>\")")
+	flags.BoolVarP(&boolPause, "pause", "p", true, "Pause container during commit")
 
 	flags = cmdListContainers.Flags()
 	flags.BoolVarP(&boolAll, "all", "a", false, "Show all containers. Only running containers are shown by default.")
@@ -197,6 +216,12 @@ func init() {
 	cmdContainer.AddCommand(cmdExportContainer)
 
 	cmdContainer.AddCommand(cmdGetContainerProcesses)
+
+	flags = cmdCommitContainer.Flags()
+	flags.StringVarP(&message, "message", "m", "", "Commit message")
+	flags.StringVarP(&author, "author", "a", "", "Author (e.g., \"A.I. <ailis@paw.zone>\")")
+	flags.BoolVarP(&boolPause, "pause", "p", true, "Pause container during commit")
+	cmdContainer.AddCommand(cmdCommitContainer)
 }
 
 func listContainers(ctx *cobra.Command, args []string) {
@@ -604,4 +629,30 @@ func getContainerProcesses(ctx *cobra.Command, args []string) {
 	}
 
 	PrintInTable(ctx.Out(), ps.Titles, ps.Processes, 100, tablewriter.ALIGN_DEFAULT)
+}
+
+func commitContainer(ctx *cobra.Command, args []string) {
+	if len(args) < 2 {
+		ErrorExit(ctx, "Needs two arguments to commit <CONTAINER-NAME|ID> to <IMAGE-NAME[:TAG]>")
+	}
+
+	reg, name, tag, err := client.ParseRepositoryName(args[1])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if reg != "" {
+		name = reg + "/" + name
+	}
+
+	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if _, err := docker.CommitContainer(args[0], name, tag, message, author, boolPause); err != nil {
+		log.Fatal(err)
+	}
+
+	ctx.Printf("Committed %s as %s:%s\n", args[0], name, tag)
 }

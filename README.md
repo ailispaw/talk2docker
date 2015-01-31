@@ -48,6 +48,7 @@ Available Commands:
   hosts                            list hosts
   build [PATH/TO/DOCKERFILE]       Build an image from a Dockerfile
   compose <PATH/TO/YAML> [NAME...] Compose containers
+  commit <NAME|ID> <NAME[:TAG]>    Create a new image from a container
   version                          Show the version information
   container [command]              Manage containers
   image [command]                  Manage images
