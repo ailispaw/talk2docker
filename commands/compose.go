@@ -135,16 +135,19 @@ func composeContainer(ctx *cobra.Command, name string, composer Composer) (strin
 		bindVolumes    []string
 		exposedPorts   = make(map[string]struct{})
 		portBindings   = make(map[string][]api.PortBinding)
+		links          []string
 		deviceMappings []api.DeviceMapping
 	)
 
-	r, n, t, err := client.ParseRepositoryName(composer.Image)
-	if err != nil {
-		return "", err
-	}
-	composer.Image = n + ":" + t
-	if r != "" {
-		composer.Image = r + "/" + composer.Image
+	if composer.Image != "" {
+		r, n, t, err := client.ParseRepositoryName(composer.Image)
+		if err != nil {
+			return "", err
+		}
+		composer.Image = n + ":" + t
+		if r != "" {
+			composer.Image = r + "/" + composer.Image
+		}
 	}
 
 	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
@@ -213,6 +216,15 @@ func composeContainer(ctx *cobra.Command, name string, composer Composer) (strin
 		}
 	}
 
+	for _, link := range append(composer.Links, composer.ExternalLinks...) {
+		arr := strings.Split(link, ":")
+		if len(arr) < 2 {
+			links = append(links, arr[0]+":"+arr[0])
+		} else {
+			links = append(links, link)
+		}
+	}
+
 	for _, device := range composer.Devices {
 		src := ""
 		dst := ""
@@ -277,7 +289,7 @@ func composeContainer(ctx *cobra.Command, name string, composer Composer) (strin
 	hostConfig.Binds = bindVolumes
 	hostConfig.Privileged = composer.Privileged
 	hostConfig.PortBindings = portBindings
-	hostConfig.Links = append(composer.Links, composer.ExternalLinks...)
+	hostConfig.Links = links
 	hostConfig.PublishAllPorts = composer.PublishAllPorts
 	hostConfig.Dns = composer.Dns
 	hostConfig.DnsSearch = composer.DnsSearch
