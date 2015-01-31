@@ -5,16 +5,7 @@ HERE=`pwd`
 popd > /dev/null
 
 cd "${HERE}"
-talk2docker="../talk2docker --config=config.yml"
-
-if command -v boot2docker > /dev/null; then
-  boot2docker up
-  eval ${talk2docker} host switch boot2docker
-fi
-if command -v vagrant > /dev/null; then
-  vagrant up
-  eval ${talk2docker} host switch vagrant
-fi
+talk2docker="../../talk2docker --config=../config.yml"
 
 execute() {
   command="${talk2docker} ${*}"
@@ -28,6 +19,17 @@ execute() {
   fi
   return $status
 }
+
+if command -v boot2docker > /dev/null; then
+  boot2docker up
+  eval ${talk2docker} host switch boot2docker
+fi
+if command -v vagrant > /dev/null; then
+  cd ..
+  vagrant up
+  cd "${HERE}"
+  eval ${talk2docker} host switch vagrant
+fi
 
 execute config cat
 

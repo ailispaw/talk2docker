@@ -2,6 +2,6 @@ FROM busybox
 
 MAINTAINER A.I. <ailis@paw.zone>
 
-COPY config.yml /config.yml
+COPY compose.yml /compose.yml
 
 CMD ["sh"]
