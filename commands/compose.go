@@ -154,6 +154,10 @@ func composeContainer(ctx *cobra.Command, name string, composer Composer) (strin
 		}
 	}
 
+	if (composer.WorkingDir != "") && !filepath.IsAbs(composer.WorkingDir) {
+		return "", fmt.Errorf("Invalid working directory: it must be absolute.")
+	}
+
 	docker, err := client.NewDockerClient(configPath, hostName, ctx.Out())
 	if err != nil {
 		return "", err
@@ -211,6 +215,9 @@ func composeContainer(ctx *cobra.Command, name string, composer Composer) (strin
 		if arr := strings.Split(volume, ":"); len(arr) > 1 {
 			if arr[1] == "/" {
 				return "", fmt.Errorf("Invalid bind mount: destination can't be '/'")
+			}
+			if !filepath.IsAbs(arr[0]) {
+				return "", fmt.Errorf("Invalid bind mount: the host path must be absolute.")
 			}
 			bindVolumes = append(bindVolumes, volume)
 		} else if volume == "/" {
