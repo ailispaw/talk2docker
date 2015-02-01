@@ -42,7 +42,7 @@ func (client *DockerClient) BuildImage(path, tag string, quiet bool) (string, er
 
 	uri := fmt.Sprintf("/v%s/build?%s", API_VERSION, v.Encode())
 
-	dockerfile := os.ExpandEnv(path)
+	dockerfile := filepath.Clean(path)
 
 	fi, err := os.Lstat(dockerfile)
 	if err != nil {
