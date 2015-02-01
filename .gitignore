@@ -27,3 +27,5 @@ talk2docker
 Godeps/_workspace/
 .vagrant/
 *.bak
+
+examples/wordpress/wordpress/
