@@ -47,23 +47,23 @@ var cmdSwitchHost = &cobra.Command{
 
 var cmdGetHostInfo = &cobra.Command{
 	Use:   "info [NAME]",
-	Short: "Get the host information",
-	Long:  APP_NAME + " host info - Get the host information",
+	Short: "Show the host's information",
+	Long:  APP_NAME + " host info - Show the host's information",
 	Run:   getHostInfo,
 }
 
 var cmdAddHost = &cobra.Command{
 	Use:   "add <NAME> <URL> [DESCRIPTION]",
-	Short: "Add a new host into the config file",
-	Long:  APP_NAME + " host add - Add a new host into the config",
+	Short: "Add a new host into the configuration file",
+	Long:  APP_NAME + " host add - Add a new host into the configuration file",
 	Run:   addHost,
 }
 
 var cmdRemoveHost = &cobra.Command{
 	Use:     "remove <NAME>",
 	Aliases: []string{"rm", "delete", "del"},
-	Short:   "Remove a host from the config file",
-	Long:    APP_NAME + " host remove - Remove a host from the config file",
+	Short:   "Remove a host from the configuration file",
+	Long:    APP_NAME + " host remove - Remove a host from the configuration file",
 	Run:     removeHost,
 }
 

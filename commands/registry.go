@@ -34,16 +34,16 @@ var cmdListRegistries = &cobra.Command{
 var cmdLoginRegistry = &cobra.Command{
 	Use:     "login [REGISTRY]",
 	Aliases: []string{"in"},
-	Short:   "Log in to a Docker registry through the host",
-	Long:    APP_NAME + " registry login - Log in to a Docker registry through the host",
+	Short:   "Log in to a Docker registry",
+	Long:    APP_NAME + " registry login - Log in to a Docker registry",
 	Run:     loginRegistry,
 }
 
 var cmdLogoutRegistry = &cobra.Command{
 	Use:     "logout [REGISTRY]",
 	Aliases: []string{"out"},
-	Short:   "Log out from a Docker registry through the host",
-	Long:    APP_NAME + " registry logout - Log out from a Docker registry through the host",
+	Short:   "Log out from a Docker registry",
+	Long:    APP_NAME + " registry logout - Log out from a Docker registry",
 	Run:     logoutRegistry,
 }
 

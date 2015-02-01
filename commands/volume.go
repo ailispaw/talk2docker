@@ -130,8 +130,8 @@ var cmdListVolumes = &cobra.Command{
 var cmdInspectVolumes = &cobra.Command{
 	Use:     "inspect <ID|CONTAINER-NAME:PATH>...",
 	Aliases: []string{"ins", "info"},
-	Short:   "Inspect volumes",
-	Long:    APP_NAME + " volume inspect - Inspect volumes",
+	Short:   "Show volumes' information",
+	Long:    APP_NAME + " volume inspect - Show volumes' information",
 	Run:     inspectVolumes,
 }
 

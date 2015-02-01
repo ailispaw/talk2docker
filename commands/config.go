@@ -23,8 +23,8 @@ var cmdConfig = &cobra.Command{
 var cmdCatConfig = &cobra.Command{
 	Use:     "cat",
 	Aliases: []string{"ls"},
-	Short:   "Cat the configuration file",
-	Long:    APP_NAME + " config cat - Cat the configuration file",
+	Short:   "Show the contents of the configuration file",
+	Long:    APP_NAME + " config cat - Show the contents of the configuration file",
 	Run:     catConfig,
 }
 

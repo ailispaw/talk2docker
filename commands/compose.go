@@ -19,16 +19,16 @@ import (
 var cmdCompose = &cobra.Command{
 	Use:     "compose <PATH/TO/YAML> [NAME...]",
 	Aliases: []string{"fig", "create"},
-	Short:   "Compose containers",
-	Long:    APP_NAME + " compose - Compose containers",
+	Short:   "Create containers",
+	Long:    APP_NAME + " compose - Create containers",
 	Run:     composeContainers,
 }
 
 var cmdComposeContainers = &cobra.Command{
 	Use:     "compose <PATH/TO/YAML> [NAME...]",
 	Aliases: []string{"fig", "create"},
-	Short:   "Compose containers",
-	Long:    APP_NAME + " container compose - Compose containers",
+	Short:   "Create containers",
+	Long:    APP_NAME + " container compose - Create containers",
 	Run:     composeContainers,
 }
 

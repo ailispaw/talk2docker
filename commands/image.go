@@ -64,8 +64,8 @@ var cmdBuildImage = &cobra.Command{
 
 var cmdPullImage = &cobra.Command{
 	Use:   "pull <NAME[:TAG]>",
-	Short: "Pull an image",
-	Long:  APP_NAME + " image pull - Pull an image",
+	Short: "Pull an image from a registry",
+	Long:  APP_NAME + " image pull - Pull an image from a registry",
 	Run:   pullImage,
 }
 
@@ -87,15 +87,15 @@ var cmdShowImageHistory = &cobra.Command{
 var cmdInspectImages = &cobra.Command{
 	Use:     "inspect <NAME[:TAG]|ID>...",
 	Aliases: []string{"ins", "info"},
-	Short:   "Inspect images",
-	Long:    APP_NAME + " image inspect - Inspect images",
+	Short:   "Show images' information",
+	Long:    APP_NAME + " image inspect - Show images' information",
 	Run:     inspectImages,
 }
 
 var cmdPushImage = &cobra.Command{
 	Use:   "push <NAME[:TAG]>",
-	Short: "Push an image",
-	Long:  APP_NAME + " image push - Push an image",
+	Short: "Push an image into a registry",
+	Long:  APP_NAME + " image push - Push an image into a registry",
 	Run:   pushImage,
 }
 
@@ -109,8 +109,8 @@ var cmdRemoveImages = &cobra.Command{
 
 var cmdSearchImages = &cobra.Command{
 	Use:   "search <TERM>",
-	Short: "Search images",
-	Long:  APP_NAME + " image search - Search images",
+	Short: "Search for images on a registry",
+	Long:  APP_NAME + " image search - Search for images on a registry",
 	Run:   searchImages,
 }
 

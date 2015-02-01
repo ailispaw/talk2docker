@@ -57,8 +57,8 @@ var cmdListContainers = &cobra.Command{
 var cmdInspectContainers = &cobra.Command{
 	Use:     "inspect <NAME|ID>...",
 	Aliases: []string{"ins", "info"},
-	Short:   "Inspect containers",
-	Long:    APP_NAME + " container inspect - Inspect containers",
+	Short:   "Show containers' information",
+	Long:    APP_NAME + " container inspect - Show containers' information",
 	Run:     inspectContainers,
 }
 
@@ -110,8 +110,8 @@ var cmdUnpauseContainers = &cobra.Command{
 
 var cmdWaitContainers = &cobra.Command{
 	Use:   "wait <NAME|ID>...",
-	Short: "Wait containers",
-	Long:  APP_NAME + " container wait - Wait containers",
+	Short: "Block until containers stop",
+	Long:  APP_NAME + " container wait - Block until containers stop",
 	Run:   waitContainers,
 }
 
@@ -125,15 +125,15 @@ var cmdRemoveContainers = &cobra.Command{
 
 var cmdGetContainerLogs = &cobra.Command{
 	Use:   "logs <NAME|ID>",
-	Short: "Get container logs",
-	Long:  APP_NAME + " container logs - Get container logs",
+	Short: "Stream outputs(STDOUT/STDERR) from a container",
+	Long:  APP_NAME + " container logs - Stream outputs(STDOUT/STDERR) from a container",
 	Run:   getContainerLogs,
 }
 
 var cmdGetContainerChanges = &cobra.Command{
 	Use:   "diff <NAME|ID>",
-	Short: "Inspect changes on a container's filesystem",
-	Long:  APP_NAME + " container diff - Inspect changes on a container's filesystem",
+	Short: "Show changes on a container's filesystem",
+	Long:  APP_NAME + " container diff - Show changes on a container's filesystem",
 	Run:   getContainerChanges,
 }
 
@@ -147,8 +147,8 @@ var cmdExportContainer = &cobra.Command{
 var cmdGetContainerProcesses = &cobra.Command{
 	Use:     "top <NAME|ID> [PS-ARGS]",
 	Aliases: []string{"ps"},
-	Short:   "Display the running processes of a container",
-	Long:    APP_NAME + " container top - Display the running processes of a container",
+	Short:   "List the running processes of a container",
+	Long:    APP_NAME + " container top - List the running processes of a container",
 	Run:     getContainerProcesses,
 }
 

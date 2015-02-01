@@ -47,7 +47,7 @@ Available Commands:
   vs                               List volumes
   hosts                            list hosts
   build [PATH/TO/DOCKERFILE]       Build an image from a Dockerfile
-  compose <PATH/TO/YAML> [NAME...] Compose containers
+  compose <PATH/TO/YAML> [NAME...] Create containers
   commit <NAME|ID> <NAME[:TAG]>    Create a new image from a container
   version                          Show the version information
   container [command]              Manage containers
