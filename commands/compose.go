@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -84,7 +85,8 @@ func composeContainers(ctx *cobra.Command, args []string) {
 		ErrorExit(ctx, "Needs an argument <PATH/TO/YAML> to compose containers")
 	}
 
-	path := os.ExpandEnv(args[0])
+	path := filepath.Clean(args[0])
+	root := filepath.Dir(path)
 
 	var names []string
 	if len(args) > 1 {
@@ -95,6 +97,8 @@ func composeContainers(ctx *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	os.Chdir(root)
 
 	var composers map[string]Composer
 	if err := yaml.Unmarshal(data, &composers); err != nil {
