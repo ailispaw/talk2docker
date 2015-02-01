@@ -71,13 +71,13 @@ Use "talk2docker help [command]" for more information about that command.
 
 ```
 
-You can find more examples of usage in [examples.sh](https://github.com/ailispaw/talk2docker/blob/master/examples/examples.sh).
+You can find more examples of usage in [examples](https://github.com/ailispaw/talk2docker/tree/master/examples).
 
 ### Configuration
 
 Talk2Docker uses a YAML file to configure a connection to Docker daemon.  
 It locates `$HOME/.talk2docker/config` by default.
-If it does't exist, it will be created automatically as below.  
+If it doesn't exist, it will be created automatically as below.
 
 ```yaml
 default: default
