@@ -1,4 +1,6 @@
-# Global Options
+# Usage of Commands
+
+## Global Options
 - --config (:=$HOME/.talk2docker/config)  
 	Path to the configuration file
 - --host  
@@ -14,7 +16,7 @@
 - --help (-h)  
 	Print help messages about the command
 
-# Commands
+## Commands
 
 ### ps (containers)  
 Shortcut to `container list` command
@@ -42,7 +44,7 @@ Show the version information
 
 ### container (ctn)
 - compose (fig, create)  
-	Create containers from a YAML file like Docker Compose (formerly fig)
+	Create containers from [a YAML file](https://github.com/ailispaw/talk2docker/blob/master/docs/compose.md) like Docker Compose (formerly fig)
 - list (ls)  
 	List containers
 - inspect (ins, info)  
