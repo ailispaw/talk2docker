@@ -42,6 +42,6 @@ fi
 cp wp-config.php wordpress/
 cp router.php wordpress/
 
-execute compose compose.yml db web --debug
+execute compose compose.yml db web
 
 execute container start db web
