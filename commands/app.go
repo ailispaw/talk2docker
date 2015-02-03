@@ -22,8 +22,8 @@ var (
 
 var app = &cobra.Command{
 	Use:   "talk2docker",
-	Short: "A simple Docker client to talk to Docker daemon",
-	Long:  APP_NAME + " - A simple Docker client to talk to Docker daemon",
+	Short: "Yet Another Docker Client to talk to Docker daemon",
+	Long:  APP_NAME + " - Yet Another Docker Client to talk to Docker daemon",
 	Run: func(ctx *cobra.Command, args []string) {
 		ctx.Help()
 	},

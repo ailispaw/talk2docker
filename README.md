@@ -35,7 +35,7 @@ $ make
 
 ```
 $ talk2docker
-Talk2Docker - A simple Docker client to talk to Docker daemon
+Talk2Docker - Yet Another Docker Client to talk to Docker daemon
 
 Usage:
   talk2docker [flags]
