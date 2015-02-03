@@ -35,10 +35,6 @@ fi
 cp wp-config.php wordpress/
 cp router.php wordpress/
 
-execute compose compose.yml db
+execute compose compose.yml db web
 
-execute compose compose.yml web
-
-execute container start db
-
-execute container start web
+execute container start db web

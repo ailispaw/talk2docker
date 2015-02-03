@@ -105,18 +105,10 @@ func composeContainers(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	inArray := func(a string, list []string) bool {
-		for _, b := range list {
-			if a == b {
-				return true
-			}
-		}
-		return false
-	}
-
 	var gotError = false
-	for name, composer := range composers {
-		if (len(names) == 0) || inArray(name, names) {
+
+	if len(names) == 0 {
+		for name, composer := range composers {
 			if cid, err := composeContainer(ctx, name, composer); err != nil {
 				log.Error(err)
 				gotError = true
@@ -125,6 +117,18 @@ func composeContainers(ctx *cobra.Command, args []string) {
 			}
 		}
 	}
+
+	for _, name := range names {
+		if composer, ok := composers[name]; ok {
+			if cid, err := composeContainer(ctx, name, composer); err != nil {
+				log.Error(err)
+				gotError = true
+			} else {
+				ctx.Println(cid)
+			}
+		}
+	}
+
 	if gotError {
 		log.Fatal("Error: failed to compose one or more containers")
 	}
