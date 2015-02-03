@@ -1,0 +1,9 @@
+.DS_Store
+
+.dockerignore
+Dockerfile
+
+compose.yml
+router.php
+run.sh
+wp-config.php

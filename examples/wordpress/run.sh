@@ -5,7 +5,7 @@ HERE=`pwd`
 popd > /dev/null
 
 cd "${HERE}"
-talk2docker="../../talk2docker --config=../config.yml --host=vagrant"
+talk2docker="../../talk2docker --config=../config.yml"
 
 execute() {
   command="${talk2docker} ${*}"
@@ -18,10 +18,17 @@ execute() {
   return $status
 }
 
+eval ${talk2docker} host switch default
+
 if command -v vagrant > /dev/null; then
   cd ..
   vagrant up
   cd "${HERE}"
+  eval ${talk2docker} host switch vagrant
+elif command -v boot2docker > /dev/null; then
+  boot2docker up
+  VBoxManage controlvm "boot2docker-vm" natpf1 "tcp8000,tcp,,8000,,8000";
+  eval ${talk2docker} host switch boot2docker
 fi
 
 eval ${talk2docker} container remove web db --force
@@ -35,6 +42,6 @@ fi
 cp wp-config.php wordpress/
 cp router.php wordpress/
 
-execute compose compose.yml db web
+execute compose compose.yml db web --debug
 
 execute container start db web

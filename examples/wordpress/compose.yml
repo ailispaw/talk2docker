@@ -4,11 +4,9 @@ db:
     - MYSQL_DATABASE=wordpress
 
 web:
-  image: orchardup/php5
+  build: .
   command: ["php", "-S", "0.0.0.0:8000", "-t", "/code"]
   ports:
     - "8000:8000"
   links:
     - db
-  volumes:
-    - /vagrant/wordpress/wordpress:/code

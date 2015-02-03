@@ -20,15 +20,16 @@ execute() {
   return $status
 }
 
-if command -v boot2docker > /dev/null; then
-  boot2docker up
-  eval ${talk2docker} host switch boot2docker
-fi
+eval ${talk2docker} host switch default
+
 if command -v vagrant > /dev/null; then
   cd ..
   vagrant up
   cd "${HERE}"
   eval ${talk2docker} host switch vagrant
+elif command -v boot2docker > /dev/null; then
+  boot2docker up
+  eval ${talk2docker} host switch boot2docker
 fi
 
 execute config cat
