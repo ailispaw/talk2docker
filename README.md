@@ -71,7 +71,7 @@ Use "talk2docker help [command]" for more information about that command.
 
 ```
 
-You can find more details in [docs](https://github.com/ailispaw/talk2docker/tree/master/docs) and examples of usage in [examples](https://github.com/ailispaw/talk2docker/tree/master/examples).
+You can find more details in [docs](https://github.com/ailispaw/talk2docker/tree/master/docs) and [examples](https://github.com/ailispaw/talk2docker/tree/master/examples).
 
 ### Configuration
 
