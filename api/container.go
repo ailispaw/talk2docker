@@ -329,3 +329,33 @@ func (client *DockerClient) GetContainerProcesses(name, ps_args string) (*Proces
 	}
 	return processes, nil
 }
+
+func (client *DockerClient) CommitContainer(name, repo, tag, comment, author string, pause bool) (string, error) {
+	v := url.Values{}
+	v.Set("container", name)
+	v.Set("repo", repo)
+	v.Set("tag", tag)
+	if comment != "" {
+		v.Set("comment", comment)
+	}
+	if author != "" {
+		v.Set("author", author)
+	}
+	if !pause {
+		v.Set("pause", "0")
+	}
+
+	uri := fmt.Sprintf("/v%s/commit?%s", API_VERSION, v.Encode())
+	data, err := client.doRequest("POST", uri, nil, nil)
+	if err != nil {
+		return "", err
+	}
+
+	var result struct {
+		Id string
+	}
+	if err := json.Unmarshal(data, &result); err != nil {
+		return "", err
+	}
+	return result.Id, nil
+}

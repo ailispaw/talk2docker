@@ -13,7 +13,6 @@ package api
 import (
 	"archive/tar"
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -253,34 +252,4 @@ func (client *DockerClient) BuildImage(path, tag string, quiet bool) (string, er
 	headers["Content-type"] = "application/tar"
 
 	return client.doStreamRequest("POST", uri, pipeReader, headers, quiet)
-}
-
-func (client *DockerClient) CommitContainer(name, repo, tag, comment, author string, pause bool) (string, error) {
-	v := url.Values{}
-	v.Set("container", name)
-	v.Set("repo", repo)
-	v.Set("tag", tag)
-	if comment != "" {
-		v.Set("comment", comment)
-	}
-	if author != "" {
-		v.Set("author", author)
-	}
-	if !pause {
-		v.Set("pause", "0")
-	}
-
-	uri := fmt.Sprintf("/v%s/commit?%s", API_VERSION, v.Encode())
-	data, err := client.doRequest("POST", uri, nil, nil)
-	if err != nil {
-		return "", err
-	}
-
-	var result struct {
-		Id string
-	}
-	if err := json.Unmarshal(data, &result); err != nil {
-		return "", err
-	}
-	return result.Id, nil
 }
