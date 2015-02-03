@@ -27,7 +27,7 @@ if command -v vagrant > /dev/null; then
   eval ${talk2docker} host switch vagrant
 elif command -v boot2docker > /dev/null; then
   boot2docker up
-  VBoxManage controlvm "boot2docker-vm" natpf1 "tcp8000,tcp,,8000,,8000";
+  VBoxManage controlvm "boot2docker-vm" natpf1 "tcp8000,tcp,,8000,,8000"
   eval ${talk2docker} host switch boot2docker
 fi
 
@@ -37,10 +37,9 @@ eval ${talk2docker} container remove web db --force
 
 if [ ! -d wordpress ]; then
   curl https://wordpress.org/latest.tar.gz | tar -xzf -
+  cp wp-config.php wordpress/
+  cp router.php wordpress/
 fi
-
-cp wp-config.php wordpress/
-cp router.php wordpress/
 
 execute compose compose.yml db web
 
