@@ -336,7 +336,7 @@ func getVolumes(ctx *cobra.Command) (Volumes, error) {
 	} else {
 		for _, pair := range info.DriverStatus {
 			if pair[0] == "Root Dir" {
-				rootDir = filepath.Dir(pair[0])
+				rootDir = filepath.Dir(pair[1])
 			}
 		}
 	}
