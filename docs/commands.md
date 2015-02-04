@@ -74,7 +74,9 @@ Show the version information
 - top (ps)  
 	List the running processes of a container
 - commit  
-		Create a new image from a container
+	Create a new image from a container
+- upload  
+	Upload a file/folder to a container
 
 ### image (img)
 - list (ls)  
@@ -105,6 +107,8 @@ Show the version information
 	Remove volumes
 - export  
 	Stream the contents of a volume as a tar archive to STDOUT
+- upload  
+	Upload a file/folder to a volume
 
 ### host (hst)
 - list (ls)  
