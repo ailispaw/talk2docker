@@ -73,9 +73,7 @@ func uploadToContainer(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	rootDir = filepath.Join(rootDir, "/mnt/"+containerInfo.Id)
-
-	dstPath := filepath.Join(rootDir, path)
+	dstPath := filepath.Join(rootDir, "/mnt/"+containerInfo.Id, path)
 
 	ctx.Printf("Uploading %s into %s\n", args[0], args[1])
 

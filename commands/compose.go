@@ -165,7 +165,7 @@ func composeContainer(ctx *cobra.Command, root, name string, composer Composer) 
 	}
 
 	if composer.Build != "" {
-		if !strings.HasPrefix(composer.Build, "/") {
+		if !filepath.IsAbs(composer.Build) {
 			composer.Build = filepath.Join(root, composer.Build)
 		}
 		message, err := docker.BuildImage(composer.Build, composer.Image, false)
