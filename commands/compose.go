@@ -3,7 +3,6 @@ package commands
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -98,8 +97,6 @@ func composeContainers(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	os.Chdir(root)
-
 	var composers map[string]Composer
 	if err := yaml.Unmarshal(data, &composers); err != nil {
 		log.Fatal(err)
@@ -109,7 +106,7 @@ func composeContainers(ctx *cobra.Command, args []string) {
 
 	if len(names) == 0 {
 		for name, composer := range composers {
-			if cid, err := composeContainer(ctx, name, composer); err != nil {
+			if cid, err := composeContainer(ctx, root, name, composer); err != nil {
 				log.Error(err)
 				gotError = true
 			} else {
@@ -120,7 +117,7 @@ func composeContainers(ctx *cobra.Command, args []string) {
 
 	for _, name := range names {
 		if composer, ok := composers[name]; ok {
-			if cid, err := composeContainer(ctx, name, composer); err != nil {
+			if cid, err := composeContainer(ctx, root, name, composer); err != nil {
 				log.Error(err)
 				gotError = true
 			} else {
@@ -134,7 +131,7 @@ func composeContainers(ctx *cobra.Command, args []string) {
 	}
 }
 
-func composeContainer(ctx *cobra.Command, name string, composer Composer) (string, error) {
+func composeContainer(ctx *cobra.Command, root, name string, composer Composer) (string, error) {
 	var (
 		config     api.Config
 		hostConfig api.HostConfig
@@ -168,6 +165,9 @@ func composeContainer(ctx *cobra.Command, name string, composer Composer) (strin
 	}
 
 	if composer.Build != "" {
+		if !strings.HasPrefix(composer.Build, "/") {
+			composer.Build = filepath.Join(root, composer.Build)
+		}
 		message, err := docker.BuildImage(composer.Build, composer.Image, false)
 		if err != nil {
 			return "", err
