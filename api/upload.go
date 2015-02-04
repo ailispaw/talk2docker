@@ -98,6 +98,10 @@ func (client *DockerClient) Upload(srcPath string, quiet bool) (string, error) {
 
 	srcPath = filepath.Clean(srcPath)
 
+	if strings.HasSuffix(srcPath, string(filepath.Separator)) {
+		return "", fmt.Errorf("Invalid path: '/'")
+	}
+
 	var (
 		rootDir  = filepath.Dir(srcPath)
 		filename = filepath.Base(srcPath)
