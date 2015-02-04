@@ -26,7 +26,10 @@ func uploadToContainer(ctx *cobra.Command, args []string) {
 		ErrorExit(ctx, "Needs two arguments <PATH> to upload into <(NAME|ID):PATH>")
 	}
 
-	srcPath := args[0]
+	srcPath, err := filepath.Abs(args[0])
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	arr := strings.Split(args[1], ":")
 	if len(arr) < 2 || (arr[1] == "") {
@@ -74,7 +77,7 @@ func uploadToContainer(ctx *cobra.Command, args []string) {
 
 	dstPath := filepath.Join(rootDir, path)
 
-	ctx.Printf("Uploading... %s into %s\n", args[0], args[1])
+	ctx.Printf("Uploading %s into %s\n", args[0], args[1])
 
 	message, err := docker.Upload(srcPath, true)
 	if err != nil {
@@ -124,7 +127,10 @@ func uploadToVolume(ctx *cobra.Command, args []string) {
 		ErrorExit(ctx, "Needs two arguments <PATH> to upload into <ID:PATH>")
 	}
 
-	srcPath := args[0]
+	srcPath, err := filepath.Abs(args[0])
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	arr := strings.Split(args[1], ":")
 	if len(arr) < 2 || (arr[1] == "") {
@@ -158,7 +164,7 @@ func uploadToVolume(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	ctx.Printf("Uploading... %s into %s\n", args[0], args[1])
+	ctx.Printf("Uploading %s into %s\n", args[0], args[1])
 
 	message, err := docker.Upload(srcPath, true)
 	if err != nil {
