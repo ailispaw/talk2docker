@@ -112,11 +112,6 @@ func (client *DockerClient) Upload(srcPath string, quiet bool) (string, error) {
 		return "", err
 	}
 
-	fmt.Fprintf(client.out, "Sending build context to Docker daemon\n")
-	if !quiet && (log.GetLevel() < log.InfoLevel) {
-		fmt.Fprintf(client.out, "---> ")
-	}
-
 	pipeReader, pipeWriter := io.Pipe()
 
 	go func() {
@@ -234,10 +229,6 @@ func (client *DockerClient) Upload(srcPath string, quiet bool) (string, error) {
 			files++
 			total += size
 
-			if !quiet && (log.GetLevel() < log.InfoLevel) {
-				fmt.Fprintf(client.out, ".")
-			}
-
 			if srcFi.Mode().IsDir() {
 				relFilePath, err = filepath.Rel(filename, relFilePath)
 				if err != nil || (relFilePath == "." && f.IsDir()) {
@@ -269,10 +260,7 @@ func (client *DockerClient) Upload(srcPath string, quiet bool) (string, error) {
 			log.Debugf("Can't close pipe writer: %s", err)
 		}
 
-		if !quiet && (log.GetLevel() < log.InfoLevel) {
-			fmt.Fprintf(client.out, "\n")
-		}
-		fmt.Fprintf(client.out, "---> Sent %d file(s), %.2f KB\n", files, float64(total)/1000)
+		log.Infof("---> %d file(s), %.2f KB", files, float64(total)/1000)
 	}()
 
 	headers := map[string]string{}
