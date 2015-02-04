@@ -86,6 +86,7 @@ else
   execute container inspect build2_with_compose
 fi
 
+# Export
 execute container export hello_world /tmp/docker | tar tv
 
 execute volume list --all
@@ -98,8 +99,25 @@ fi
 
 execute volume export hello_world:/tmp/docker | tar tv
 
+# Commit
 execute commit hello_world ailis/busybox:hello_world
 
 execute image list --all
 
 execute image history ailis/busybox:hello_world
+
+# Upload
+execute container export hello_world /tmp/wordpress | tar tv
+
+execute container upload ../wordpress hello_world:/tmp/wordpress
+
+execute container export hello_world /tmp/wordpress | tar tv
+
+if command -v jq > /dev/null; then
+  execute volume export hello_world:/tmp/test | tar tv
+
+  VOLUME="$(${talk2docker} volume inspect hello_world:/tmp/test --json | jq '.[0].ID')"
+  execute volume upload . "${VOLUME}:/" --verbose
+
+  execute volume export hello_world:/tmp/test | tar tv
+fi
