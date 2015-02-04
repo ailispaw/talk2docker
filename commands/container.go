@@ -222,6 +222,8 @@ func init() {
 	flags.StringVarP(&author, "author", "a", "", "Author (e.g., \"A.I. <ailis@paw.zone>\")")
 	flags.BoolVarP(&boolPause, "pause", "p", true, "Pause container during commit")
 	cmdContainer.AddCommand(cmdCommitContainer)
+
+	cmdContainer.AddCommand(cmdUploadToContainer)
 }
 
 func listContainers(ctx *cobra.Command, args []string) {

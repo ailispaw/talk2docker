@@ -167,6 +167,8 @@ func init() {
 	cmdVolume.AddCommand(cmdRemoveVolumes)
 
 	cmdVolume.AddCommand(cmdExportVolume)
+
+	cmdVolume.AddCommand(cmdUploadToVolume)
 }
 
 func listVolumes(ctx *cobra.Command, args []string) {
