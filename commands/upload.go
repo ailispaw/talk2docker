@@ -16,21 +16,21 @@ import (
 var cmdUploadToContainer = &cobra.Command{
 	Use:     "upload <PATH> <(NAME|ID):PATH>",
 	Aliases: []string{"import"},
-	Short:   "Upload file/folder to a container",
-	Long:    APP_NAME + " container upload - Upload file/folder to a container",
+	Short:   "Upload a file/folder to a container",
+	Long:    APP_NAME + " container upload - Upload a file/folder to a container",
 	Run:     uploadToContainer,
 }
 
 func uploadToContainer(ctx *cobra.Command, args []string) {
 	if len(args) < 2 {
-		ErrorExit(ctx, "Needs arguments <PATH> to upload into <(NAME|ID):PATH>")
+		ErrorExit(ctx, "Needs two arguments <PATH> to upload into <(NAME|ID):PATH>")
 	}
 
 	srcPath := args[0]
 
 	arr := strings.Split(args[1], ":")
 	if len(arr) < 2 || (arr[1] == "") {
-		ErrorExit(ctx, fmt.Sprint("Needs the second argument to upload into <(NAME|ID):PATH>"))
+		ErrorExit(ctx, fmt.Sprint("Needs <(NAME|ID):PATH> for the second argument"))
 	}
 
 	var (
@@ -112,29 +112,41 @@ func uploadToContainer(ctx *cobra.Command, args []string) {
 }
 
 var cmdUploadToVolume = &cobra.Command{
-	Use:     "upload <PATH> <ID|NAME:PATH>",
+	Use:     "upload <PATH> <ID:PATH>",
 	Aliases: []string{"import"},
-	Short:   "Upload file/folder to a volume",
-	Long:    APP_NAME + " volume upload - Upload file/folder to a volume",
+	Short:   "Upload a file/folder to a volume",
+	Long:    APP_NAME + " volume upload - Upload a file/folder to a volume",
 	Run:     uploadToVolume,
 }
 
 func uploadToVolume(ctx *cobra.Command, args []string) {
 	if len(args) < 2 {
-		ErrorExit(ctx, "Needs arguments <PATH> to upload into <ID|NAME:PATH>")
+		ErrorExit(ctx, "Needs two arguments <PATH> to upload into <ID:PATH>")
 	}
 
 	srcPath := args[0]
+
+	arr := strings.Split(args[1], ":")
+	if len(arr) < 2 || (arr[1] == "") {
+		ErrorExit(ctx, fmt.Sprint("Needs <ID:PATH> for the second argument"))
+	}
+
+	var (
+		id   = arr[0]
+		path = arr[1]
+	)
 
 	volumes, err := getVolumes(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	volume := volumes.Find(args[1])
+	volume := volumes.Find(id)
 	if volume == nil {
-		log.Fatalf("No such volume: %s", args[1])
+		log.Fatalf("No such volume: %s", id)
 	}
+
+	dstPath := filepath.Join(volume.Path, path)
 
 	f, err := os.Open(os.DevNull)
 	if err != nil {
@@ -164,7 +176,7 @@ func uploadToVolume(ctx *cobra.Command, args []string) {
 
 	defer docker.RemoveImage(config.Image, true, false)
 
-	hostConfig.Binds = []string{volume.Path + ":/.destination"}
+	hostConfig.Binds = []string{dstPath + ":/.destination"}
 
 	cid, err := docker.CreateContainer("", config, hostConfig)
 	if err != nil {

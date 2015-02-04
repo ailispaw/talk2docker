@@ -16,26 +16,41 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var dockerfileToUpload = `
+var fileToUpload = `
 FROM busybox:latest
 ADD {{.Src}} /.source/{{.Src}}
-CMD ["cp", "-Rf", "/.source/{{.Src}}", "/.destination/"]
+CMD ["cp", "-r", "/.source/{{.Src}}", "/.destination/"]
+`
+
+var folderToUpload = `
+FROM busybox:latest
+ADD {{.Src}} /.source/{{.Src}}
+CMD ["cp", "-r", "/.source/{{.Src}}/.", "/.destination/"]
 `
 
 func addDockerfileToTar(srcPath string, tarWriter *tar.Writer, tmpWriter *bufio.Writer) error {
-	tmpl, err := template.New("Dockerfile").Parse(dockerfileToUpload)
-	if err != nil {
-		return err
-	}
-
 	fi, err := os.Lstat(srcPath)
 	if err != nil {
 		log.Errorf("Can't get file info: %s, error: %s", srcPath, err)
 		return err
 	}
 
+	dockerfileToUpload := fileToUpload
+	if fi.Mode().IsDir() {
+		dockerfileToUpload = folderToUpload
+	}
+
+	tmpl, err := template.New("Dockerfile").Parse(dockerfileToUpload)
+	if err != nil {
+		return err
+	}
+
 	var buf bytes.Buffer
-	if err := tmpl.Execute(&buf, struct{ Src string }{Src: filepath.Base(srcPath)}); err != nil {
+	if err := tmpl.Execute(&buf, struct {
+		Src string
+	}{
+		Src: filepath.Base(srcPath),
+	}); err != nil {
 		log.Errorf("Can't execute template to upload: %s", err)
 		return err
 	}
@@ -218,6 +233,14 @@ func (client *DockerClient) Upload(srcPath string, quiet bool) (string, error) {
 			if !quiet && (log.GetLevel() < log.InfoLevel) {
 				fmt.Fprintf(client.out, ".")
 			}
+
+			if srcFi.Mode().IsDir() {
+				relFilePath, err = filepath.Rel(filename, relFilePath)
+				if err != nil || (relFilePath == "." && f.IsDir()) {
+					return nil
+				}
+			}
+
 			log.WithFields(log.Fields{
 				"": fmt.Sprintf(" %7.2f KB", float64(size)/1000),
 			}).Infof("---> %s", relFilePath)
