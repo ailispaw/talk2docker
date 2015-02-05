@@ -92,6 +92,10 @@ func uploadToContainer(ctx *cobra.Command, args []string) {
 	}
 
 	dstPath := filepath.Join(rootDir, path)
+	dstPath = filepath.Clean(dstPath)
+	if !strings.HasPrefix(dstPath, rootDir) {
+		log.Fatal("Can't upload to outside of the container")
+	}
 
 	ctx.Printf("Uploading %s into %s\n", args[0], args[1])
 
@@ -169,6 +173,10 @@ func uploadToVolume(ctx *cobra.Command, args []string) {
 	}
 
 	dstPath := filepath.Join(volume.Path, path)
+	dstPath = filepath.Clean(dstPath)
+	if !strings.HasPrefix(dstPath, volume.Path) {
+		log.Fatal("Can't upload to outside of the volume")
+	}
 
 	f, err := os.Open(os.DevNull)
 	if err != nil {
