@@ -20,6 +20,12 @@ Contributions and suggestions would be appreciated, though it's aimed at my lear
 
 - Only work with Docker Remote API v1.16 or later
 
+## Tested with
+
+- boot2docker v1.4.1 (aufs, devicemapper)
+- CoreOS Beta 557.2.0 (btrfs)
+- CoreOS Alpha 575.0.0 (overlay)
+
 ## Building talk2docker
 
 ### Requirements
