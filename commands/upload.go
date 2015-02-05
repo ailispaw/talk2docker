@@ -65,7 +65,10 @@ func uploadToContainer(ctx *cobra.Command, args []string) {
 	}
 
 	if rootDir == "" {
-		log.Fatal("Can't get root dir for the container")
+		if info.DockerRootDir == "" {
+			log.Fatal("Can't get the root dir for the container")
+		}
+		rootDir = filepath.Join(info.DockerRootDir, info.Driver)
 	}
 
 	containerInfo, err := docker.InspectContainer(name)
@@ -73,7 +76,22 @@ func uploadToContainer(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	dstPath := filepath.Join(rootDir, "/mnt/"+containerInfo.Id, path)
+	switch info.Driver {
+	case "aufs":
+		rootDir = filepath.Join(rootDir, "mnt", containerInfo.Id)
+	case "btrfs":
+		rootDir = filepath.Join(rootDir, "subvolumes", containerInfo.Id)
+	case "devicemapper":
+		rootDir = filepath.Join(rootDir, "mnt", containerInfo.Id, "rootfs")
+	case "overlay":
+		rootDir = filepath.Join(rootDir, containerInfo.Id, "merged")
+	case "vfs":
+		rootDir = filepath.Join(rootDir, "dir", containerInfo.Id)
+	default:
+		log.Fatalf("Unknown driver: %s", info.Driver)
+	}
+
+	dstPath := filepath.Join(rootDir, path)
 
 	ctx.Printf("Uploading %s into %s\n", args[0], args[1])
 
