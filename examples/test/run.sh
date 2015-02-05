@@ -121,3 +121,15 @@ if command -v jq > /dev/null; then
 
   execute volume export hello_world:/tmp/test | tar tv
 fi
+
+# Compose with flags
+execute compose compose.yml hello_world --name=hello_world2 --publish=8081:8080 --verbose
+
+if command -v jq > /dev/null; then
+  execute container inspect hello_world2 --json | jq '.[0].HostConfig.PortBindings'
+else
+  execute container inspect hello_world2
+fi
+
+execute container start hello_world2
+execute container list --all

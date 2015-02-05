@@ -9,11 +9,52 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"gopkg.in/yaml.v2"
 
 	"github.com/ailispaw/talk2docker/api"
 	"github.com/ailispaw/talk2docker/client"
 )
+
+var composeFlags = struct {
+	Name string // --name
+
+	Ports   stringArray // --publish
+	Volumes stringArray // --volume
+
+	Hostname     string      // --hostname
+	Domainname   string      // --domain
+	User         string      // --user
+	Memory       int64       // --memory
+	MemorySwap   int64       // --memory-swap
+	CpuShares    int64       // --cpu-shares
+	Cpuset       string      // --cpuset
+	ExposedPorts stringArray // --expose
+	Tty          bool        // --tty
+	OpenStdin    bool        // --interactive
+	Env          stringArray // --env
+	Cmd          stringArray // --cmd
+	WorkingDir   string      // --workdir
+	Entrypoint   string      // --entrypoint
+	MacAddress   string      // --mac-address
+
+	Privileged      bool        // --privileged
+	Links           stringArray // --link
+	PublishAllPorts bool        // --publish-all
+	Dns             stringArray // --dns
+	DnsSearch       stringArray // --dns-search
+	ExtraHosts      stringArray // --add-host
+	VolumesFrom     stringArray // --volumes-from
+	Devices         stringArray // --device
+	NetworkMode     string      // --net
+	IpcMode         string      // --ipc
+	PidMode         string      // --pid
+	CapAdd          stringArray // --cap-add
+	CapDrop         stringArray // --cap-drop
+	RestartPolicy   string      // --restart
+	SecurityOpt     stringArray // --security-opt
+	ReadonlyRootfs  bool        // --read-only
+}{}
 
 var cmdCompose = &cobra.Command{
 	Use:     "compose <PATH/TO/YAML> [NAME...]",
@@ -32,10 +73,52 @@ var cmdComposeContainers = &cobra.Command{
 }
 
 func init() {
+	for _, flags := range []*pflag.FlagSet{cmdCompose.Flags(), cmdComposeContainers.Flags()} {
+		flags.StringVar(&composeFlags.Name, "name", "", "Override the name of the container")
+
+		flags.VarP(&composeFlags.Ports, "publish", "p", "Publish a container's port to the host")
+		flags.VarP(&composeFlags.Volumes, "volume", "v", "Bind mount volume(s)")
+
+		flags.StringVar(&composeFlags.Hostname, "hostname", "", "Hostname of the container")
+		flags.StringVar(&composeFlags.Domainname, "domain", "", "Domain name of the container")
+		flags.StringVarP(&composeFlags.User, "user", "u", "", "Username or UID")
+		flags.Int64VarP(&composeFlags.Memory, "memory", "m", 0, "Memory limit")
+		flags.Int64Var(&composeFlags.MemorySwap, "memory-swap", 0, "Total memory (memory + swap), '-1' to disable swap")
+		flags.Int64Var(&composeFlags.CpuShares, "cpu-shares", 0, "CPU shares (relative weight)")
+		flags.StringVar(&composeFlags.Cpuset, "cpuset", "", "CPUs in which to allow execution (0-3, 0,1)")
+		flags.Var(&composeFlags.ExposedPorts, "expose", "Expose a port or a range of ports without publishing")
+		flags.BoolVarP(&composeFlags.Tty, "tty", "t", false, "Allocate a pseudo-TTY")
+		flags.BoolVarP(&composeFlags.OpenStdin, "interactive", "i", false, "Keep STDIN open even if not attached")
+		flags.VarP(&composeFlags.Env, "env", "e", "Set environment variable(s)")
+		flags.VarP(&composeFlags.Cmd, "cmd", "c", "Command line to execute")
+		flags.StringVarP(&composeFlags.WorkingDir, "workdir", "w", "", "Working directory inside the container")
+		flags.StringVar(&composeFlags.Entrypoint, "entrypoint", "", "Overwrite the default ENTRYPOINT of the image")
+		flags.StringVar(&composeFlags.MacAddress, "mac-address", "", "Assign a MAC address to the container")
+
+		flags.BoolVar(&composeFlags.Privileged, "privileged", false, "Give extended privileges to the container")
+		flags.Var(&composeFlags.Links, "link", "Add link to another container in the form of NAME:ALIAS")
+		flags.BoolVar(&composeFlags.PublishAllPorts, "publish-all", false, "Publish all exposed ports to random ports")
+		flags.Var(&composeFlags.Dns, "dns", "Set custom DNS servers")
+		flags.Var(&composeFlags.DnsSearch, "dns-search", "Set custom DNS search domains")
+		flags.Var(&composeFlags.ExtraHosts, "add-host", "Add a custom host-to-IP mapping (host:ip)")
+		flags.Var(&composeFlags.VolumesFrom, "volumes-from", "Mount volumes from the specified container(s)")
+		flags.Var(&composeFlags.Devices, "device", "Add a host device to the container")
+		flags.StringVar(&composeFlags.NetworkMode, "net", "", "Set the Network mode for the container")
+		flags.StringVar(&composeFlags.IpcMode, "ipc", "", "IPC namespace to use")
+		flags.StringVar(&composeFlags.PidMode, "pid", "", "PID namespace to use")
+		flags.Var(&composeFlags.CapAdd, "cap-add", "Add Linux capabilities")
+		flags.Var(&composeFlags.CapDrop, "cap-drop", "Drop Linux capabilities")
+		flags.StringVar(&composeFlags.RestartPolicy, "restart", "", "Restart policy to apply when a container exits (no, on-failure[:MAX-RETRY], always)")
+		flags.Var(&composeFlags.SecurityOpt, "security-opt", "Security options")
+		flags.BoolVar(&composeFlags.ReadonlyRootfs, "read-only", false, "Mount the container's root filesystem as read only")
+	}
+
 	cmdContainer.AddCommand(cmdComposeContainers)
 }
 
 type Composer struct {
+	Name string
+
 	Build string `yaml:"build"`
 
 	Ports   []string `yaml:"ports"`
@@ -106,7 +189,9 @@ func composeContainers(ctx *cobra.Command, args []string) {
 
 	if len(names) == 0 {
 		for name, composer := range composers {
-			if cid, err := composeContainer(ctx, root, name, composer); err != nil {
+			composer.Name = name
+			composer = mergeComposeFlags(composer)
+			if cid, err := composeContainer(ctx, root, composer); err != nil {
 				log.Error(err)
 				gotError = true
 			} else {
@@ -117,7 +202,9 @@ func composeContainers(ctx *cobra.Command, args []string) {
 
 	for _, name := range names {
 		if composer, ok := composers[name]; ok {
-			if cid, err := composeContainer(ctx, root, name, composer); err != nil {
+			composer.Name = name
+			composer = mergeComposeFlags(composer)
+			if cid, err := composeContainer(ctx, root, composer); err != nil {
 				log.Error(err)
 				gotError = true
 			} else {
@@ -131,7 +218,7 @@ func composeContainers(ctx *cobra.Command, args []string) {
 	}
 }
 
-func composeContainer(ctx *cobra.Command, root, name string, composer Composer) (string, error) {
+func composeContainer(ctx *cobra.Command, root string, composer Composer) (string, error) {
 	var (
 		config     api.Config
 		hostConfig api.HostConfig
@@ -321,14 +408,14 @@ func composeContainer(ctx *cobra.Command, root, name string, composer Composer) 
 	hostConfig.ReadonlyRootfs = composer.ReadonlyRootfs
 
 	var cid string
-	cid, err = docker.CreateContainer(name, config, hostConfig)
+	cid, err = docker.CreateContainer(composer.Name, config, hostConfig)
 	if err != nil {
 		if apiErr, ok := err.(api.Error); ok && (apiErr.StatusCode == 404) {
 			if _, err := docker.PullImage(config.Image); err != nil {
 				return "", err
 			}
 
-			cid, err = docker.CreateContainer(name, config, hostConfig)
+			cid, err = docker.CreateContainer(composer.Name, config, hostConfig)
 			if err != nil {
 				return "", err
 			}
@@ -338,4 +425,114 @@ func composeContainer(ctx *cobra.Command, root, name string, composer Composer) 
 	}
 
 	return cid, nil
+}
+
+func mergeComposeFlags(composer Composer) Composer {
+	if composeFlags.Name != "" {
+		composer.Name = composeFlags.Name
+	}
+
+	if len(composeFlags.Ports) > 0 {
+		composer.Ports = composeFlags.Ports
+	}
+	if len(composeFlags.Volumes) > 0 {
+		composer.Volumes = composeFlags.Volumes
+	}
+
+	if composeFlags.Hostname != "" {
+		composer.Hostname = composeFlags.Hostname
+	}
+	if composeFlags.Domainname != "" {
+		composer.Domainname = composeFlags.Domainname
+	}
+	if composeFlags.User != "" {
+		composer.User = composeFlags.User
+	}
+	if composeFlags.Memory != 0 {
+		composer.Memory = composeFlags.Memory
+	}
+	if composeFlags.MemorySwap != 0 {
+		composer.MemorySwap = composeFlags.MemorySwap
+	}
+	if composeFlags.CpuShares != 0 {
+		composer.CpuShares = composeFlags.CpuShares
+	}
+	if composeFlags.Cpuset != "" {
+		composer.Cpuset = composeFlags.Cpuset
+	}
+	if len(composeFlags.ExposedPorts) > 0 {
+		composer.ExposedPorts = composeFlags.ExposedPorts
+	}
+	if composer.Tty != composeFlags.Tty {
+		composer.Tty = composeFlags.Tty
+	}
+	if composer.OpenStdin != composeFlags.OpenStdin {
+		composer.OpenStdin = composeFlags.OpenStdin
+	}
+	if len(composeFlags.Env) > 0 {
+		composer.Env = composeFlags.Env
+	}
+	if len(composeFlags.Cmd) > 0 {
+		composer.Cmd = composeFlags.Cmd
+	}
+	if composeFlags.WorkingDir != "" {
+		composer.WorkingDir = composeFlags.WorkingDir
+	}
+	if composeFlags.Entrypoint != "" {
+		composer.Entrypoint = composeFlags.Entrypoint
+	}
+	if composeFlags.MacAddress != "" {
+		composer.MacAddress = composeFlags.MacAddress
+	}
+
+	if composer.Privileged != composeFlags.Privileged {
+		composer.Privileged = composeFlags.Privileged
+	}
+	if len(composeFlags.Links) > 0 {
+		composer.Links = composeFlags.Links
+	}
+	if composer.PublishAllPorts != composeFlags.PublishAllPorts {
+		composer.PublishAllPorts = composeFlags.PublishAllPorts
+	}
+	if len(composeFlags.Dns) > 0 {
+		composer.Dns = composeFlags.Dns
+	}
+	if len(composeFlags.DnsSearch) > 0 {
+		composer.DnsSearch = composeFlags.DnsSearch
+	}
+	if len(composeFlags.ExtraHosts) > 0 {
+		composer.ExtraHosts = composeFlags.ExtraHosts
+	}
+	if len(composeFlags.VolumesFrom) > 0 {
+		composer.VolumesFrom = composeFlags.VolumesFrom
+	}
+	if len(composeFlags.Devices) > 0 {
+		composer.Devices = composeFlags.Devices
+	}
+	if composeFlags.NetworkMode != "" {
+		composer.NetworkMode = composeFlags.NetworkMode
+	}
+	if composeFlags.IpcMode != "" {
+		composer.IpcMode = composeFlags.IpcMode
+	}
+	if composeFlags.PidMode != "" {
+		composer.PidMode = composeFlags.PidMode
+	}
+	if len(composeFlags.CapAdd) > 0 {
+		composer.CapAdd = composeFlags.CapAdd
+	}
+	if len(composeFlags.CapDrop) > 0 {
+		composer.CapDrop = composeFlags.CapDrop
+	}
+	if composeFlags.RestartPolicy != "" {
+		composer.RestartPolicy = composeFlags.RestartPolicy
+	}
+	if len(composeFlags.SecurityOpt) > 0 {
+		composer.SecurityOpt = composeFlags.SecurityOpt
+	}
+	if composer.ReadonlyRootfs != composeFlags.ReadonlyRootfs {
+		composer.ReadonlyRootfs = composeFlags.ReadonlyRootfs
+	}
+
+	return composer
 }

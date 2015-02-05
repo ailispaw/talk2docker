@@ -45,7 +45,7 @@ If `image` is specified with `build`, `image` is used as the tag of the base ima
 	build: Dockerfile
 ```
 
-### command (array of string)
+### command (array of string), --cmd
 
 Command and its arguments to execute in the container
 
@@ -61,7 +61,7 @@ Host name for the container
 	hostname: foo
 ```
 
-### domainname (string)
+### domainname (string), --domain
 
 Domain name for the container
 
@@ -227,7 +227,7 @@ Set custom DNS search domains
 
 Add a custom host-to-IP mapping (HOST:IP)
 
-### volumes
+### volumes (array of string), --volume
 
 Mount paths as volumes, optionally specifying a path on the host machine (HOST:CONTAINER), or an access mode (HOST:CONTAINER:ro).  
 HOST must be an absolute path.
