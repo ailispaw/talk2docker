@@ -70,13 +70,13 @@ Available Commands:
   help [command]                   Help about any command
 
  Available Flags:
-      --config="$HOME/.talk2docker/config": Path to the configuration file
-      --debug=false: Print debug messages
+  -C, --config="$HOME/.talk2docker/config": Path to the configuration file
+  -D, --debug=false: Print debug messages
   -h, --help=false: help for talk2docker
-      --host="": Hostname to use its config (runtime only)
-      --json=false: Output in JSON format
-  -v, --verbose=false: Print verbose messages
-      --yaml=false: Output in YAML format
+  -H, --host="": Docker hostname to use its config (runtime only)
+  -J, --json=false: Output in JSON format
+  -V, --verbose=false: Print verbose messages
+  -Y, --yaml=false: Output in YAML format
 
 Use "talk2docker help [command]" for more information about that command.
 
