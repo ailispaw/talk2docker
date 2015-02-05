@@ -30,14 +30,14 @@ var app = &cobra.Command{
 }
 
 func init() {
-	app.PersistentFlags().StringVar(&configPath, "config", "$HOME/.talk2docker/config", "Path to the configuration file")
-	app.PersistentFlags().StringVar(&hostName, "host", "", "Hostname to use its config (runtime only)")
+	app.PersistentFlags().StringVarP(&configPath, "config", "C", "$HOME/.talk2docker/config", "Path to the configuration file")
+	app.PersistentFlags().StringVarP(&hostName, "host", "H", "", "Docker hostname to use its config (runtime only)")
 
-	app.PersistentFlags().BoolVar(&boolYAML, "yaml", false, "Output in YAML format")
-	app.PersistentFlags().BoolVar(&boolJSON, "json", false, "Output in JSON format")
+	app.PersistentFlags().BoolVarP(&boolYAML, "yaml", "Y", false, "Output in YAML format")
+	app.PersistentFlags().BoolVarP(&boolJSON, "json", "J", false, "Output in JSON format")
 
-	app.PersistentFlags().BoolVarP(&boolVerbose, "verbose", "v", false, "Print verbose messages")
-	app.PersistentFlags().BoolVar(&boolDebug, "debug", false, "Print debug messages")
+	app.PersistentFlags().BoolVarP(&boolVerbose, "verbose", "V", false, "Print verbose messages")
+	app.PersistentFlags().BoolVarP(&boolDebug, "debug", "D", false, "Print debug messages")
 
 	cobra.OnInitialize(Initialize)
 }
