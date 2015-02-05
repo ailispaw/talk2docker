@@ -8,6 +8,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/yungsang/tablewriter"
 
 	"github.com/ailispaw/talk2docker/api"
@@ -160,31 +161,27 @@ var cmdCommitContainer = &cobra.Command{
 }
 
 func init() {
-	flags := cmdPs.Flags()
-	flags.BoolVarP(&boolAll, "all", "a", false, "Show all containers. Only running containers are shown by default.")
-	flags.BoolVarP(&boolLatest, "latest", "l", false, "Show only the latest created container, include non-running ones.")
-	flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
-	flags.BoolVarP(&boolSize, "size", "s", false, "Display sizes")
-	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+	for _, flags := range []*pflag.FlagSet{cmdPs.Flags(), cmdListContainers.Flags()} {
+		flags.BoolVarP(&boolAll, "all", "a", false, "Show all containers. Only running containers are shown by default.")
+		flags.BoolVarP(&boolLatest, "latest", "l", false, "Show only the latest created container, include non-running ones.")
+		flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
+		flags.BoolVarP(&boolSize, "size", "s", false, "Display sizes")
+		flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+	}
 
-	flags = cmdCommit.Flags()
-	flags.StringVarP(&message, "message", "m", "", "Commit message")
-	flags.StringVarP(&author, "author", "a", "", "Author (e.g., \"A.I. <ailis@paw.zone>\")")
-	flags.BoolVarP(&boolPause, "pause", "p", true, "Pause container during commit")
-
-	flags = cmdListContainers.Flags()
-	flags.BoolVarP(&boolAll, "all", "a", false, "Show all containers. Only running containers are shown by default.")
-	flags.BoolVarP(&boolLatest, "latest", "l", false, "Show only the latest created container, include non-running ones.")
-	flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
-	flags.BoolVarP(&boolSize, "size", "s", false, "Display sizes")
-	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 	cmdContainer.AddCommand(cmdListContainers)
+
+	for _, flags := range []*pflag.FlagSet{cmdCommit.Flags(), cmdCommitContainer.Flags()} {
+		flags.StringVarP(&message, "message", "m", "", "Commit message")
+		flags.StringVarP(&author, "author", "a", "", "Author (e.g., \"A.I. <ailis@paw.zone>\")")
+		flags.BoolVarP(&boolPause, "pause", "p", true, "Pause container during commit")
+	}
 
 	cmdContainer.AddCommand(cmdInspectContainers)
 
 	cmdContainer.AddCommand(cmdStartContainers)
 
-	flags = cmdStopContainers.Flags()
+	flags := cmdStopContainers.Flags()
 	flags.IntVarP(&timeToWait, "time", "t", 10, "Number of seconds to wait for the container to stop before killing it. Default is 10 seconds.")
 	cmdContainer.AddCommand(cmdStopContainers)
 
@@ -217,10 +214,6 @@ func init() {
 
 	cmdContainer.AddCommand(cmdGetContainerProcesses)
 
-	flags = cmdCommitContainer.Flags()
-	flags.StringVarP(&message, "message", "m", "", "Commit message")
-	flags.StringVarP(&author, "author", "a", "", "Author (e.g., \"A.I. <ailis@paw.zone>\")")
-	flags.BoolVarP(&boolPause, "pause", "p", true, "Pause container during commit")
 	cmdContainer.AddCommand(cmdCommitContainer)
 
 	cmdContainer.AddCommand(cmdUploadToContainer)

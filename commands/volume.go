@@ -10,6 +10,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/yungsang/tablewriter"
 
 	"github.com/ailispaw/talk2docker/api"
@@ -151,15 +152,12 @@ var cmdExportVolume = &cobra.Command{
 }
 
 func init() {
-	flags := cmdVs.Flags()
-	flags.BoolVarP(&boolAll, "all", "a", false, "Show all volumes. Only active volumes are shown by default.")
-	flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
-	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+	for _, flags := range []*pflag.FlagSet{cmdVs.Flags(), cmdListVolumes.Flags()} {
+		flags.BoolVarP(&boolAll, "all", "a", false, "Show all volumes. Only active volumes are shown by default.")
+		flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
+		flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+	}
 
-	flags = cmdListVolumes.Flags()
-	flags.BoolVarP(&boolAll, "all", "a", false, "Show all volumes. Only active volumes are shown by default.")
-	flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
-	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 	cmdVolume.AddCommand(cmdListVolumes)
 
 	cmdVolume.AddCommand(cmdInspectVolumes)

@@ -10,6 +10,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/yungsang/tablewriter"
 
 	"github.com/ailispaw/talk2docker/api"
@@ -115,27 +116,22 @@ var cmdSearchImages = &cobra.Command{
 }
 
 func init() {
-	flags := cmdIs.Flags()
-	flags.BoolVarP(&boolAll, "all", "a", false, "Show all images. Only named/taged and leaf images are shown by default.")
-	flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
-	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+	for _, flags := range []*pflag.FlagSet{cmdIs.Flags(), cmdListImages.Flags()} {
+		flags.BoolVarP(&boolAll, "all", "a", false, "Show all images. Only named/taged and leaf images are shown by default.")
+		flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
+		flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+	}
 
-	flags = cmdBuild.Flags()
-	flags.StringVarP(&imageTag, "tag", "t", "", "<NAME[:TAG]> to be applied to the image")
-	flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Suppress the verbose output")
-
-	flags = cmdListImages.Flags()
-	flags.BoolVarP(&boolAll, "all", "a", false, "Show all images. Only named/taged and leaf images are shown by default.")
-	flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
-	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 	cmdImage.AddCommand(cmdListImages)
 
-	flags = cmdBuildImage.Flags()
-	flags.StringVarP(&imageTag, "tag", "t", "", "<NAME[:TAG]> to be applied to the image")
-	flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Suppress the verbose output")
+	for _, flags := range []*pflag.FlagSet{cmdBuild.Flags(), cmdBuildImage.Flags()} {
+		flags.StringVarP(&imageTag, "tag", "t", "", "<NAME[:TAG]> to be applied to the image")
+		flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Suppress the verbose output")
+	}
+
 	cmdImage.AddCommand(cmdBuildImage)
 
-	flags = cmdPullImage.Flags()
+	flags := cmdPullImage.Flags()
 	flags.BoolVarP(&boolAll, "all", "a", false, "Pull all tagged images in the repository. Only the \"latest\" tagged image is pulled by default.")
 	cmdImage.AddCommand(cmdPullImage)
 

@@ -7,6 +7,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/yungsang/tablewriter"
 
 	"github.com/ailispaw/talk2docker/client"
@@ -68,18 +69,16 @@ var cmdRemoveHost = &cobra.Command{
 }
 
 func init() {
-	flags := cmdHosts.Flags()
-	flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display host names")
-	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+	for _, flags := range []*pflag.FlagSet{cmdHosts.Flags(), cmdListHosts.Flags()} {
+		flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display host names")
+		flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+	}
 
-	flags = cmdListHosts.Flags()
-	flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
-	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 	cmdHost.AddCommand(cmdListHosts)
 
 	cmdHost.AddCommand(cmdSwitchHost)
 
-	flags = cmdGetHostInfo.Flags()
+	flags := cmdGetHostInfo.Flags()
 	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 	cmdHost.AddCommand(cmdGetHostInfo)
 
