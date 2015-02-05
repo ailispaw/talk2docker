@@ -331,7 +331,7 @@ func getVolumes(ctx *cobra.Command) (Volumes, error) {
 
 	rootDir := "/var/lib/docker"
 
-	if (info.Debug != 0) && (info.DockerRootDir != "") {
+	if info.DockerRootDir != "" {
 		rootDir = info.DockerRootDir
 	} else {
 		for _, pair := range info.DriverStatus {
