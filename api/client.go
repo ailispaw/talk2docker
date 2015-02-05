@@ -24,7 +24,7 @@ import (
 )
 
 const (
-	API_VERSION = "1.15"
+	API_VERSION = "1.16"
 )
 
 type DockerClient struct {

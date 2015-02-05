@@ -16,6 +16,10 @@ Contributions and suggestions would be appreciated, though it's aimed at my lear
 - Output in JSON or YAML format as well
 - Organize commands by category
 
+## Limitations
+
+- Only work with Docker Remote API v1.16 or later
+
 ## Building talk2docker
 
 ### Requirements
