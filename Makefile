@@ -4,12 +4,6 @@ WORKSPACE := `godep path`
 
 GIT_COMMIT := `git rev-parse --short HEAD`
 
-ifeq ($(OS),Windows_NT)
-	KERNEL_VERSION := ""
-else
-	KERNEL_VERSION := `uname -r`
-endif
-
 all: build
 
 get:
@@ -22,10 +16,10 @@ test:
 	godep go test ./...
 
 build: fmt restore
-	godep go build -v -ldflags "-X $(PROJECT)/version.GIT_COMMIT '$(GIT_COMMIT)' -X $(PROJECT)/version.KERNEL_VERSION '$(KERNEL_VERSION)'"
+	godep go build -v -ldflags "-X $(PROJECT)/version.GIT_COMMIT '$(GIT_COMMIT)'"
 
 install: fmt restore uninstall
-	godep go install -v -ldflags "-s -w -X $(PROJECT)/version.GIT_COMMIT '$(GIT_COMMIT)' -X $(PROJECT)/version.KERNEL_VERSION '$(KERNEL_VERSION)'"
+	godep go install -v -ldflags "-s -w -X $(PROJECT)/version.GIT_COMMIT '$(GIT_COMMIT)'"
 
 uninstall:
 	go clean -x -i
