@@ -132,4 +132,27 @@ else
 fi
 
 execute container start hello_world2
+execute container list --latest
+
+execute container top hello_world2
+
+execute container pause hello_world2
+execute container list --latest
+
+execute container unpause hello_world2
+execute container list --latest
+
+execute container restart hello_world2 --time=1
+execute container list --latest
+
+execute container stop hello_world2 --time=1
+execute container list --latest
+
+execute container start hello_world2
+execute container list --latest
+
+execute container kill hello_world2
+execute container list --latest
+
+execute container remove hello_world2
 execute container list --all
