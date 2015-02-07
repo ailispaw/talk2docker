@@ -4,7 +4,7 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/howeyc/gopass",
-			"Rev": "1af4cd08f75465cbb0fcec37b64b77c4a6b6d41a"
+			"Rev": "2c70fa70727c953c51695f800f25d6b44abb368e"
 		},
 		{
 			"ImportPath": "github.com/mattn/go-runewidth",
