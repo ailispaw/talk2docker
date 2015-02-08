@@ -266,26 +266,42 @@ func composeContainer(ctx *cobra.Command, root string, composer Composer) (strin
 		}
 	}
 
-	for _, rawPort := range composer.Ports {
+	for _, port := range composer.Ports {
 		var (
-			hostPort, containerPort string
+			rawPort       = port
+			hostIp        = ""
+			hostPort      = ""
+			containerPort = ""
+			proto         = "tcp"
 		)
 
-		if !strings.Contains(rawPort, ":") {
-			hostPort = ""
-			containerPort = rawPort
-		} else {
-			parts := strings.Split(rawPort, ":")
-			hostPort = parts[0]
-			containerPort = parts[1]
+		if i := strings.LastIndex(port, "/"); i != -1 {
+			proto = strings.ToLower(port[i+1:])
+			port = port[:i]
 		}
 
-		port := fmt.Sprintf("%s/%s", containerPort, "tcp")
+		parts := strings.Split(port, ":")
+		switch len(parts) {
+		case 1:
+			containerPort = parts[0]
+		case 2:
+			hostPort = parts[0]
+			containerPort = parts[1]
+		case 3:
+			hostIp = parts[0]
+			hostPort = parts[1]
+			containerPort = parts[2]
+		default:
+			return "", fmt.Errorf("Invalid port specification: %s", rawPort)
+		}
+
+		port := fmt.Sprintf("%s/%s", containerPort, proto)
 		if _, exists := exposedPorts[port]; !exists {
 			exposedPorts[port] = struct{}{}
 		}
 
 		portBinding := api.PortBinding{
+			HostIp:   hostIp,
 			HostPort: hostPort,
 		}
 		bslice, exists := portBindings[port]
@@ -295,8 +311,25 @@ func composeContainer(ctx *cobra.Command, root string, composer Composer) (strin
 		portBindings[port] = append(bslice, portBinding)
 	}
 
-	for _, containerPort := range composer.ExposedPorts {
-		port := fmt.Sprintf("%s/%s", containerPort, "tcp")
+	for _, port := range composer.ExposedPorts {
+		var (
+			rawPort       = port
+			containerPort = ""
+			proto         = "tcp"
+		)
+
+		parts := strings.Split(containerPort, "/")
+		switch len(parts) {
+		case 1:
+			containerPort = parts[0]
+		case 2:
+			containerPort = parts[0]
+			proto = strings.ToLower(parts[1])
+		default:
+			return "", fmt.Errorf("Invalid port specification: %s", rawPort)
+		}
+
+		port := fmt.Sprintf("%s/%s", containerPort, proto)
 		if _, exists := exposedPorts[port]; !exists {
 			exposedPorts[port] = struct{}{}
 		}
