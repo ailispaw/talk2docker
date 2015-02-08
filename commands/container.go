@@ -259,8 +259,12 @@ func listContainers(ctx *cobra.Command, args []string) {
 	formatPorts := func(ports []api.Port) string {
 		result := []string{}
 		for _, p := range ports {
-			result = append(result, fmt.Sprintf("%s:%d->%d/%s",
-				p.IP, p.PublicPort, p.PrivatePort, p.Type))
+			if p.IP == "" {
+				result = append(result, fmt.Sprintf("%d/%s", p.PrivatePort, p.Type))
+			} else {
+				result = append(result, fmt.Sprintf("%s:%d->%d/%s",
+					p.IP, p.PublicPort, p.PrivatePort, p.Type))
+			}
 		}
 		return strings.Join(result, ", ")
 	}
