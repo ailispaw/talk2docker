@@ -190,7 +190,7 @@ func composeContainers(ctx *cobra.Command, args []string) {
 	if len(names) == 0 {
 		for name, composer := range composers {
 			composer.Name = name
-			composer = mergeComposeFlags(composer)
+			composer = mergeComposeFlags(ctx, composer)
 			if cid, err := composeContainer(ctx, root, composer); err != nil {
 				log.Error(err)
 				gotError = true
@@ -203,7 +203,7 @@ func composeContainers(ctx *cobra.Command, args []string) {
 	for _, name := range names {
 		if composer, ok := composers[name]; ok {
 			composer.Name = name
-			composer = mergeComposeFlags(composer)
+			composer = mergeComposeFlags(ctx, composer)
 			if cid, err := composeContainer(ctx, root, composer); err != nil {
 				log.Error(err)
 				gotError = true
@@ -460,7 +460,7 @@ func composeContainer(ctx *cobra.Command, root string, composer Composer) (strin
 	return cid, nil
 }
 
-func mergeComposeFlags(composer Composer) Composer {
+func mergeComposeFlags(ctx *cobra.Command, composer Composer) Composer {
 	if composeFlags.Name != "" {
 		composer.Name = composeFlags.Name
 	}
@@ -496,10 +496,10 @@ func mergeComposeFlags(composer Composer) Composer {
 	if len(composeFlags.ExposedPorts) > 0 {
 		composer.ExposedPorts = composeFlags.ExposedPorts
 	}
-	if composer.Tty != composeFlags.Tty {
+	if ctx.Flags().Lookup("tty").Changed {
 		composer.Tty = composeFlags.Tty
 	}
-	if composer.OpenStdin != composeFlags.OpenStdin {
+	if ctx.Flags().Lookup("interactive").Changed {
 		composer.OpenStdin = composeFlags.OpenStdin
 	}
 	if len(composeFlags.Env) > 0 {
@@ -518,13 +518,13 @@ func mergeComposeFlags(composer Composer) Composer {
 		composer.MacAddress = composeFlags.MacAddress
 	}
 
-	if composer.Privileged != composeFlags.Privileged {
+	if ctx.Flags().Lookup("privileged").Changed {
 		composer.Privileged = composeFlags.Privileged
 	}
 	if len(composeFlags.Links) > 0 {
 		composer.Links = composeFlags.Links
 	}
-	if composer.PublishAllPorts != composeFlags.PublishAllPorts {
+	if ctx.Flags().Lookup("publish-all").Changed {
 		composer.PublishAllPorts = composeFlags.PublishAllPorts
 	}
 	if len(composeFlags.Dns) > 0 {
@@ -563,7 +563,7 @@ func mergeComposeFlags(composer Composer) Composer {
 	if len(composeFlags.SecurityOpt) > 0 {
 		composer.SecurityOpt = composeFlags.SecurityOpt
 	}
-	if composer.ReadonlyRootfs != composeFlags.ReadonlyRootfs {
+	if ctx.Flags().Lookup("read-only").Changed {
 		composer.ReadonlyRootfs = composeFlags.ReadonlyRootfs
 	}
 
