@@ -53,23 +53,24 @@ Usage:
   talk2docker [command]
 
 Available Commands:
-  ps                               List containers
-  ls [NAME[:TAG]]                  List images
-  vs                               List volumes
-  hosts                            list hosts
-  build [PATH/TO/DOCKERFILE]       Build an image from a Dockerfile
-  compose <PATH/TO/YAML> [NAME...] Create containers
-  commit <NAME|ID> <NAME[:TAG]>    Create a new image from a container
-  version                          Show the version information
-  container [command]              Manage containers
-  image [command]                  Manage images
-  volume [command]                 Manage volumes
-  host [command]                   Manage hosts
-  registry [command]               Manage registries
-  config [command]                 Manage the configuration file
-  help [command]                   Help about any command
+  ps          List containers
+  ls          List images
+  vs          List volumes
+  hosts       list hosts
+  build       Build an image from a Dockerfile
+  compose     Create containers
+  commit      Create a new image from a container
+  version     Show the version information
+  container   Manage containers
+  image       Manage images
+  volume      Manage volumes
+  host        Manage hosts
+  registry    Manage registries
+  config      Manage the configuration file
+  help        Help about any command
 
- Available Flags:
+
+Global Flags:
   -C, --config="$HOME/.talk2docker/config": Path to the configuration file
   -D, --debug=false: Print debug messages
   -h, --help=false: help for talk2docker
@@ -78,7 +79,7 @@ Available Commands:
   -V, --verbose=false: Print verbose messages
   -Y, --yaml=false: Output in YAML format
 
-Use "talk2docker help [command]" for more information about that command.
+Use "talk2docker help [command]" for more information about a command.
 
 ```
 

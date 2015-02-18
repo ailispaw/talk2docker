@@ -8,8 +8,8 @@
 		},
 		{
 			"ImportPath": "github.com/mattn/go-runewidth",
-			"Comment": "travisish-28-g8adae32",
-			"Rev": "8adae32de8a26f36cc7acaa53051407d514bb5f0"
+			"Comment": "travisish-30-gc718ccb",
+			"Rev": "c718ccb0685f9fa7129b1b41c04d2877423c419d"
 		},
 		{
 			"ImportPath": "github.com/sirupsen/logrus",
@@ -18,11 +18,11 @@
 		},
 		{
 			"ImportPath": "github.com/spf13/cobra",
-			"Rev": "07a9dc0024fcc97a0dcb3117bdf8933367037f4e"
+			"Rev": "a16cb2499939d048b37ce4ad9488bb099a57fc2e"
 		},
 		{
 			"ImportPath": "github.com/spf13/pflag",
-			"Rev": "f82776d6cc998e3c026baef7b24409ff49fe5c8d"
+			"Rev": "370c3171201099fa6b466db45c8a032cbce33d8d"
 		},
 		{
 			"ImportPath": "github.com/yungsang/tablewriter",
