@@ -26,6 +26,7 @@ Contributions and suggestions would be appreciated, though it's aimed at my lear
 - boot2docker v1.4.1 (aufs, devicemapper)
 - CoreOS Beta 557.2.0 (btrfs)
 - CoreOS Alpha 575.0.0 (overlay)
+- only-docker v0.8.0 (overlay)
 
 ## Building talk2docker
 
