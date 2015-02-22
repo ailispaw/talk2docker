@@ -392,9 +392,10 @@ func getVolumes(ctx *cobra.Command) (Volumes, error) {
 
 	var volumes Volumes
 	for _, vol := range vols {
-		arr := strings.SplitN(vol, " ", 2)
+		arr := strings.SplitN(vol, "} ", 2)
 		volume := &Volume{}
-		if err := json.Unmarshal([]byte(arr[0]), volume); err != nil {
+		if err := json.Unmarshal([]byte(arr[0]+"}"), volume); err != nil {
+			log.Debugf("%s: '%s'", err, arr[0])
 			return nil, err
 		}
 		volume.Created, _ = time.Parse(time.ANSIC, arr[1])
