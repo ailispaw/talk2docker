@@ -1,7 +1,7 @@
 package version
 
 const (
-	APP_VERSION = "1.1.2-dev"
+	APP_VERSION = "1.1.2"
 )
 
 var ( // from Makefile
