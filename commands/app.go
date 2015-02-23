@@ -17,7 +17,7 @@ var (
 
 	boolYAML, boolJSON, boolVerbose, boolDebug bool
 
-	boolAll, boolQuiet, boolNoHeader bool
+	boolAll, boolQuiet, boolNoHeader, boolNoTrunc bool
 )
 
 var app = &cobra.Command{

@@ -156,6 +156,7 @@ func init() {
 		flags.BoolVarP(&boolAll, "all", "a", false, "Show all volumes. Only active volumes are shown by default.")
 		flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display numeric IDs")
 		flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
+		flags.BoolVar(&boolNoTrunc, "no-trunc", false, "Don't truncate output")
 	}
 
 	cmdVolume.AddCommand(cmdListVolumes)
@@ -216,18 +217,39 @@ func listVolumes(ctx *cobra.Command, args []string) {
 	}
 
 	var items [][]string
-	for _, volume := range volumes {
-		out := []string{
-			Truncate(volume.ID, 12),
-			formatNames(volume.MountedOn),
-			FormatDateTime(volume.Created),
+
+	if boolNoTrunc {
+		for _, volume := range volumes {
+			for _, mount := range volume.MountedOn {
+				var name string
+				if mount.Writable {
+					name = fmt.Sprintf("%s:%s", mount.ContainerName, mount.MountToPath)
+				} else {
+					name = fmt.Sprintf("%s:%s:ro", mount.ContainerName, mount.MountToPath)
+				}
+				out := []string{
+					Truncate(volume.ID, 12),
+					name,
+					FormatDateTime(volume.Created),
+					volume.Path,
+				}
+				items = append(items, out)
+			}
 		}
-		if volume.IsBindMount {
-			out = append(out, volume.Path)
-		} else {
-			out = append(out, filepath.Dir(volume.Path)+"/<ID>")
+	} else {
+		for _, volume := range volumes {
+			out := []string{
+				Truncate(volume.ID, 12),
+				formatNames(volume.MountedOn),
+				FormatDateTime(volume.Created),
+			}
+			if volume.IsBindMount {
+				out = append(out, volume.Path)
+			} else {
+				out = append(out, filepath.Dir(volume.Path)+"/<ID>")
+			}
+			items = append(items, out)
 		}
-		items = append(items, out)
 	}
 
 	header := []string{
