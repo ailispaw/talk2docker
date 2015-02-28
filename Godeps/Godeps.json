@@ -13,8 +13,8 @@
 		},
 		{
 			"ImportPath": "github.com/sirupsen/logrus",
-			"Comment": "v0.6.4",
-			"Rev": "58f778a886b1e483dccc3b61085ccf347bf1a37e"
+			"Comment": "v0.6.5",
+			"Rev": "c0f7e35ed2e48f188c37581b4b743cf7383f85c6"
 		},
 		{
 			"ImportPath": "github.com/spf13/cobra",
@@ -30,7 +30,7 @@
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",
-			"Rev": "5d6f7e02b7cdad63b06ab3877915532cd30073b4"
+			"Rev": "49c95bdc21843256fb6c4e0d370a05f24a0bf213"
 		}
 	]
 }
