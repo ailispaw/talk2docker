@@ -13,6 +13,11 @@ import (
 	"github.com/ailispaw/talk2docker/client"
 )
 
+var (
+	boolTLS, boolTLSVerify                 bool
+	pathTLSCaCert, pathTLSCert, pathTLSKey string
+)
+
 var cmdHosts = &cobra.Command{
 	Use:   "hosts",
 	Short: "list hosts",
@@ -82,6 +87,12 @@ func init() {
 	flags.BoolVarP(&boolNoHeader, "no-header", "n", false, "Omit the header")
 	cmdHost.AddCommand(cmdGetHostInfo)
 
+	flags = cmdAddHost.Flags()
+	flags.BoolVar(&boolTLS, "tls", false, "Use TLS; implied by --tls-verify flag")
+	flags.StringVar(&pathTLSCaCert, "tls-ca-cert", "", "Path to a certificate signed by the CA")
+	flags.StringVar(&pathTLSCert, "tls-cert", "", "Path to TLS certificate file")
+	flags.StringVar(&pathTLSKey, "tls-key", "", "Path to TLS key file")
+	flags.BoolVar(&boolTLSVerify, "tls-verify", false, "Use TLS and verify the remote")
 	cmdHost.AddCommand(cmdAddHost)
 
 	cmdHost.AddCommand(cmdRemoveHost)
@@ -330,6 +341,24 @@ func addHost(ctx *cobra.Command, args []string) {
 		Name:        name,
 		URL:         url,
 		Description: desc,
+	}
+
+	if boolTLSVerify {
+		boolTLS = true
+	}
+
+	if boolTLS {
+		newHost.TLS = boolTLS
+		if pathTLSCaCert != "" {
+			newHost.TLSCaCert = pathTLSCaCert
+		}
+		if pathTLSCert != "" {
+			newHost.TLSCert = pathTLSCert
+		}
+		if pathTLSKey != "" {
+			newHost.TLSKey = pathTLSKey
+		}
+		newHost.TLSVerify = boolTLSVerify
 	}
 
 	config.Default = newHost.Name
