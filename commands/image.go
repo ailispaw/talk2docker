@@ -396,10 +396,14 @@ func showImageHistory(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	sort.Sort(history)
+	// Just reverse history
+	var images api.ImageHistories
+	for i, l := 0, len(history); i < l; i++ {
+		images = append(images, history[l-i-1])
+	}
 
 	if boolYAML || boolJSON {
-		if err := FormatPrint(ctx.Out(), history); err != nil {
+		if err := FormatPrint(ctx.Out(), images); err != nil {
 			log.Fatal(err)
 		}
 		return
@@ -407,7 +411,7 @@ func showImageHistory(ctx *cobra.Command, args []string) {
 
 	var items [][]string
 
-	for _, image := range history {
+	for _, image := range images {
 		re := regexp.MustCompile("\\s+")
 		createdBy := re.ReplaceAllLiteralString(image.CreatedBy, " ")
 		re = regexp.MustCompile("^/bin/sh -c #\\(nop\\) ")

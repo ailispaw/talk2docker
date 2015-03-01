@@ -55,9 +55,6 @@ func (images ImageHistories) Swap(i, j int) {
 }
 
 func (images ImageHistories) Less(i, j int) bool {
-	if images[i].Created == images[j].Created {
-		return i > j
-	}
 	return images[i].Created < images[j].Created
 }
 
