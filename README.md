@@ -43,6 +43,21 @@ $ cd talk2docker
 $ make
 ```
 
+## Cross-compiling talk2docker
+
+### Requirements
+
+- [VirtualBox](https://www.virtualbox.org/)
+- [Vagrant](https://www.vagrantup.com/)
+
+### How to build
+
+```
+$ git clone https://github.com/ailispaw/talk2docker.git
+$ cd talk2docker
+$ vagrant up
+```
+
 ## Usage
 
 ```
