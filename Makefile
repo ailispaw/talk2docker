@@ -41,6 +41,6 @@ restore:
 .PHONY: all get fmt test build install uninstall clean save update restore
 
 gox:
-	gox -osarch="darwin/amd64 linux/amd64" -ldflags "-X $(PROJECT)/version.GIT_COMMIT '$(GIT_COMMIT)'"
+	gox -os="darwin linux" -ldflags "-X $(PROJECT)/version.GIT_COMMIT '$(GIT_COMMIT)'"
 
 .PHONY: gox
