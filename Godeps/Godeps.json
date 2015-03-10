@@ -13,8 +13,8 @@
 		},
 		{
 			"ImportPath": "github.com/sirupsen/logrus",
-			"Comment": "v0.6.5",
-			"Rev": "c0f7e35ed2e48f188c37581b4b743cf7383f85c6"
+			"Comment": "v0.6.6",
+			"Rev": "79d043289eeca70fedf97308f8f6c71b232c6d1d"
 		},
 		{
 			"ImportPath": "github.com/spf13/cobra",
