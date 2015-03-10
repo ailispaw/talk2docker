@@ -220,16 +220,26 @@ func listVolumes(ctx *cobra.Command, args []string) {
 
 	if boolNoTrunc {
 		for _, volume := range volumes {
-			for _, mount := range volume.MountedOn {
-				var name string
-				if mount.Writable {
-					name = fmt.Sprintf("%s:%s", mount.ContainerName, mount.MountToPath)
-				} else {
-					name = fmt.Sprintf("%s:%s:ro", mount.ContainerName, mount.MountToPath)
+			if len(volume.MountedOn) > 0 {
+				for _, mount := range volume.MountedOn {
+					var name string
+					if mount.Writable {
+						name = fmt.Sprintf("%s:%s", mount.ContainerName, mount.MountToPath)
+					} else {
+						name = fmt.Sprintf("%s:%s:ro", mount.ContainerName, mount.MountToPath)
+					}
+					out := []string{
+						Truncate(volume.ID, 12),
+						name,
+						FormatDateTime(volume.Created),
+						volume.Path,
+					}
+					items = append(items, out)
 				}
+			} else {
 				out := []string{
 					Truncate(volume.ID, 12),
-					name,
+					"",
 					FormatDateTime(volume.Created),
 					volume.Path,
 				}
