@@ -8,8 +8,8 @@
 		},
 		{
 			"ImportPath": "github.com/mattn/go-runewidth",
-			"Comment": "travisish-30-gc718ccb",
-			"Rev": "c718ccb0685f9fa7129b1b41c04d2877423c419d"
+			"Comment": "travisish-31-g58a0da4",
+			"Rev": "58a0da4ed7b321c9b5dfeffb7e03ee188fae1c60"
 		},
 		{
 			"ImportPath": "github.com/sirupsen/logrus",
