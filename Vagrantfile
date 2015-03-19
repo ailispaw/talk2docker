@@ -10,19 +10,13 @@ Vagrant.configure(2) do |config|
   if Vagrant.has_plugin?("vagrant-triggers") then
     config.trigger.after [:up, :resume] do
       info "Adjusting datetime after suspend and resume."
-      run_remote <<-EOT.prepend("\n")
-        sudo /usr/local/bin/ntpclient -s -h pool.ntp.org
-        date
-      EOT
+      run_remote "timeout -t 10 sudo /usr/local/bin/ntpclient -s -h pool.ntp.org; date"
     end
   end
 
   # Adjusting datetime before provisioning.
   config.vm.provision :shell, run: "always" do |sh|
-    sh.inline = <<-EOT
-      /usr/local/bin/ntpclient -s -h pool.ntp.org
-      date
-    EOT
+    sh.inline = "timeout -t 10 sudo /usr/local/bin/ntpclient -s -h pool.ntp.org; date"
   end
 
   config.vm.provision :docker do |d|
