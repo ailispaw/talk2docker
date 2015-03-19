@@ -18,11 +18,11 @@
 		},
 		{
 			"ImportPath": "github.com/spf13/cobra",
-			"Rev": "a16cb2499939d048b37ce4ad9488bb099a57fc2e"
+			"Rev": "e784a5991089b1209b46c73889ddc34fa9660a0f"
 		},
 		{
 			"ImportPath": "github.com/spf13/pflag",
-			"Rev": "370c3171201099fa6b466db45c8a032cbce33d8d"
+			"Rev": "11b7cf8387a31f278486eaad758162830eca8c73"
 		},
 		{
 			"ImportPath": "github.com/yungsang/tablewriter",
