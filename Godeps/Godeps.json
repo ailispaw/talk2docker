@@ -7,6 +7,10 @@
 			"Rev": "2c70fa70727c953c51695f800f25d6b44abb368e"
 		},
 		{
+			"ImportPath": "github.com/inconshreveable/mousetrap",
+			"Rev": "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
+		},
+		{
 			"ImportPath": "github.com/mattn/go-runewidth",
 			"Comment": "travisish-31-g58a0da4",
 			"Rev": "58a0da4ed7b321c9b5dfeffb7e03ee188fae1c60"
@@ -18,11 +22,11 @@
 		},
 		{
 			"ImportPath": "github.com/spf13/cobra",
-			"Rev": "e784a5991089b1209b46c73889ddc34fa9660a0f"
+			"Rev": "c746d30ef097c1570887112ac3bc9d7b77d3dc66"
 		},
 		{
 			"ImportPath": "github.com/spf13/pflag",
-			"Rev": "11b7cf8387a31f278486eaad758162830eca8c73"
+			"Rev": "18d831e92d67eafd1b0db8af9ffddbd04f7ae1f4"
 		},
 		{
 			"ImportPath": "github.com/yungsang/tablewriter",
