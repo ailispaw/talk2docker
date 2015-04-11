@@ -34,7 +34,7 @@ func showVersion(ctx *cobra.Command, args []string) {
 		GoVersion:     runtime.Version(),
 		GitCommit:     version.GIT_COMMIT,
 		Os:            runtime.GOOS,
-		KernelVersion: version.KERNEL_VERSION,
+		KernelVersion: "",
 		Arch:          runtime.GOARCH,
 	}
 
