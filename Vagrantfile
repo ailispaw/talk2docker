@@ -20,10 +20,10 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.provision :docker do |d|
-    d.build_image "/vagrant/godep-gox/", args: "-t godep-gox"
-    d.run "godep-gox",
+    d.build_image "/vagrant/godep-goxc/", args: "-t godep-goxc"
+    d.run "godep-goxc",
       args: "--rm -v /vagrant:/gopath/src/github.com/ailispaw/talk2docker -w /gopath/src/github.com/ailispaw/talk2docker",
-      cmd: "sh -c 'godep restore && make gox'",
+      cmd: "sh -c 'godep restore && make goxc'",
       auto_assign_name: false, daemonize: false
   end
 end

@@ -1,4 +1,6 @@
-PROJECT := "github.com/ailispaw/talk2docker"
+VERSION := 1.3.2
+
+PROJECT := github.com/ailispaw/talk2docker
 
 WORKSPACE := `godep path`
 
@@ -16,10 +18,10 @@ test:
 	godep go test ./...
 
 build: fmt restore
-	godep go build -v -ldflags "-X $(PROJECT)/version.GIT_COMMIT '$(GIT_COMMIT)'"
+	CGO_ENABLED=0 godep go build -a -installsuffix cgo -v -ldflags "-X $(PROJECT)/version.GIT_COMMIT '$(GIT_COMMIT)' -X $(PROJECT)/version.APP_VERSION '$(VERSION)'"
 
-install: fmt restore uninstall
-	godep go install -v -ldflags "-s -w -X $(PROJECT)/version.GIT_COMMIT '$(GIT_COMMIT)'"
+install: uninstall build
+	cp talk2docker $(GOPATH)/bin
 
 uninstall:
 	go clean -x -i
@@ -40,7 +42,13 @@ restore:
 
 .PHONY: all get fmt test build install uninstall clean save update restore
 
-gox:
-	gox -os="darwin linux" -arch="386 amd64" -ldflags "-X $(PROJECT)/version.GIT_COMMIT '$(GIT_COMMIT)'"
+xc:
+	$(RM) -r bin/$(VERSION)
+	vagrant up --no-provision
+	vagrant provision
+	vagrant suspend
 
-.PHONY: gox
+goxc:
+	CGO_ENABLED=0 goxc -d="bin" -bc="darwin linux,!arm" -build-installsuffix="cgo" -build-ldflags="-X $(PROJECT)/version.GIT_COMMIT '$(GIT_COMMIT)' -X $(PROJECT)/version.APP_VERSION '$(VERSION)'" -pv=$(VERSION) xc archive
+
+.PHONY: xc goxc

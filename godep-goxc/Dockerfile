@@ -17,9 +17,9 @@ ENV GOPATH /gopath
 ENV GOROOT /goroot
 ENV PATH $GOPATH/bin:$GOROOT/bin:$PATH
 
-RUN go get github.com/mitchellh/gox
-RUN gox -build-toolchain -os="darwin linux windows" -arch="386 amd64"
+RUN go get github.com/laher/goxc
+RUN goxc -bc="darwin linux,!arm windows" toolchain
 
 RUN go get github.com/tools/godep
 
-CMD godep restore && gox
+CMD godep restore && goxc

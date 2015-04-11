@@ -1,10 +1,7 @@
 package version
 
-const (
-	APP_VERSION = "1.3.2"
-)
-
 var ( // from Makefile
+	APP_VERSION    string
 	KERNEL_VERSION string
 	GIT_COMMIT     string
 )
