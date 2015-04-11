@@ -14,10 +14,13 @@ get:
 fmt:
 	go fmt -x ./...
 
+vet:
+	go vet -x ./...
+
 test:
 	godep go test ./...
 
-build: fmt restore
+build: fmt vet test restore
 	CGO_ENABLED=0 godep go build -a -installsuffix cgo -v -ldflags "-X $(PROJECT)/version.GIT_COMMIT '$(GIT_COMMIT)' -X $(PROJECT)/version.APP_VERSION '$(VERSION)'"
 
 install: uninstall build
@@ -40,7 +43,7 @@ update:
 restore:
 	GOPATH="$(WORKSPACE)" godep restore
 
-.PHONY: all get fmt test build install uninstall clean save update restore
+.PHONY: all get fmt vet test build install uninstall clean save update restore
 
 xc:
 	$(RM) -r bin/$(VERSION)

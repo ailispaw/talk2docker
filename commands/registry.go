@@ -170,7 +170,7 @@ func loginRegistry(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	ctx.Println("Login Succeeded!\n")
+	ctx.Println("Login Succeeded!")
 
 	listRegistries(ctx, args)
 }

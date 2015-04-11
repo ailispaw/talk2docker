@@ -557,9 +557,9 @@ func searchImages(ctx *cobra.Command, args []string) {
 	}
 
 	if boolStar {
-		sort.Sort(sort.Reverse(api.SortImagesByStars{images}))
+		sort.Sort(sort.Reverse(api.SortImagesByStars{ImageSearchResults: images}))
 	} else {
-		sort.Sort(api.SortImagesByName{images})
+		sort.Sort(api.SortImagesByName{ImageSearchResults: images})
 	}
 
 	if boolQuiet {
