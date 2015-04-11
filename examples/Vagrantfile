@@ -4,16 +4,9 @@
 Vagrant.configure(2) do |config|
   config.vm.define "talk2docker"
 
-  config.vm.box = "yungsang/boot2docker"
+  config.vm.box = "ailispaw/rancheros-lite"
 
   config.vm.synced_folder ".", "/vagrant"
 
   config.vm.network :forwarded_port, guest: 8000, host: 8000
-
-  config.vm.provision :shell do |sh|
-    sh.inline = <<-EOT
-      sudo echo 'EXTRA_ARGS="--label=vm=vitrualbox --label=box=yungsang/boot2docker"' > /var/lib/boot2docker/profile
-      sudo /etc/init.d/docker restart
-    EOT
-  end
 end
