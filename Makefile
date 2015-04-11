@@ -28,14 +28,14 @@ uninstall:
 
 clean:
 	go clean -x
-	$(RM) -rf "$(WORKSPACE)"
+	$(RM) -r "$(WORKSPACE)"
 
 save:
 	godep save
 
 update:
 	godep update ...
-	$(RM) -rf "$(WORKSPACE)"
+	$(RM) -r "$(WORKSPACE)"
 
 restore:
 	GOPATH="$(WORKSPACE)" godep restore
