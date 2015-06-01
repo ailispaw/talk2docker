@@ -17,10 +17,10 @@ fmt:
 vet:
 	go vet -x ./...
 
-test:
+test: restore
 	godep go test ./...
 
-build: fmt vet test restore
+build: fmt vet restore test
 	CGO_ENABLED=0 godep go build -a -installsuffix cgo -v -ldflags "-X $(PROJECT)/version.GIT_COMMIT '$(GIT_COMMIT)' -X $(PROJECT)/version.APP_VERSION '$(VERSION)'"
 
 install: uninstall build
