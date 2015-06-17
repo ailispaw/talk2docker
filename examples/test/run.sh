@@ -5,7 +5,9 @@ HERE=`pwd`
 popd > /dev/null
 
 cd "${HERE}"
-talk2docker="../../talk2docker --config=../config.yml"
+talk2docker="../../talk2docker"
+
+export TALK2DOCKER_CONFIG="../config.yml"
 
 execute() {
   command="${talk2docker} ${*}"
