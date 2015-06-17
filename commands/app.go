@@ -30,7 +30,12 @@ var app = &cobra.Command{
 }
 
 func init() {
-	app.PersistentFlags().StringVarP(&configPath, "config", "C", "$HOME/.talk2docker/config", "Path to the configuration file")
+	defaultConfigPath := os.Getenv("TALK2DOCKER_CONFIG")
+	if defaultConfigPath == "" {
+		defaultConfigPath = "$HOME/.talk2docker/config"
+	}
+
+	app.PersistentFlags().StringVarP(&configPath, "config", "C", defaultConfigPath, "Path to the configuration file")
 	app.PersistentFlags().StringVarP(&hostName, "host", "H", "", "Docker hostname to use its config (runtime only)")
 
 	app.PersistentFlags().BoolVarP(&boolYAML, "yaml", "Y", false, "Output in YAML format")
