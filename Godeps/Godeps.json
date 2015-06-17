@@ -4,7 +4,7 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/howeyc/gopass",
-			"Rev": "2c70fa70727c953c51695f800f25d6b44abb368e"
+			"Rev": "10b54de414cc9693221d5ff2ae14fd2fbf1b0ac1"
 		},
 		{
 			"ImportPath": "github.com/inconshreveable/mousetrap",
@@ -12,21 +12,21 @@
 		},
 		{
 			"ImportPath": "github.com/mattn/go-runewidth",
-			"Comment": "travisish-31-g58a0da4",
-			"Rev": "58a0da4ed7b321c9b5dfeffb7e03ee188fae1c60"
+			"Comment": "travisish-33-g5890272",
+			"Rev": "5890272cd41c5103531cd7b79e428d99c9e97f76"
 		},
 		{
 			"ImportPath": "github.com/sirupsen/logrus",
-			"Comment": "v0.7.3",
-			"Rev": "55eb11d21d2a31a3cc93838241d04800f52e823d"
+			"Comment": "v0.8.6",
+			"Rev": "5701be89e7d3cdcbc48504241b9c66ef085f759d"
 		},
 		{
 			"ImportPath": "github.com/spf13/cobra",
-			"Rev": "c746d30ef097c1570887112ac3bc9d7b77d3dc66"
+			"Rev": "c55cdf33856a08e4822738728b41783292812889"
 		},
 		{
 			"ImportPath": "github.com/spf13/pflag",
-			"Rev": "18d831e92d67eafd1b0db8af9ffddbd04f7ae1f4"
+			"Rev": "41e9136667ee4f9ffd03da380e24629d7eccace4"
 		},
 		{
 			"ImportPath": "github.com/yungsang/tablewriter",
@@ -34,7 +34,7 @@
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",
-			"Rev": "49c95bdc21843256fb6c4e0d370a05f24a0bf213"
+			"Rev": "c1cd2254a6dd314c9d73c338c12688c9325d85c6"
 		}
 	]
 }
