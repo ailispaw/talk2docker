@@ -266,13 +266,13 @@ func getHostInfo(ctx *cobra.Command, args []string) {
 	})
 
 	items = append(items, []string{
-		"Memory Limit", FormatBool(info.MemoryLimit != 0, "Supported", "No"),
+		"Memory Limit", FormatBool((info.MemoryLimit != 0) && (info.MemoryLimit != false), "Supported", "No"),
 	})
 	items = append(items, []string{
-		"Swap Limit", FormatBool(info.SwapLimit != 0, "Supported", "No"),
+		"Swap Limit", FormatBool((info.SwapLimit != 0) && (info.SwapLimit != false), "Supported", "No"),
 	})
 	items = append(items, []string{
-		"IPv4 Forwarding", FormatBool(info.IPv4Forwarding != 0, "Enabled", "Disabled"),
+		"IPv4 Forwarding", FormatBool((info.IPv4Forwarding != 0) && (info.IPv4Forwarding != false), "Enabled", "Disabled"),
 	})
 
 	items = append(items, []string{
@@ -286,9 +286,9 @@ func getHostInfo(ctx *cobra.Command, args []string) {
 	})
 
 	items = append(items, []string{
-		"Debug Mode", FormatBool(info.Debug != 0, "Yes", "No"),
+		"Debug Mode", FormatBool((info.Debug != 0) && (info.Debug != false), "Yes", "No"),
 	})
-	if info.Debug != 0 {
+	if (info.Debug != 0) && (info.Debug != false) {
 		items = append(items, []string{
 			FormatNonBreakingString("  Events Listeners"), strconv.Itoa(info.NEventsListener),
 		})

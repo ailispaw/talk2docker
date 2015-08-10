@@ -205,10 +205,10 @@ type Info struct {
 	Images             int
 	Driver             string
 	DriverStatus       [][]string
-	MemoryLimit        int // bool
-	SwapLimit          int // bool
-	IPv4Forwarding     int // bool
-	Debug              int // bool
+	MemoryLimit        interface{} // int or bool
+	SwapLimit          interface{} // int or bool
+	IPv4Forwarding     interface{} // int or bool
+	Debug              interface{} // int or bool
 	NFd                int
 	NGoroutines        int
 	ExecutionDriver    string
