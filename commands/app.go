@@ -79,6 +79,8 @@ func Execute() {
 	app.AddCommand(cmdRegistry)
 	app.AddCommand(cmdConfig)
 
+	app.AddCommand(cmdDocker)
+
 	app.SetOutput(os.Stdout)
 	app.Execute()
 }
