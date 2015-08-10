@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -73,6 +74,13 @@ var cmdRemoveHost = &cobra.Command{
 	Run:     removeHost,
 }
 
+var cmdExportHostEnv = &cobra.Command{
+	Use:   "env [NAME]",
+	Short: "Export environment variables of a host for Docker cli",
+	Long:  APP_NAME + " host env - Export environment variables of a host for Docker cli",
+	Run:   exportHostEnv,
+}
+
 func init() {
 	for _, flags := range []*pflag.FlagSet{cmdHosts.Flags(), cmdListHosts.Flags()} {
 		flags.BoolVarP(&boolQuiet, "quiet", "q", false, "Only display host names")
@@ -96,6 +104,8 @@ func init() {
 	cmdHost.AddCommand(cmdAddHost)
 
 	cmdHost.AddCommand(cmdRemoveHost)
+
+	cmdHost.AddCommand(cmdExportHostEnv)
 }
 
 func listHosts(ctx *cobra.Command, args []string) {
@@ -406,4 +416,29 @@ func removeHost(ctx *cobra.Command, args []string) {
 	}
 
 	listHosts(ctx, args)
+}
+
+func exportHostEnv(ctx *cobra.Command, args []string) {
+	if len(args) > 0 {
+		hostName = args[0]
+	}
+
+	config, err := client.LoadConfig(configPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	host, err := config.GetHost(hostName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	ctx.Printf("export DOCKER_HOST=%s;\n", host.URL)
+	if host.TLS {
+		ctx.Printf("export DOCKER_CERT_PATH=%s;\n", filepath.Dir(host.TLSCert))
+		ctx.Printf("export DOCKER_TLS_VERIFY=%s;\n", FormatBool(host.TLSVerify, "true", "false"))
+	} else {
+		ctx.Printf("unset DOCKER_CERT_PATH;\n")
+		ctx.Printf("unset DOCKER_TLS_VERIFY;\n")
+	}
 }
