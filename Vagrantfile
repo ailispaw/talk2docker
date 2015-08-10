@@ -24,6 +24,6 @@ Vagrant.configure(2) do |config|
     d.run "godep-goxc",
       args: "--rm -v /vagrant:/gopath/src/github.com/ailispaw/talk2docker -w /gopath/src/github.com/ailispaw/talk2docker",
       cmd: "sh -c 'godep restore && make goxc'",
-      auto_assign_name: false, daemonize: false
+      auto_assign_name: false, daemonize: false, restart: false
   end
 end
