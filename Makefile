@@ -1,4 +1,4 @@
-VERSION := 1.5.0
+VERSION := 1.6.0
 
 PROJECT := github.com/ailispaw/talk2docker
 
