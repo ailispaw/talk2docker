@@ -1,7 +1,7 @@
 Vagrant.configure(2) do |config|
-  config.vm.define "rancheros-lite"
+  config.vm.define "docker-root"
 
-  config.vm.box = "ailispaw/rancheros-lite"
+  config.vm.box = "ailispaw/docker-root"
 
   config.vm.network :forwarded_port, guest: 2375, host: 2375, auto_correct: true, disabled: true
 
