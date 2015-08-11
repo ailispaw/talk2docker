@@ -27,6 +27,8 @@ Contributions and suggestions would be appreciated, though it's aimed at my lear
 - CoreOS Beta 557.2.0 (btrfs)
 - CoreOS Alpha 575.0.0 (overlay)
 - only-docker v0.8.0 (overlay)
+- Rancheros Lite (overlay)
+- DockerRoot (overlay)
 
 ## Building talk2docker
 
@@ -83,10 +85,10 @@ Available Commands:
   host        Manage hosts
   registry    Manage registries
   config      Manage the configuration file
+  docker      Execute the original docker cli
   help        Help about any command
 
-
-Global Flags:
+Flags:
   -C, --config="$HOME/.talk2docker/config": Path to the configuration file
   -D, --debug=false: Print debug messages
   -h, --help=false: help for talk2docker
@@ -95,7 +97,8 @@ Global Flags:
   -V, --verbose=false: Print verbose messages
   -Y, --yaml=false: Output in YAML format
 
-Use "talk2docker help [command]" for more information about a command.
+
+Use "talk2docker [command] --help" for more information about a command.
 
 ```
 
