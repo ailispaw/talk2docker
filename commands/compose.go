@@ -19,41 +19,41 @@ import (
 var composeFlags = struct {
 	Name string // --name
 
-	Ports   stringArray // --publish
-	Volumes stringArray // --volume
+	Ports   []string // --publish
+	Volumes []string // --volume
 
-	Hostname     string      // --hostname
-	Domainname   string      // --domain
-	User         string      // --user
-	Memory       int64       // --memory
-	MemorySwap   int64       // --memory-swap
-	CpuShares    int64       // --cpu-shares
-	Cpuset       string      // --cpuset
-	ExposedPorts stringArray // --expose
-	Tty          bool        // --tty
-	OpenStdin    bool        // --interactive
-	Env          stringArray // --env
-	Cmd          stringArray // --cmd
-	WorkingDir   string      // --workdir
-	Entrypoint   string      // --entrypoint
-	MacAddress   string      // --mac-address
+	Hostname     string   // --hostname
+	Domainname   string   // --domain
+	User         string   // --user
+	Memory       int64    // --memory
+	MemorySwap   int64    // --memory-swap
+	CpuShares    int64    // --cpu-shares
+	Cpuset       string   // --cpuset
+	ExposedPorts []string // --expose
+	Tty          bool     // --tty
+	OpenStdin    bool     // --interactive
+	Env          []string // --env
+	Cmd          []string // --cmd
+	WorkingDir   string   // --workdir
+	Entrypoint   string   // --entrypoint
+	MacAddress   string   // --mac-address
 
-	Privileged      bool        // --privileged
-	Links           stringArray // --link
-	PublishAllPorts bool        // --publish-all
-	Dns             stringArray // --dns
-	DnsSearch       stringArray // --dns-search
-	ExtraHosts      stringArray // --add-host
-	VolumesFrom     stringArray // --volumes-from
-	Devices         stringArray // --device
-	NetworkMode     string      // --net
-	IpcMode         string      // --ipc
-	PidMode         string      // --pid
-	CapAdd          stringArray // --cap-add
-	CapDrop         stringArray // --cap-drop
-	RestartPolicy   string      // --restart
-	SecurityOpt     stringArray // --security-opt
-	ReadonlyRootfs  bool        // --read-only
+	Privileged      bool     // --privileged
+	Links           []string // --link
+	PublishAllPorts bool     // --publish-all
+	Dns             []string // --dns
+	DnsSearch       []string // --dns-search
+	ExtraHosts      []string // --add-host
+	VolumesFrom     []string // --volumes-from
+	Devices         []string // --device
+	NetworkMode     string   // --net
+	IpcMode         string   // --ipc
+	PidMode         string   // --pid
+	CapAdd          []string // --cap-add
+	CapDrop         []string // --cap-drop
+	RestartPolicy   string   // --restart
+	SecurityOpt     []string // --security-opt
+	ReadonlyRootfs  bool     // --read-only
 }{}
 
 var cmdCompose = &cobra.Command{
@@ -76,8 +76,8 @@ func init() {
 	for _, flags := range []*pflag.FlagSet{cmdCompose.Flags(), cmdComposeContainers.Flags()} {
 		flags.StringVar(&composeFlags.Name, "name", "", "Override the name of the container")
 
-		flags.VarP(&composeFlags.Ports, "publish", "p", "Publish a container's port to the host")
-		flags.VarP(&composeFlags.Volumes, "volume", "v", "Bind mount volume(s)")
+		flags.StringSliceVarP(&composeFlags.Ports, "publish", "p", nil, "Publish a container's port to the host")
+		flags.StringSliceVarP(&composeFlags.Volumes, "volume", "v", nil, "Bind mount volume(s)")
 
 		flags.StringVar(&composeFlags.Hostname, "hostname", "", "Hostname of the container")
 		flags.StringVar(&composeFlags.Domainname, "domain", "", "Domain name of the container")
@@ -86,30 +86,30 @@ func init() {
 		flags.Int64Var(&composeFlags.MemorySwap, "memory-swap", 0, "Total memory (memory + swap), '-1' to disable swap")
 		flags.Int64Var(&composeFlags.CpuShares, "cpu-shares", 0, "CPU shares (relative weight)")
 		flags.StringVar(&composeFlags.Cpuset, "cpuset", "", "CPUs in which to allow execution (0-3, 0,1)")
-		flags.Var(&composeFlags.ExposedPorts, "expose", "Expose a port or a range of ports without publishing")
+		flags.StringSliceVar(&composeFlags.ExposedPorts, "expose", nil, "Expose a port or a range of ports without publishing")
 		flags.BoolVarP(&composeFlags.Tty, "tty", "t", false, "Allocate a pseudo-TTY")
 		flags.BoolVarP(&composeFlags.OpenStdin, "interactive", "i", false, "Keep STDIN open even if not attached")
-		flags.VarP(&composeFlags.Env, "env", "e", "Set environment variable(s)")
-		flags.VarP(&composeFlags.Cmd, "cmd", "c", "Command line to execute")
+		flags.StringSliceVarP(&composeFlags.Env, "env", "e", nil, "Set environment variable(s)")
+		flags.StringSliceVarP(&composeFlags.Cmd, "cmd", "c", nil, "Command line to execute")
 		flags.StringVarP(&composeFlags.WorkingDir, "workdir", "w", "", "Working directory inside the container")
 		flags.StringVar(&composeFlags.Entrypoint, "entrypoint", "", "Overwrite the default ENTRYPOINT of the image")
 		flags.StringVar(&composeFlags.MacAddress, "mac-address", "", "Assign a MAC address to the container")
 
 		flags.BoolVar(&composeFlags.Privileged, "privileged", false, "Give extended privileges to the container")
-		flags.Var(&composeFlags.Links, "link", "Add link to another container in the form of NAME:ALIAS")
+		flags.StringSliceVar(&composeFlags.Links, "link", nil, "Add link to another container in the form of NAME:ALIAS")
 		flags.BoolVar(&composeFlags.PublishAllPorts, "publish-all", false, "Publish all exposed ports to random ports")
-		flags.Var(&composeFlags.Dns, "dns", "Set custom DNS servers")
-		flags.Var(&composeFlags.DnsSearch, "dns-search", "Set custom DNS search domains")
-		flags.Var(&composeFlags.ExtraHosts, "add-host", "Add a custom host-to-IP mapping (host:ip)")
-		flags.Var(&composeFlags.VolumesFrom, "volumes-from", "Mount volumes from the specified container(s)")
-		flags.Var(&composeFlags.Devices, "device", "Add a host device to the container")
+		flags.StringSliceVar(&composeFlags.Dns, "dns", nil, "Set custom DNS servers")
+		flags.StringSliceVar(&composeFlags.DnsSearch, "dns-search", nil, "Set custom DNS search domains")
+		flags.StringSliceVar(&composeFlags.ExtraHosts, "add-host", nil, "Add a custom host-to-IP mapping (host:ip)")
+		flags.StringSliceVar(&composeFlags.VolumesFrom, "volumes-from", nil, "Mount volumes from the specified container(s)")
+		flags.StringSliceVar(&composeFlags.Devices, "device", nil, "Add a host device to the container")
 		flags.StringVar(&composeFlags.NetworkMode, "net", "", "Set the Network mode for the container")
 		flags.StringVar(&composeFlags.IpcMode, "ipc", "", "IPC namespace to use")
 		flags.StringVar(&composeFlags.PidMode, "pid", "", "PID namespace to use")
-		flags.Var(&composeFlags.CapAdd, "cap-add", "Add Linux capabilities")
-		flags.Var(&composeFlags.CapDrop, "cap-drop", "Drop Linux capabilities")
+		flags.StringSliceVar(&composeFlags.CapAdd, "cap-add", nil, "Add Linux capabilities")
+		flags.StringSliceVar(&composeFlags.CapDrop, "cap-drop", nil, "Drop Linux capabilities")
 		flags.StringVar(&composeFlags.RestartPolicy, "restart", "", "Restart policy to apply when a container exits (no, on-failure[:MAX-RETRY], always)")
-		flags.Var(&composeFlags.SecurityOpt, "security-opt", "Security options")
+		flags.StringSliceVar(&composeFlags.SecurityOpt, "security-opt", nil, "Security options")
 		flags.BoolVar(&composeFlags.ReadonlyRootfs, "read-only", false, "Mount the container's root filesystem as read only")
 	}
 

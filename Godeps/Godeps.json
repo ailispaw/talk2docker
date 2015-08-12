@@ -26,7 +26,7 @@
 		},
 		{
 			"ImportPath": "github.com/spf13/pflag",
-			"Rev": "41e9136667ee4f9ffd03da380e24629d7eccace4"
+			"Rev": "4869ec2ae0628354eaac5bf88fccf9a7265ae475"
 		},
 		{
 			"ImportPath": "github.com/yungsang/tablewriter",
