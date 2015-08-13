@@ -5,6 +5,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+
+	"github.com/ailispaw/talk2docker/version"
 )
 
 const (
@@ -15,7 +17,7 @@ var (
 	configPath string
 	hostName   string
 
-	boolYAML, boolJSON, boolVerbose, boolDebug bool
+	boolYAML, boolJSON, boolVerbose, boolDebug, boolVersion bool
 
 	boolAll, boolQuiet, boolNoHeader, boolNoTrunc bool
 )
@@ -25,6 +27,11 @@ var app = &cobra.Command{
 	Short: "Yet Another Docker Client to talk to Docker daemon",
 	Long:  APP_NAME + " - Yet Another Docker Client to talk to Docker daemon",
 	Run: func(ctx *cobra.Command, args []string) {
+		if boolVersion {
+			ctx.Printf("%s version %s, build %s\n",
+				APP_NAME, version.APP_VERSION, version.GIT_COMMIT)
+			return
+		}
 		ctx.Help()
 	},
 }
@@ -43,6 +50,8 @@ func init() {
 
 	app.PersistentFlags().BoolVarP(&boolVerbose, "verbose", "V", false, "Print verbose messages")
 	app.PersistentFlags().BoolVarP(&boolDebug, "debug", "D", false, "Print debug messages")
+
+	app.Flags().BoolVarP(&boolVersion, "version", "v", false, "Print version information")
 
 	cobra.OnInitialize(Initialize)
 }
