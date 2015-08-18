@@ -3,7 +3,6 @@ package commands
 import (
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -32,17 +31,6 @@ func docker(ctx *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	cmd := exec.Command("docker", args...)
-	cmd.Env = getEnv()
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
-		log.Fatal(err)
-	}
-}
-
-func getEnv() []string {
 	config, err := client.LoadConfig(configPath)
 	if err != nil {
 		log.Fatal(err)
@@ -64,11 +52,21 @@ func getEnv() []string {
 		}
 	}
 
-	env = append(env, "DOCKER_HOST="+host.URL)
+	args = append([]string{"--host", host.URL}, args...)
 	if host.TLS {
-		env = append(env, "DOCKER_CERT_PATH="+filepath.Dir(host.TLSCert))
-		env = append(env, "DOCKER_TLS_VERIFY="+FormatBool(host.TLSVerify, "true", "false"))
+		args = append([]string{"--tls", "true"}, args...)
+		args = append([]string{"--tlscacert", host.TLSCaCert}, args...)
+		args = append([]string{"--tlscert", host.TLSCert}, args...)
+		args = append([]string{"--tlskey", host.TLSKey}, args...)
+		args = append([]string{"--tlsverify", FormatBool(host.TLSVerify, "true", "false")}, args...)
 	}
 
-	return env
+	cmd := exec.Command("docker", args...)
+	cmd.Env = env
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		log.Fatal(err)
+	}
 }
