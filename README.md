@@ -89,12 +89,13 @@ Available Commands:
 
 Flags:
   -C, --config="$HOME/.talk2docker/config": Path to the configuration file
-  -D, --debug=false: Print debug messages
-  -h, --help=false: help for talk2docker
+  -D, --debug[=false]: Print debug messages
+  -h, --help[=false]: help for talk2docker
   -H, --host="": Docker hostname to use its config (runtime only)
-  -J, --json=false: Output in JSON format
-  -V, --verbose=false: Print verbose messages
-  -Y, --yaml=false: Output in YAML format
+  -J, --json[=false]: Output in JSON format
+  -V, --verbose[=false]: Print verbose messages
+  -v, --version[=false]: Print version information
+  -Y, --yaml[=false]: Output in YAML format
 
 
 Use "talk2docker [command] --help" for more information about a command.
