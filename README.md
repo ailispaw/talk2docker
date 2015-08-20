@@ -12,7 +12,7 @@ Contributions and suggestions would be appreciated, though it's aimed at my lear
 - Display a tree of all images, which Docker deprecates
 - Display a history of an image, modeled on Dockerfile
 - Show uploaded files to build in verbose mode and debug mode
-- Handle volumes, inspired by [cpuguy83/docker-volumes](https://github.com/cpuguy83/docker-volumes)
+- ~~Handle volumes, inspired by [cpuguy83/docker-volumes](https://github.com/cpuguy83/docker-volumes)~~
 - Support uploading a file/folder to a containter
 - Output in JSON or YAML format as well
 - Organize commands by category
@@ -81,7 +81,6 @@ Available Commands:
   version     Show the version information
   container   Manage containers
   image       Manage images
-  volume      Manage volumes
   host        Manage hosts
   registry    Manage registries
   config      Manage the configuration file

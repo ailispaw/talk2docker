@@ -83,7 +83,7 @@ func Execute() {
 
 	app.AddCommand(cmdContainer)
 	app.AddCommand(cmdImage)
-	app.AddCommand(cmdVolume)
+	//app.AddCommand(cmdVolume)
 	app.AddCommand(cmdHost)
 	app.AddCommand(cmdRegistry)
 	app.AddCommand(cmdConfig)
