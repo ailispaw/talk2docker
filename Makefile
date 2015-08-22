@@ -21,7 +21,7 @@ test: restore
 	godep go test ./...
 
 build: fmt vet restore test
-	CGO_ENABLED=0 godep go build -a -installsuffix cgo -v -ldflags "-X $(PROJECT)/version.GIT_COMMIT '$(GIT_COMMIT)' -X $(PROJECT)/version.APP_VERSION '$(VERSION)'"
+	CGO_ENABLED=0 godep go build -a -installsuffix cgo -v -ldflags "-X $(PROJECT)/version.GIT_COMMIT=$(GIT_COMMIT) -X $(PROJECT)/version.APP_VERSION=$(VERSION)"
 
 install: uninstall build
 	cp talk2docker $(GOPATH)/bin
@@ -52,6 +52,6 @@ xc:
 	vagrant suspend
 
 goxc:
-	CGO_ENABLED=0 goxc -d="bin" -bc="darwin linux,!arm" -build-installsuffix="cgo" -build-ldflags="-X $(PROJECT)/version.GIT_COMMIT '$(GIT_COMMIT)' -X $(PROJECT)/version.APP_VERSION '$(VERSION)'" -pv=$(VERSION) xc archive
+	CGO_ENABLED=0 goxc -d="bin" -bc="darwin linux,!arm" -build-installsuffix="cgo" -build-ldflags="-X $(PROJECT)/version.GIT_COMMIT=$(GIT_COMMIT) -X $(PROJECT)/version.APP_VERSION=$(VERSION)" -pv=$(VERSION) xc archive
 
 .PHONY: xc goxc

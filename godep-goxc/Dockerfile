@@ -8,7 +8,7 @@ RUN apt-get update -y && \
       git mercurial bzr \
     && rm -rf /var/lib/apt/lists/*
 
-ENV GOVERSION 1.4.2
+ENV GOVERSION 1.5
 RUN mkdir /goroot && mkdir /gopath
 RUN curl https://storage.googleapis.com/golang/go${GOVERSION}.linux-amd64.tar.gz \
       | tar xvzf - -C /goroot --strip-components=1
@@ -18,7 +18,6 @@ ENV GOROOT /goroot
 ENV PATH $GOPATH/bin:$GOROOT/bin:$PATH
 
 RUN go get github.com/laher/goxc
-RUN goxc -bc="darwin linux,!arm windows" toolchain
 
 RUN go get github.com/tools/godep
 
