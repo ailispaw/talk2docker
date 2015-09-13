@@ -54,11 +54,13 @@ func docker(ctx *cobra.Command, args []string) {
 
 	args = append([]string{"--host", host.URL}, args...)
 	if host.TLS {
-		args = append([]string{"--tls", "true"}, args...)
+		args = append([]string{"--tls"}, args...)
 		args = append([]string{"--tlscacert", host.TLSCaCert}, args...)
 		args = append([]string{"--tlscert", host.TLSCert}, args...)
 		args = append([]string{"--tlskey", host.TLSKey}, args...)
-		args = append([]string{"--tlsverify", FormatBool(host.TLSVerify, "true", "false")}, args...)
+		if host.TLSVerify {
+			args = append([]string{"--tlsverify"}, args...)
+		}
 	}
 
 	cmd := exec.Command("docker", args...)
