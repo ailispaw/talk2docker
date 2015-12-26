@@ -17,16 +17,16 @@
 		},
 		{
 			"ImportPath": "github.com/sirupsen/logrus",
-			"Comment": "v0.8.6",
-			"Rev": "5701be89e7d3cdcbc48504241b9c66ef085f759d"
+			"Comment": "v0.8.7",
+			"Rev": "418b41d23a1bf978c06faea5313ba194650ac088"
 		},
 		{
 			"ImportPath": "github.com/spf13/cobra",
-			"Rev": "db0518444643a7b170abb78164bbeaf5a2bb816f"
+			"Rev": "b3f29e98e63a3618988a231fd02b45c1e6369d4f"
 		},
 		{
 			"ImportPath": "github.com/spf13/pflag",
-			"Rev": "112aaa578dfdd0e913663b05153be974bd72497a"
+			"Rev": "7f60f83a2c81bc3c3c0d5297f61ddfa68da9d3b7"
 		},
 		{
 			"ImportPath": "github.com/yungsang/tablewriter",
@@ -38,7 +38,7 @@
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",
-			"Rev": "c1cd2254a6dd314c9d73c338c12688c9325d85c6"
+			"Rev": "f7716cbe52baa25d2e9b0d0da546fcf909fc16b4"
 		}
 	]
 }

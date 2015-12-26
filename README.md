@@ -85,21 +85,18 @@ Available Commands:
   registry    Manage registries
   config      Manage the configuration file
   docker      Execute the original docker cli
-  help        Help about any command
 
 Flags:
-  -C, --config="$HOME/.talk2docker/config": Path to the configuration file
-  -D, --debug[=false]: Print debug messages
-  -h, --help[=false]: help for talk2docker
-  -H, --host="": Docker hostname to use its config (runtime only)
-  -J, --json[=false]: Output in JSON format
-  -V, --verbose[=false]: Print verbose messages
-  -v, --version[=false]: Print version information
-  -Y, --yaml[=false]: Output in YAML format
-
+  -C, --config string   Path to the configuration file (default "$HOME/.talk2docker/config")
+  -D, --debug           Print debug messages
+  -h, --help            help for talk2docker
+  -H, --host string     Docker hostname to use its config (runtime only)
+  -J, --json            Output in JSON format
+  -V, --verbose         Print verbose messages
+  -v, --version         Print version information
+  -Y, --yaml            Output in YAML format
 
 Use "talk2docker [command] --help" for more information about a command.
-
 ```
 
 You can find more details in [docs](https://github.com/ailispaw/talk2docker/tree/master/docs) and [examples](https://github.com/ailispaw/talk2docker/tree/master/examples).
