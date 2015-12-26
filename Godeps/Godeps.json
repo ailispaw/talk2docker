@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/ailispaw/talk2docker",
-	"GoVersion": "go1.5",
+	"GoVersion": "go1.5.2",
 	"Deps": [
 		{
 			"ImportPath": "github.com/howeyc/gopass",
@@ -31,6 +31,10 @@
 		{
 			"ImportPath": "github.com/yungsang/tablewriter",
 			"Rev": "42b381e04e11dd793d50403bab0ab36905be0fcf"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/ssh/terminal",
+			"Rev": "1e856cbfdf9bc25eefca75f83f25d55e35ae72e0"
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",

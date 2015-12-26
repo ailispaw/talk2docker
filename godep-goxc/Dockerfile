@@ -8,17 +8,16 @@ RUN apt-get update -y && \
       git mercurial bzr \
     && rm -rf /var/lib/apt/lists/*
 
-ENV GOVERSION 1.5
-RUN mkdir /goroot && mkdir /gopath
-RUN curl https://storage.googleapis.com/golang/go${GOVERSION}.linux-amd64.tar.gz \
-      | tar xvzf - -C /goroot --strip-components=1
+ENV GOVERSION=1.5.2 \
+    GOROOT=/goroot \
+    GOPATH=/gopath
+ENV PATH ${PATH}:${GOROOT}/bin:${GOPATH}/bin
 
-ENV GOPATH /gopath
-ENV GOROOT /goroot
-ENV PATH $GOPATH/bin:$GOROOT/bin:$PATH
+RUN mkdir -p ${GOROOT} && \
+    curl https://storage.googleapis.com/golang/go${GOVERSION}.linux-amd64.tar.gz \
+      | tar xvzf - -C ${GOROOT} --strip-components=1
 
-RUN go get github.com/laher/goxc
-
-RUN go get github.com/tools/godep
+RUN go get github.com/laher/goxc && \
+    go get github.com/tools/godep
 
 CMD godep restore && goxc
