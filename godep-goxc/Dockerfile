@@ -8,7 +8,7 @@ RUN apt-get update -y && \
       git mercurial bzr \
     && rm -rf /var/lib/apt/lists/*
 
-ENV GOVERSION=1.5.2 \
+ENV GOVERSION=1.6 \
     GOROOT=/goroot \
     GOPATH=/gopath
 ENV PATH ${PATH}:${GOROOT}/bin:${GOPATH}/bin
