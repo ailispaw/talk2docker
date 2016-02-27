@@ -2,7 +2,7 @@ VERSION := 1.6.1
 
 PROJECT := github.com/ailispaw/talk2docker
 
-WORKSPACE := `godep path`
+WORKSPACE := $(CURDIR)/Godeps/_workspace
 
 GIT_COMMIT := `git rev-parse --short HEAD`
 
