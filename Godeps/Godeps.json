@@ -4,7 +4,7 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/howeyc/gopass",
-			"Rev": "10b54de414cc9693221d5ff2ae14fd2fbf1b0ac1"
+			"Rev": "c89a32868e47b1b7ef388b4d94318b359506400a"
 		},
 		{
 			"ImportPath": "github.com/inconshreveable/mousetrap",
@@ -17,12 +17,12 @@
 		},
 		{
 			"ImportPath": "github.com/sirupsen/logrus",
-			"Comment": "v0.8.7",
-			"Rev": "418b41d23a1bf978c06faea5313ba194650ac088"
+			"Comment": "v0.9.0",
+			"Rev": "be52937128b38f1d99787bb476c789e2af1147f1"
 		},
 		{
 			"ImportPath": "github.com/spf13/cobra",
-			"Rev": "b3f29e98e63a3618988a231fd02b45c1e6369d4f"
+			"Rev": "65a708cee0a4424f4e353d031ce440643e312f92"
 		},
 		{
 			"ImportPath": "github.com/spf13/pflag",
@@ -35,6 +35,10 @@
 		{
 			"ImportPath": "golang.org/x/crypto/ssh/terminal",
 			"Rev": "1e856cbfdf9bc25eefca75f83f25d55e35ae72e0"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/unix",
+			"Rev": "5eaf0df67e70d6997a9fe0ed24383fa1b01638d3"
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",

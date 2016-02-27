@@ -142,7 +142,11 @@ func loginRegistry(ctx *cobra.Command, args []string) {
 	}
 
 	ctx.Print("Password: ")
-	authConfig.Password = string(gopass.GetPasswdMasked())
+	pass, err := gopass.GetPasswd()
+	if err != nil {
+		log.Fatal(err)
+	}
+	authConfig.Password = string(pass)
 
 	promptDefault("Email", registry.Email)
 	authConfig.Email = readInput()
