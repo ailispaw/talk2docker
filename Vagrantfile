@@ -32,7 +32,11 @@ Vagrant.configure(2) do |config|
   config.vm.provision :docker do |d|
     d.build_image "/vagrant/godep-goxc/", args: "-t godep-goxc"
     d.run "godep-goxc",
-      args: "--rm -v /vagrant:/gopath/src/github.com/ailispaw/talk2docker -w /gopath/src/github.com/ailispaw/talk2docker",
+      args: [
+        "--rm",
+        "-v /vagrant:/gopath/src/github.com/ailispaw/talk2docker",
+        "-w /gopath/src/github.com/ailispaw/talk2docker"
+      ].join(" "),
       cmd: "sh -c 'godep restore && make goxc'",
       auto_assign_name: false, daemonize: false, restart: false
   end

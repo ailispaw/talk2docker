@@ -1,12 +1,8 @@
-FROM debian:wheezy
+FROM ailispaw/ubuntu-essential
 
-RUN apt-get update -y && \
-    apt-get install --no-install-recommends -y -q \
-      curl \
-      build-essential \
-      ca-certificates \
-      git mercurial bzr \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get -q update && \
+    apt-get -q -y install --no-install-recommends curl ca-certificates git make && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ENV GOVERSION=1.6 \
     GOROOT=/goroot \
@@ -19,5 +15,3 @@ RUN mkdir -p ${GOROOT} && \
 
 RUN go get github.com/laher/goxc && \
     go get github.com/tools/godep
-
-CMD godep restore && goxc
