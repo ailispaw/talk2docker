@@ -417,7 +417,7 @@ func composeContainer(ctx *cobra.Command, root string, composer Composer) (strin
 	config.Volumes = localVolumes
 	config.WorkingDir = composer.WorkingDir
 	if composer.Entrypoint != "" {
-		config.Entrypoint = []string{composer.Entrypoint}
+		config.Entrypoint = strings.Split(composer.Entrypoint, ",")
 	}
 	config.MacAddress = composer.MacAddress
 
