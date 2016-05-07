@@ -18,8 +18,8 @@ Vagrant.configure(2) do |config|
   config.vm.synced_folder ".", "/vagrant"
 
   config.vm.provision :docker do |d|
-    d.build_image "/vagrant/godep-goxc/", args: "-t godep-goxc"
     d.run "godep-goxc",
+      image: "ailispaw/godep-goxc",
       args: [
         "--rm",
         "-v /vagrant:/gopath/src/github.com/ailispaw/talk2docker",
