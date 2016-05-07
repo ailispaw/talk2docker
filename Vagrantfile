@@ -1,4 +1,4 @@
-# A dummy plugin for DockerRoot to set hostname and network correctly at the very first `vagrant up`
+# A dummy plugin for Barge to set hostname and network correctly at the very first `vagrant up`
 module VagrantPlugins
   module GuestLinux
     class Plugin < Vagrant.plugin("2")
@@ -9,10 +9,9 @@ module VagrantPlugins
 end
 
 Vagrant.configure(2) do |config|
-  config.vm.define "docker-root"
+  config.vm.define "talk2docker"
 
-  config.vm.box = "ailispaw/docker-root"
-  config.vm.box_version = ">= 1.3.9"
+  config.vm.box = "ailispaw/barge"
 
   config.vm.network :forwarded_port, guest: 2375, host: 2375, auto_correct: true, disabled: true
 
